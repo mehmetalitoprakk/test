@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:padding="5dp"
+    android:layout_marginLeft="10dp"
+    android:layout_height="wrap_content">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/circleKisiler"
+        android:layout_width="64dp"
+        android:src="@drawable/default_profile_icon"
+        android:layout_height="64dp"
+        android:padding="4dp">
+
+    </de.hdodenhof.circleimageview.CircleImageView>
+    <LinearLayout
+        android:layout_toRightOf="@+id/circleKisiler"
+        android:layout_toEndOf="@id/circleKisiler"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_centerVertical="true"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvkisilername"
+            android:layout_margin="5dp"
+            android:text="Kaan"
+            android:textColor="@color/black"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        </TextView>
+
+        <TextView
+            android:id="@+id/tvKisilerNumber"
+            android:layout_width="match_parent"
+            android:text="+905380101166"
+            android:layout_margin="5dp"
+            android:layout_height="wrap_content">
+
+        </TextView>
+    </LinearLayout>
+
+</RelativeLayout>

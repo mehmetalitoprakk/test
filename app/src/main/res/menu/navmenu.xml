@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/home"
+        android:title="Anasayfa"
+        android:icon="@drawable/ic_home"
+        ></item>
+    <item
+        android:id="@+id/newGroup"
+        android:title="Yeni Grup"
+        android:icon="@drawable/ic_newgroup"
+        ></item>
+    <item
+        android:id="@+id/contacts"
+        android:title="Kişiler"
+        android:icon="@drawable/ic_contacts"
+        ></item>
+
+    <item
+        android:id="@+id/savedMessages"
+        android:title="Kaydedilen Mesajlar"
+        android:icon="@drawable/ic_messages"
+        ></item>
+    <item
+        android:id="@+id/settings"
+        android:title="Ayarlar"
+        android:icon="@drawable/ic_settings"
+        ></item>
+    <item
+        android:id="@+id/logout"
+        android:title="Çıkış Yap"
+        android:icon="@drawable/ic_baseline_logout_24"
+        ></item>
+
+</menu>

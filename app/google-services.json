@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "443103677746",
+    "project_id": "cimbomes-4cf88",
+    "storage_bucket": "cimbomes-4cf88.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:443103677746:android:9a05f4092fa9b869b8db2b",
+        "android_client_info": {
+          "package_name": "com.motive.cimbomes"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "443103677746-5t4i0m5gnktstc22ikfhofsod3u1vt8b.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.motive.cimbomes",
+            "certificate_hash": "57aac1670668e27253442e8c7a8654d856549a76"
+          }
+        },
+        {
+          "client_id": "443103677746-rm0vg1duelbn0k5hh220a72ptt8eqh7o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAuRSvoAXdL8HWuW36KLJvmONQODURyrlQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "443103677746-rm0vg1duelbn0k5hh220a72ptt8eqh7o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

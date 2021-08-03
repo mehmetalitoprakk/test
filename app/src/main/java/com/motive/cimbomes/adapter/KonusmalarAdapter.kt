@@ -33,10 +33,16 @@ class KonusmalarAdapter(var konsumalar : ArrayList<Konusma>,var ctx : Context) :
         var okunduBilgisi = tumLayout.imgOkunmadi
 
         fun setData(oAnkiKonusma : Konusma,ctx: Context){
-            if (oAnkiKonusma.son_mesaj.toString().length > 30){
-                sonMesaj.text = oAnkiKonusma.son_mesaj.toString().trim().substring(0,30)+"..."
+
+            var konusmaText = oAnkiKonusma.son_mesaj.toString()
+            konusmaText = konusmaText.replace("\n"," ")
+            konusmaText=konusmaText.trim()
+
+
+            if (konusmaText.length > 30){
+                sonMesaj.text = konusmaText.substring(0,30)+"..."
             }else{
-                sonMesaj.text = oAnkiKonusma.son_mesaj.toString().trim()
+                sonMesaj.text = konusmaText
             }
 
             sonZaman.text = TimeAgo.getTimeAgoForComments(oAnkiKonusma.time!!.toLong())

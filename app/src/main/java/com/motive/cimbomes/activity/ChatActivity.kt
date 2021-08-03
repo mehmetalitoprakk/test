@@ -47,6 +47,7 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
     var ilkMesajID = ""
     var moremesajPos = 0
     var listedeOlanMesajID= ""
+    var ekrandaSonGorulmeVarMi = false
 
 
     private lateinit var childEventListener : ChildEventListener
@@ -60,6 +61,7 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
         image = intent.getStringExtra("tiklananfoto")!!
 
         typingContainer.visibility = View.GONE
+        gorulduContainer.visibility = View.GONE
 
         mAuth = FirebaseAuth.getInstance()
         db = FirebaseDatabase.getInstance().reference
@@ -109,7 +111,7 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
 
 
         imgSendChat.setOnClickListener {
-            var mesajText = edittextChat.text.toString()
+            var mesajText = edittextChat.text.toString().trim()
 
             if (mesajText.trim().length>0){
                 var mesajAtan = HashMap<String,Any>()
@@ -211,24 +213,6 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
 
     private fun mesajlarıGetir() {
 
-        /*db.child("chats").child(myID).child(uid).addValueEventListener(object : ValueEventListener{
-            override fun onDataChange(snapshot: DataSnapshot) {
-                mesajlar.clear()
-                if (snapshot.getValue() != null){
-                    for (mesaj in snapshot.children){
-                        var okunanmesaj = mesaj.getValue(Mesaj::class.java)
-                        mesajlar.add(okunanmesaj!!)
-                    }
-                    setupMesajlarRecyclerView()
-                }
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-
-            }
-
-        })*/
-
         childEventListener = db.child("chats").child(myID).child(uid).limitToLast(NUMBER_OF_MESSAGE_PER_PAGE).addChildEventListener(object : ChildEventListener{
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                 var okunanmesaj = snapshot.getValue(Mesaj::class.java)
@@ -239,7 +223,9 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
                 }
                 mesajPosition++
 
-                mesajGorulduBilgisiniGuncelle(ilkMesajID)
+                mesajGorulduBilgisiniGuncelle(snapshot!!.key.toString())
+                sonMesajGorulduBilgisiniGuncelle(snapshot!!.key.toString())
+
 
                 MyAdapter.notifyItemInserted(mesajlar.size-1)
                 myRecyclerView.scrollToPosition(mesajlar.size-1)
@@ -268,10 +254,33 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
 
     }
 
+    private fun sonMesajGorulduBilgisiniGuncelle(mesajKey: String?) {
+        FirebaseDatabase.getInstance().reference.child("chats").child(uid).child(myID).child(mesajKey!!).addValueEventListener(object : ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.child("goruldu").getValue() == true && snapshot.child("user_id").getValue().toString().equals(myID)){
+                    ekrandaSonGorulmeVarMi = true
+                    gorulduContainer.visibility = View.VISIBLE
+                    gorulduContainer.startAnimation(AnimationUtils.loadAnimation(this@ChatActivity,android.R.anim.fade_in))
+                }else{
+                    ekrandaSonGorulmeVarMi = false
+                    gorulduContainer.visibility = View.GONE
+                    gorulduContainer.startAnimation(AnimationUtils.loadAnimation(this@ChatActivity,android.R.anim.fade_out))
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+
+            }
+
+        })
+    }
+
     private fun mesajGorulduBilgisiniGuncelle(mesajID: String) {
         FirebaseDatabase.getInstance().reference.child("chats").child(myID).child(uid).child(mesajID).child("goruldu").setValue(true)
                 .addOnCompleteListener {
-                    FirebaseDatabase.getInstance().reference.child("konusmalar").child(myID).child(uid).child("goruldu").setValue(true)
+                    FirebaseDatabase.getInstance().reference.child("konusmalar").child(myID).child(uid).child("goruldu").setValue(true).addOnCompleteListener {
+
+                    }
                 }
 
     }
@@ -292,9 +301,16 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
 
             if (snapshot.getValue() != null){
                 if (snapshot.getValue() == true){
+                    if (ekrandaSonGorulmeVarMi){
+                        gorulduContainer.visibility = View.GONE
+                    }
                     typingContainer.visibility = View.VISIBLE
                     typingContainer.startAnimation(AnimationUtils.loadAnimation(this@ChatActivity,android.R.anim.fade_in))
                 }else if(snapshot.getValue() == false){
+
+                    if (ekrandaSonGorulmeVarMi){
+                        gorulduContainer.visibility = View.VISIBLE
+                    }
                     typingContainer.visibility = View.GONE
                     typingContainer.startAnimation(AnimationUtils.loadAnimation(this@ChatActivity,android.R.anim.fade_out))
                 }
@@ -364,7 +380,18 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
 
     override fun onPause() {
         super.onPause()
-        typingRef.child("typing").setValue(false)
+        typingRef.addListenerForSingleValueEvent(object : ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.hasChild("typing")){
+                    typingRef.child("typing").setValue(false)
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+
+            }
+
+        })
         dinlenecekYaziyorRef.removeEventListener(typingEventListener)
     }
 

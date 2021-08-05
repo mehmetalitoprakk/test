@@ -20,6 +20,9 @@ import kotlinx.android.synthetic.main.chat_child_sender.view.tvMessageSender
 import kotlinx.android.synthetic.main.chat_child_sender.view.imgSenderView
 import kotlinx.android.synthetic.main.chat_child_sender.view.imgSenderContainer
 import kotlinx.android.synthetic.main.chat_child_sender.view.yukleniyorSenderProgress
+import kotlinx.android.synthetic.main.chat_child_sender.view.videoContainer
+import kotlinx.android.synthetic.main.chat_child_sender.view.videoViewSender
+
 import java.lang.Exception
 
 class MessageAdapter(var mesahlar:ArrayList<Mesaj>,var ctx: Context,var listener:OnItemClickListener) : RecyclerView.Adapter<MessageAdapter.MesajViewHolder>() {
@@ -29,6 +32,8 @@ class MessageAdapter(var mesahlar:ArrayList<Mesaj>,var ctx: Context,var listener
         var img =tumLayout.imgSenderView
         var imgConainer = tumLayout.imgSenderContainer
         var progress = tumLayout.yukleniyorSenderProgress
+        var videoContainer = tumLayout.videoContainer
+        var videoView = tumLayout.videoViewSender
 
 
         init {
@@ -40,7 +45,7 @@ class MessageAdapter(var mesahlar:ArrayList<Mesaj>,var ctx: Context,var listener
             if (oankiMesaj.type == "text"){
                 mesaj.text = oankiMesaj.mesaj
                 imgConainer.visibility = View.GONE
-            }else{
+            }else if(oankiMesaj.type == "image"){
                 imgConainer.visibility = View.VISIBLE
                 mesaj.visibility = View.GONE
 
@@ -55,8 +60,14 @@ class MessageAdapter(var mesahlar:ArrayList<Mesaj>,var ctx: Context,var listener
                     val intent = Intent(ctx,FullImageActivity::class.java)
                     intent.putExtra("fullImage",oankiMesaj.mesajResim.toString())
                     ctx.startActivity(intent)
+
                 }
 
+            }else if(oankiMesaj.type == "video"){
+                videoContainer.visibility = View.VISIBLE
+                mesaj.visibility = View.GONE
+                imgConainer.visibility = View.GONE
+                videoView.setVideoPath(oankiMesaj.mesajResim)
             }
 
 

@@ -72,6 +72,10 @@ class ChechPhoneCodeActivity : AppCompatActivity() {
                 finish()
 
             }else{
+                val intent = Intent(this,UserInfoActivity::class.java)
+                intent.putExtra("dbphone",gelenTelNo)
+                startActivity(intent)
+                finish()
                 Toast.makeText(this,"Onay kodu hatalı!",Toast.LENGTH_SHORT).show()
             }
         }
@@ -159,5 +163,7 @@ class ChechPhoneCodeActivity : AppCompatActivity() {
             }
         }
     }
+
+
 
 }

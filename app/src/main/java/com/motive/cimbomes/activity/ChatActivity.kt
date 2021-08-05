@@ -2,6 +2,7 @@ package com.motive.cimbomes.activity
 
 import android.content.ContentResolver
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Rect
 import android.net.Uri
@@ -18,23 +19,27 @@ import android.webkit.MimeTypeMap
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContract
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dinuscxj.refresh.RecyclerRefreshLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageReference
-import com.google.firebase.storage.StorageTask
+import com.google.firebase.storage.*
 import com.motive.cimbomes.R
 import com.motive.cimbomes.adapter.MessageAdapter
 import com.motive.cimbomes.fragments.ProgressFragment
 import com.motive.cimbomes.model.Mesaj
 import com.motive.cimbomes.model.Users
+import com.motive.cimbomes.utils.CompressSiliPhoto
+import com.motive.cimbomes.utils.CompressSiliVideo
+import com.motive.cimbomes.utils.URIPathHelper
 import com.motive.cimbomes.utils.UniversalImageLoader
 import com.theartofdev.edmodo.cropper.CropImage
 import kotlinx.android.synthetic.main.activity_chat.*
+import kotlinx.android.synthetic.main.chat_child_getter.*
+import kotlinx.android.synthetic.main.fragment_progress.*
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -62,11 +67,15 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
     var listedeOlanMesajID= ""
     var ekrandaSonGorulmeVarMi = false
     var yeniMesajKey : String? = ""
+    var selectedOptions = "Fotoğraf"
+    var videoUri : Uri? = null
+    var dosyaTuruResimMi = false
 
     //fotoğraf gönderme
     val RESIM_SEC = 100
     var resimUri : Uri? = null
     var resimLink = ""
+    val VIDEO_SEC = 200
 
 
 
@@ -106,6 +115,7 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
         setTouchDelegate(imgBackChat,100)
 
         imgBackChat.setOnClickListener {
+            db.child("chats").child(myID).child(uid).removeEventListener(childEventListener)
             finish()
         }
 
@@ -192,10 +202,12 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
         }
         imgMicChat.setOnClickListener {
             Toast.makeText(this,"Mic tıklandı",Toast.LENGTH_SHORT).show()
+            showDialog()
+
         }
 
         imgAddChat.setOnClickListener {
-            resimSec()
+            showDialog()
         }
 
     }
@@ -211,10 +223,31 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == RESIM_SEC && resultCode == RESULT_OK && data!!.data != null){
+            dosyaTuruResimMi = true
             resimUri = data.data
-            resimYukle()
+            //resimYukle()
+            CompressSiliPhoto(supportFragmentManager,this,this).execute(resimUri.toString())
+            Log.e("KONTROL PATH",resimUri.toString())
+        }
+
+
+        if (requestCode == VIDEO_SEC && resultCode == RESULT_OK){
+            if (data?.data != null){
+                dosyaTuruResimMi = false
+                val uriPathHelper = URIPathHelper()
+                val videoFullPath = uriPathHelper.getPath(this,data.data!!)
+                videoUri = data.data!!
+                if (videoFullPath != null){
+                    CompressSiliVideo(supportFragmentManager,this,this).execute(videoUri.toString())
+
+                }
+
+            }
         }
     }
+
+
+
 
     private fun dahaFazlaMesajGetir(){
         childEventListenerMore = db.child("chats").child(myID).child(uid).orderByKey().endAt(ilkMesajID).limitToLast(NUMBER_OF_MESSAGE_PER_PAGE).addChildEventListener(object : ChildEventListener{
@@ -256,6 +289,47 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
 
         })
     }
+
+
+    fun showDialog(){
+        var options = arrayOf("Fotoğraf","Video")
+        var builder = AlertDialog.Builder(this)
+        builder.setTitle("Ne göndermek istiyorsunuz?")
+        builder.setSingleChoiceItems(options,0,object : DialogInterface.OnClickListener{
+            override fun onClick(dialog: DialogInterface?, which: Int) {
+                selectedOptions = options[which]
+
+            }
+
+        })
+        builder.setPositiveButton("Tamam", object : DialogInterface.OnClickListener{
+            override fun onClick(dialog: DialogInterface?, which: Int) {
+                if (selectedOptions == "Fotoğraf"){
+                    resimSec()
+                }else if(selectedOptions == "Video"){
+                    openGalleryForVideo()
+                }
+            }
+
+        })
+        builder.setNegativeButton("İptal",object : DialogInterface.OnClickListener{
+            override fun onClick(dialog: DialogInterface?, which: Int) {
+                dialog!!.dismiss()
+
+            }
+
+        })
+        builder.show()
+    }
+
+
+    private fun openGalleryForVideo() {
+        val intent = Intent()
+        intent.type = "video/*"
+        intent.action = Intent.ACTION_PICK
+        startActivityForResult(Intent.createChooser(intent, "Select Video"),VIDEO_SEC)
+    }
+
 
     private fun mesajlarıGetir() {
 
@@ -407,13 +481,94 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
 
 
     private fun resimYukle(){
+
+    }
+
+
+
+
+    private fun setTouchDelegate(view: View, dimen: Int) {
+        val parent = view.parent as View
+        parent.post {
+            val delegateArea = Rect()
+            view.getHitRect(delegateArea)
+            delegateArea.right += dimen
+            delegateArea.left -= dimen
+            delegateArea.bottom += dimen
+            delegateArea.top -= dimen
+            parent.touchDelegate = TouchDelegate(delegateArea, view)
+        }
+    }
+
+
+    override fun onItemClick(position: Int) {
+        var clickedItem = mesajlar[position]
+    }
+
+    override fun onBackPressed() {
+        db.child("chats").child(myID).child(uid).removeEventListener(childEventListener)
+        finish()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        typingRef.addListenerForSingleValueEvent(object : ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.hasChild("typing")){
+                    typingRef.child("typing").setValue(false)
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+
+            }
+
+        })
+        Log.e("KONTROL","onpause girdi")
+        dinlenecekYaziyorRef.removeEventListener(typingEventListener)
+
+    }
+
+
+
+    override fun onStart() {
+        super.onStart()
+        //AuthListener Eklenicek
+        Log.e("KONTROL","onstarta girdi")
+    }
+
+
+    override fun onStop() {
+        // auth listener null değilse remove edilicek
+        super.onStop()
+        Log.e("KONTROL","onstopa girdi")
+
+    }
+
+    override fun onResume() {
+
+        super.onResume()
+        Log.e("KONTROL","onresume girdi")
+        dinlenecekYaziyorRef.child("typing").addValueEventListener(typingEventListener)
+
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+        Log.e("KONTROL","Onrestarta girdi")
+
+    }
+
+    fun uploadStorage(result: String) {
+
+        var fileUri = Uri.parse(result)
         val Rndomuid = UUID.randomUUID().toString()
         var myref = storageReference.child("mesajphotos").child(myID).child(uid).child(Rndomuid)
-        if (resimUri != null){
+        if (fileUri != null){
             val progressDialog = ProgressFragment()
             progressDialog.show(this.supportFragmentManager,"resimloading")
             progressDialog.isCancelable = false
-            myref.putFile(resimUri!!).addOnSuccessListener {
+            myref.putFile(fileUri).addOnSuccessListener {
                 myref.downloadUrl.addOnSuccessListener {
                     var mesajAtan = HashMap<String,Any>()
                     mesajAtan.put("mesaj","")
@@ -462,76 +617,84 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
                     progressDialog.dismiss()
                     Toast.makeText(this,"Bir hata oluştu",Toast.LENGTH_SHORT).show()
                 }
-            }
-
-        }
-    }
-
-
-
-
-    private fun setTouchDelegate(view: View, dimen: Int) {
-        val parent = view.parent as View
-        parent.post {
-            val delegateArea = Rect()
-            view.getHitRect(delegateArea)
-            delegateArea.right += dimen
-            delegateArea.left -= dimen
-            delegateArea.bottom += dimen
-            delegateArea.top -= dimen
-            parent.touchDelegate = TouchDelegate(delegateArea, view)
-        }
-    }
-
-
-    override fun onItemClick(position: Int) {
-        var clickedItem = mesajlar[position]
-    }
-
-    override fun onBackPressed() {
-        finish()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        typingRef.addListenerForSingleValueEvent(object : ValueEventListener{
-            override fun onDataChange(snapshot: DataSnapshot) {
-                if (snapshot.hasChild("typing")){
-                    typingRef.child("typing").setValue(false)
+            }.addOnProgressListener(object :OnProgressListener<UploadTask.TaskSnapshot>{
+                override fun onProgress(snapshot: UploadTask.TaskSnapshot) {
+                    var progress = 100 * snapshot.bytesTransferred / snapshot.totalByteCount
+                    progressDialog.tvBilgi.text = "%${progress} yüklendi"
                 }
-            }
 
-            override fun onCancelled(error: DatabaseError) {
+            })
 
-            }
-
-        })
-        dinlenecekYaziyorRef.removeEventListener(typingEventListener)
+        }
     }
 
-    override fun onStart() {
-        super.onStart()
-        //AuthListener Eklenicek
-        Log.e("KONTROL","onstarta girdi")
-    }
 
-    override fun onStop() {
-        // auth listener null değilse remove edilicek
-        super.onStop()
-        Log.e("KONTROL","onstopa girdi")
-        db.child("chats").child(myID).child(uid).removeEventListener(childEventListener)
-    }
+    fun uploadStorageVideo(result: String) {
+        var fileUri = Uri.parse("file://"+result)
+        val Rndomuid = UUID.randomUUID().toString()
+        var myref = storageReference.child("mesajVideos").child(myID).child(uid).child(Rndomuid)
+        if (fileUri != null){
+            val progressDialog = ProgressFragment()
+            progressDialog.show(this.supportFragmentManager,"videoLoading")
+            progressDialog.isCancelable = false
+            myref.putFile(fileUri).addOnSuccessListener {
+                myref.downloadUrl.addOnSuccessListener {
+                    var mesajAtan = HashMap<String,Any>()
+                    mesajAtan.put("mesaj","")
+                    mesajAtan.put("goruldu",true)
+                    mesajAtan.put("time",ServerValue.TIMESTAMP)
+                    mesajAtan.put("type","video")
+                    mesajAtan.put("user_id",myID)
+                    mesajAtan.put("mesajResim",it.toString())
 
-    override fun onResume() {
-        super.onResume()
-        Log.e("KONTROL","onresume girdi")
-        dinlenecekYaziyorRef.child("typing").addValueEventListener(typingEventListener)
-    }
+                    var fotoMesajKey = db.child("chats").child(myID).child(uid).push().key
 
-    override fun onRestart() {
-        super.onRestart()
-        Log.e("KONTROL","Onrestarta girdi")
-        db.child("chats").child(myID).child(uid).addChildEventListener(childEventListener)
+                    db.child("chats").child(myID).child(uid).child(fotoMesajKey!!).setValue(mesajAtan)
+
+
+
+                    var mesajAlan = HashMap<String,Any>()
+                    mesajAlan.put("mesaj","")
+                    mesajAlan.put("goruldu",false)
+                    mesajAlan.put("time",ServerValue.TIMESTAMP)
+                    mesajAlan.put("type","video")
+                    mesajAlan.put("user_id",myID)
+                    mesajAlan.put("mesajResim",it.toString())
+                    db.child("chats").child(uid).child(myID).child(fotoMesajKey!!).setValue(mesajAlan)
+
+
+
+
+                    var konusmaMesajAtan = HashMap<String,Any>()
+                    konusmaMesajAtan.put("time",ServerValue.TIMESTAMP)
+                    konusmaMesajAtan.put("goruldu",true)
+                    konusmaMesajAtan.put("son_mesaj","Video")
+                    konusmaMesajAtan.put("typing",false)
+                    db.child("konusmalar").child(myID).child(uid).setValue(konusmaMesajAtan)
+
+
+                    var konusmaMesajAlan = HashMap<String,Any>()
+                    konusmaMesajAlan.put("time",ServerValue.TIMESTAMP)
+                    konusmaMesajAlan.put("goruldu",false)
+                    konusmaMesajAlan.put("son_mesaj","Video")
+                    //konusmaMesajAlan.put("typing",false)
+                    db.child("konusmalar").child(uid).child(myID).setValue(konusmaMesajAlan)
+                    progressDialog.dismiss()
+
+
+                }.addOnFailureListener {
+                    progressDialog.dismiss()
+                    Toast.makeText(this,"Bir hata oluştu",Toast.LENGTH_SHORT).show()
+                }
+            }.addOnProgressListener(object :OnProgressListener<UploadTask.TaskSnapshot>{
+                override fun onProgress(snapshot: UploadTask.TaskSnapshot) {
+                    var progress = 100 * snapshot.bytesTransferred / snapshot.totalByteCount
+                    progressDialog.tvBilgi.text = "%${progress} yüklendi"
+                }
+
+            })
+
+        }
     }
 
 

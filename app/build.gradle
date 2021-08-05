@@ -92,4 +92,11 @@ dependencies {
     //PhotoView
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
 
+    //UniversalVideoView
+    compile 'com.linsea:universalvideoview:1.1.0@aar'
+
+    //SiliComprasor
+    implementation 'com.iceteck.silicompressorr:silicompressor:2.2.4'
+    implementation 'com.googlecode.mp4parser:isoparser:1.1.22'
+
 }

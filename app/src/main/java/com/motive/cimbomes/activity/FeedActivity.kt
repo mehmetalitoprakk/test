@@ -1,10 +1,13 @@
 package com.motive.cimbomes.activity
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.MenuItem
 import android.widget.ProgressBar
@@ -37,6 +40,8 @@ class FeedActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     lateinit var headerProgress : ProgressBar
     val CONTACT_RQ = 101
     lateinit var toolbars : androidx.appcompat.widget.Toolbar
+
+    var contactPermissinVerildiMi = false
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -100,6 +105,7 @@ class FeedActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             when{
                 ContextCompat.checkSelfPermission(applicationContext,permission) == PackageManager.PERMISSION_GRANTED ->{
                     Toast.makeText(applicationContext,"$name permission granted",Toast.LENGTH_SHORT).show()
+                    contactPermissinVerildiMi = true
                 }
                 shouldShowRequestPermissionRationale(permission) -> showDialog(permission,name,requestCode)
                 else -> ActivityCompat.requestPermissions(this, arrayOf(permission),requestCode)
@@ -112,11 +118,25 @@ class FeedActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         fun innerChech(name:String){
             if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED){
-                Toast.makeText(this,"İzin reddedildi",Toast.LENGTH_SHORT).show()
+
+                val builder = AlertDialog.Builder(this)
+                builder.apply {
+                    setMessage("'Cimbomes uygulamasını en verimli şekilde kullanmanız için kişilerinize erişmesine izin vermeniz gerekiyor. İzin verilsin mi?'")
+                    setTitle("İzin isteği")
+                    setPositiveButton("AYARLARA GİT"){dialog,which ->
+                        dialog.cancel()
+                        startActivity(Intent(Settings.ACTION_SETTINGS))
+
+                    }
+                }
+                val dialog = builder.create()
+                dialog.show()
             }else{
                 Toast.makeText(this,"İzin verildi",Toast.LENGTH_SHORT).show()
+                contactPermissinVerildiMi = true
             }
         }
         when(requestCode){
@@ -130,9 +150,9 @@ class FeedActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val builder = AlertDialog.Builder(this)
 
         builder.apply {
-            setMessage("Cimbomes kişilerinize erişmek istiyor")
+            setMessage("Cimbomes uygulamasının kişilerinize erişmesine izin verilsin mi?")
             setTitle("İzin isteği")
-            setPositiveButton("ok"){dialog,which ->
+            setPositiveButton("Tamam"){dialog,which ->
                 ActivityCompat.requestPermissions(this@FeedActivity, arrayOf(permission),requestCode)
             }
         }
@@ -167,8 +187,13 @@ class FeedActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         drawerLayout.closeDrawer(GravityCompat.START)
         when(item.itemId){
             R.id.contacts -> {
-                setCurrentFragment(KisilerFragment())
-                toolbars.setTitle("Kişilerim")
+                if (contactPermissinVerildiMi){
+                    setCurrentFragment(KisilerFragment())
+                    toolbars.setTitle("Kişilerim")
+                }else{
+                    Toast.makeText(this,"Lütfen 'Cimbomes' uygulamasının kişilerinize erişmesine izin verin.! ",Toast.LENGTH_SHORT).show()
+                }
+
             }
             R.id.home -> {
                 setCurrentFragment(AnasayfaFragment())

@@ -17,9 +17,45 @@
         android:padding="10dp"
         android:textAlignment="textStart"
         android:textSize="12sp"
+        android:visibility="visible"
         android:gravity="start"
         android:textColor="@color/white"
         android:background="@drawable/message_sender"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <FrameLayout
+        android:id="@+id/imgSenderContainer"
+        android:layout_width="250dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@drawable/message_sender"
+        android:layout_height="350dp"
+        >
+        <ProgressBar
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_margin="20dp"
+            android:visibility="gone"
+            android:layout_gravity="center"
+            android:indeterminateTint="@color/white"
+            android:id="@+id/yukleniyorSenderProgress">
+
+        </ProgressBar>
+
+        <ImageView
+            android:id="@+id/imgSenderView"
+            android:layout_width="match_parent"
+            android:visibility="visible"
+            android:layout_margin="10dp"
+            android:layout_gravity="center"
+            android:scaleType="centerCrop"
+            android:adjustViewBounds="true"
+            android:layout_height="match_parent"
+            />
+
+    </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

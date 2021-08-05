@@ -1,6 +1,10 @@
 package com.motive.cimbomes.activity
 
+import android.content.ContentResolver
+import android.content.Context
+import android.content.Intent
 import android.graphics.Rect
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
@@ -10,8 +14,10 @@ import android.util.Log
 import android.view.TouchDelegate
 import android.view.View
 import android.view.animation.AnimationUtils
+import android.webkit.MimeTypeMap
 import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContract
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dinuscxj.refresh.RecyclerRefreshLayout
@@ -20,12 +26,18 @@ import com.google.firebase.database.*
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
+import com.google.firebase.storage.StorageTask
 import com.motive.cimbomes.R
 import com.motive.cimbomes.adapter.MessageAdapter
+import com.motive.cimbomes.fragments.ProgressFragment
 import com.motive.cimbomes.model.Mesaj
 import com.motive.cimbomes.model.Users
 import com.motive.cimbomes.utils.UniversalImageLoader
+import com.theartofdev.edmodo.cropper.CropImage
 import kotlinx.android.synthetic.main.activity_chat.*
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
     private lateinit var uid : String
@@ -40,6 +52,7 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
     private lateinit var MyAdapter : MessageAdapter
     private lateinit var myRecyclerView : RecyclerView
     private lateinit var dinlenecekYaziyorRef : DatabaseReference
+    private lateinit var storageReference: StorageReference
 
     //Sayfalama
     val NUMBER_OF_MESSAGE_PER_PAGE = 15
@@ -48,10 +61,19 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
     var moremesajPos = 0
     var listedeOlanMesajID= ""
     var ekrandaSonGorulmeVarMi = false
+    var yeniMesajKey : String? = ""
+
+    //fotoğraf gönderme
+    val RESIM_SEC = 100
+    var resimUri : Uri? = null
+    var resimLink = ""
+
 
 
     private lateinit var childEventListener : ChildEventListener
     private lateinit var childEventListenerMore : ChildEventListener
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,6 +88,7 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
         mAuth = FirebaseAuth.getInstance()
         db = FirebaseDatabase.getInstance().reference
         storage = FirebaseStorage.getInstance().reference
+        storageReference = FirebaseStorage.getInstance().reference
 
         myID = mAuth.currentUser!!.uid
         mesajlar = ArrayList<Mesaj>()
@@ -120,8 +143,9 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
                 mesajAtan.put("time",ServerValue.TIMESTAMP)
                 mesajAtan.put("type","text")
                 mesajAtan.put("user_id",myID)
+                mesajAtan.put("mesajResim",resimLink)
 
-                var yeniMesajKey = db.child("chats").child(myID).child(uid).push().key
+                yeniMesajKey = db.child("chats").child(myID).child(uid).push().key
 
                 db.child("chats").child(myID).child(uid).child(yeniMesajKey!!).setValue(mesajAtan)
 
@@ -133,6 +157,7 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
                 mesajAlan.put("time",ServerValue.TIMESTAMP)
                 mesajAlan.put("type","text")
                 mesajAlan.put("user_id",myID)
+                mesajAlan.put("mesajResim",resimLink)
                 db.child("chats").child(uid).child(myID).child(yeniMesajKey!!).setValue(mesajAlan)
 
 
@@ -169,6 +194,26 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
             Toast.makeText(this,"Mic tıklandı",Toast.LENGTH_SHORT).show()
         }
 
+        imgAddChat.setOnClickListener {
+            resimSec()
+        }
+
+    }
+
+    private fun resimSec() {
+        val intent = Intent()
+        intent.setType("image/*")
+        intent.setAction(Intent.ACTION_PICK)
+        startActivityForResult(intent,RESIM_SEC)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == RESIM_SEC && resultCode == RESULT_OK && data!!.data != null){
+            resimUri = data.data
+            resimYukle()
+        }
     }
 
     private fun dahaFazlaMesajGetir(){
@@ -190,6 +235,7 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
                 myRecyclerView.scrollToPosition(NUMBER_OF_MESSAGE_PER_PAGE)
 
                 Log.e("KONTROL", ilkMesajID)
+                println("RESİM ID" + okunanmesaj!!.mesajResim!!)
             }
 
             override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
@@ -216,6 +262,7 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
         childEventListener = db.child("chats").child(myID).child(uid).limitToLast(NUMBER_OF_MESSAGE_PER_PAGE).addChildEventListener(object : ChildEventListener{
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                 var okunanmesaj = snapshot.getValue(Mesaj::class.java)
+                println(okunanmesaj.toString())
                 mesajlar.add(okunanmesaj!!)
                 if (mesajPosition ==0){
                     ilkMesajID = snapshot.key!!
@@ -230,7 +277,8 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
                 MyAdapter.notifyItemInserted(mesajlar.size-1)
                 myRecyclerView.scrollToPosition(mesajlar.size-1)
 
-                Log.e("KONTROL", ilkMesajID)
+
+                println("Resim Kontrol")
 
             }
 
@@ -239,6 +287,7 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
             }
 
             override fun onChildRemoved(snapshot: DataSnapshot) {
+
 
             }
 
@@ -356,6 +405,71 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
 
     }
 
+
+    private fun resimYukle(){
+        val Rndomuid = UUID.randomUUID().toString()
+        var myref = storageReference.child("mesajphotos").child(myID).child(uid).child(Rndomuid)
+        if (resimUri != null){
+            val progressDialog = ProgressFragment()
+            progressDialog.show(this.supportFragmentManager,"resimloading")
+            progressDialog.isCancelable = false
+            myref.putFile(resimUri!!).addOnSuccessListener {
+                myref.downloadUrl.addOnSuccessListener {
+                    var mesajAtan = HashMap<String,Any>()
+                    mesajAtan.put("mesaj","")
+                    mesajAtan.put("goruldu",true)
+                    mesajAtan.put("time",ServerValue.TIMESTAMP)
+                    mesajAtan.put("type","image")
+                    mesajAtan.put("user_id",myID)
+                    mesajAtan.put("mesajResim",it.toString())
+
+                    var fotoMesajKey = db.child("chats").child(myID).child(uid).push().key
+
+                    db.child("chats").child(myID).child(uid).child(fotoMesajKey!!).setValue(mesajAtan)
+
+
+
+                    var mesajAlan = HashMap<String,Any>()
+                    mesajAlan.put("mesaj","")
+                    mesajAlan.put("goruldu",false)
+                    mesajAlan.put("time",ServerValue.TIMESTAMP)
+                    mesajAlan.put("type","image")
+                    mesajAlan.put("user_id",myID)
+                    mesajAlan.put("mesajResim",it.toString())
+                    db.child("chats").child(uid).child(myID).child(fotoMesajKey!!).setValue(mesajAlan)
+
+
+
+
+                    var konusmaMesajAtan = HashMap<String,Any>()
+                    konusmaMesajAtan.put("time",ServerValue.TIMESTAMP)
+                    konusmaMesajAtan.put("goruldu",true)
+                    konusmaMesajAtan.put("son_mesaj","Fotoğraf")
+                    konusmaMesajAtan.put("typing",false)
+                    db.child("konusmalar").child(myID).child(uid).setValue(konusmaMesajAtan)
+
+
+                    var konusmaMesajAlan = HashMap<String,Any>()
+                    konusmaMesajAlan.put("time",ServerValue.TIMESTAMP)
+                    konusmaMesajAlan.put("goruldu",false)
+                    konusmaMesajAlan.put("son_mesaj","Fotograf")
+                    //konusmaMesajAlan.put("typing",false)
+                    db.child("konusmalar").child(uid).child(myID).setValue(konusmaMesajAlan)
+                    progressDialog.dismiss()
+
+
+                }.addOnFailureListener {
+                    progressDialog.dismiss()
+                    Toast.makeText(this,"Bir hata oluştu",Toast.LENGTH_SHORT).show()
+                }
+            }
+
+        }
+    }
+
+
+
+
     private fun setTouchDelegate(view: View, dimen: Int) {
         val parent = view.parent as View
         parent.post {
@@ -398,17 +512,26 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
     override fun onStart() {
         super.onStart()
         //AuthListener Eklenicek
+        Log.e("KONTROL","onstarta girdi")
     }
 
     override fun onStop() {
         // auth listener null değilse remove edilicek
         super.onStop()
+        Log.e("KONTROL","onstopa girdi")
         db.child("chats").child(myID).child(uid).removeEventListener(childEventListener)
     }
 
     override fun onResume() {
         super.onResume()
+        Log.e("KONTROL","onresume girdi")
         dinlenecekYaziyorRef.child("typing").addValueEventListener(typingEventListener)
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+        Log.e("KONTROL","Onrestarta girdi")
+        db.child("chats").child(myID).child(uid).addChildEventListener(childEventListener)
     }
 
 

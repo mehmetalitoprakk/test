@@ -1,13 +1,15 @@
 package com.motive.cimbomes.activity
 
-import android.content.ContentResolver
-import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.Rect
+import android.media.MediaMetadataRetriever
 import android.net.Uri
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Environment
 import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
@@ -15,31 +17,28 @@ import android.util.Log
 import android.view.TouchDelegate
 import android.view.View
 import android.view.animation.AnimationUtils
-import android.webkit.MimeTypeMap
-import android.widget.LinearLayout
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContract
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.abedelazizshe.lightcompressorlibrary.CompressionListener
+import com.abedelazizshe.lightcompressorlibrary.VideoCompressor
+import com.abedelazizshe.lightcompressorlibrary.VideoQuality
+import com.abedelazizshe.lightcompressorlibrary.config.Configuration
 import com.dinuscxj.refresh.RecyclerRefreshLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
-import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.*
 import com.motive.cimbomes.R
 import com.motive.cimbomes.adapter.MessageAdapter
 import com.motive.cimbomes.fragments.ProgressFragment
 import com.motive.cimbomes.model.Mesaj
-import com.motive.cimbomes.model.Users
-import com.motive.cimbomes.utils.CompressSiliPhoto
-import com.motive.cimbomes.utils.CompressSiliVideo
 import com.motive.cimbomes.utils.URIPathHelper
 import com.motive.cimbomes.utils.UniversalImageLoader
-import com.theartofdev.edmodo.cropper.CropImage
 import kotlinx.android.synthetic.main.activity_chat.*
 import kotlinx.android.synthetic.main.chat_child_getter.*
 import kotlinx.android.synthetic.main.fragment_progress.*
+import java.io.File
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -76,6 +75,10 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
     var resimUri : Uri? = null
     var resimLink = ""
     val VIDEO_SEC = 200
+    var video = ""
+
+
+    var videoFullPath = ""
 
 
 
@@ -154,6 +157,7 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
                 mesajAtan.put("type","text")
                 mesajAtan.put("user_id",myID)
                 mesajAtan.put("mesajResim",resimLink)
+                mesajAtan.put("video",video)
 
                 yeniMesajKey = db.child("chats").child(myID).child(uid).push().key
 
@@ -168,6 +172,7 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
                 mesajAlan.put("type","text")
                 mesajAlan.put("user_id",myID)
                 mesajAlan.put("mesajResim",resimLink)
+                mesajAlan.put("video",video)
                 db.child("chats").child(uid).child(myID).child(yeniMesajKey!!).setValue(mesajAlan)
 
 
@@ -226,7 +231,7 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
             dosyaTuruResimMi = true
             resimUri = data.data
             //resimYukle()
-            CompressSiliPhoto(supportFragmentManager,this,this).execute(resimUri.toString())
+            uploadStorage(resimUri!!)
             Log.e("KONTROL PATH",resimUri.toString())
         }
 
@@ -235,18 +240,68 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
             if (data?.data != null){
                 dosyaTuruResimMi = false
                 val uriPathHelper = URIPathHelper()
-                val videoFullPath = uriPathHelper.getPath(this,data.data!!)
+                //videoFullPath = uriPathHelper.getPath(this,data.data!!)!!
                 videoUri = data.data!!
-                if (videoFullPath != null){
+                compressVideo(videoUri!!)
+                /*if (videoFullPath != null){
                     CompressSiliVideo(supportFragmentManager,this,this).execute(videoUri.toString())
 
-                }
+                }*/
 
             }
         }
     }
 
+    private fun compressVideo(video: Uri) {
+        var yeniOlusturulanDosyaninKlasoru = File(Environment.getExternalStorageDirectory().absolutePath+"/Android/data/${applicationContext.packageName}/files/Movies/")
+        yeniOlusturulanDosyaninKlasoru.parentFile.mkdirs()
+        Log.e("KONTROL","İFE GİRMEDİ")
+            Log.e("KONTROLCOMPRESS", yeniOlusturulanDosyaninKlasoru.path)
+            var dialog = ProgressFragment()
+            VideoCompressor.start(
+                    this,
+                    videoUri,
+                    srcPath = null,
+                    destPath = yeniOlusturulanDosyaninKlasoru.path,
+                    listener = object : CompressionListener {
+                        override fun onCancelled() {
 
+                        }
+
+                        override fun onFailure(failureMessage: String) {
+
+                        }
+
+                        override fun onProgress(percent: Float) {
+                            Log.e("PROGRESS","%${percent}")
+
+                        }
+
+                        override fun onStart() {
+                            dialog.show(supportFragmentManager, "LightCompress")
+                            dialog.isCancelable = false
+
+                        }
+
+                        override fun onSuccess() {
+                            dialog.dismiss()
+                            uploadStorageVideo(yeniOlusturulanDosyaninKlasoru.path)
+                            Log.e("KONTROLCOMPRESS", "SUCCCES")
+
+                        }
+
+                    },
+                    configureWith = Configuration(
+                            quality = VideoQuality.MEDIUM,
+                            isMinBitRateEnabled = true,
+                            keepOriginalResolution = false,
+                            videoHeight = null /*Double, ignore, or null*/,
+                            videoWidth = null /*Double, ignore, or null*/,
+                            videoBitrate = null /*Int, ignore, or null*/
+                    )
+            )
+
+    }
 
 
     private fun dahaFazlaMesajGetir(){
@@ -480,10 +535,6 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
     }
 
 
-    private fun resimYukle(){
-
-    }
-
 
 
 
@@ -559,16 +610,16 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
 
     }
 
-    fun uploadStorage(result: String) {
+    fun uploadStorage(result: Uri) {
 
-        var fileUri = Uri.parse(result)
+        //var fileUri = Uri.parse(result)
         val Rndomuid = UUID.randomUUID().toString()
         var myref = storageReference.child("mesajphotos").child(myID).child(uid).child(Rndomuid)
-        if (fileUri != null){
+        if (result != null){
             val progressDialog = ProgressFragment()
             progressDialog.show(this.supportFragmentManager,"resimloading")
             progressDialog.isCancelable = false
-            myref.putFile(fileUri).addOnSuccessListener {
+            myref.putFile(result).addOnSuccessListener {
                 myref.downloadUrl.addOnSuccessListener {
                     var mesajAtan = HashMap<String,Any>()
                     mesajAtan.put("mesaj","")
@@ -577,6 +628,7 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
                     mesajAtan.put("type","image")
                     mesajAtan.put("user_id",myID)
                     mesajAtan.put("mesajResim",it.toString())
+                    mesajAtan.put("video",video)
 
                     var fotoMesajKey = db.child("chats").child(myID).child(uid).push().key
 
@@ -591,6 +643,7 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
                     mesajAlan.put("type","image")
                     mesajAlan.put("user_id",myID)
                     mesajAlan.put("mesajResim",it.toString())
+                    mesajAlan.put("video",video)
                     db.child("chats").child(uid).child(myID).child(fotoMesajKey!!).setValue(mesajAlan)
 
 
@@ -629,23 +682,29 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
     }
 
 
+
+
     fun uploadStorageVideo(result: String) {
         var fileUri = Uri.parse("file://"+result)
         val Rndomuid = UUID.randomUUID().toString()
         var myref = storageReference.child("mesajVideos").child(myID).child(uid).child(Rndomuid)
+        Log.e("KONTROL","VİDEO STORAGE FONKSİYONUNA GİRDİ")
         if (fileUri != null){
+            Log.e("KONTROL","VİDEO STORAGE FONKSİYONUNA GİRDİ2")
             val progressDialog = ProgressFragment()
             progressDialog.show(this.supportFragmentManager,"videoLoading")
             progressDialog.isCancelable = false
             myref.putFile(fileUri).addOnSuccessListener {
                 myref.downloadUrl.addOnSuccessListener {
+
                     var mesajAtan = HashMap<String,Any>()
                     mesajAtan.put("mesaj","")
                     mesajAtan.put("goruldu",true)
                     mesajAtan.put("time",ServerValue.TIMESTAMP)
                     mesajAtan.put("type","video")
                     mesajAtan.put("user_id",myID)
-                    mesajAtan.put("mesajResim",it.toString())
+                    mesajAtan.put("mesajResim","")
+                    mesajAtan.put("video",it.toString())
 
                     var fotoMesajKey = db.child("chats").child(myID).child(uid).push().key
 
@@ -659,7 +718,8 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
                     mesajAlan.put("time",ServerValue.TIMESTAMP)
                     mesajAlan.put("type","video")
                     mesajAlan.put("user_id",myID)
-                    mesajAlan.put("mesajResim",it.toString())
+                    mesajAlan.put("mesajResim","")
+                    mesajAlan.put("video",it.toString())
                     db.child("chats").child(uid).child(myID).child(fotoMesajKey!!).setValue(mesajAlan)
 
 

@@ -39,6 +39,7 @@ class FeedActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     lateinit var headerIsim : TextView
     lateinit var headerProgress : ProgressBar
     val CONTACT_RQ = 101
+    val RECORD_RQ = 102
     lateinit var toolbars : androidx.appcompat.widget.Toolbar
 
     var contactPermissinVerildiMi = false
@@ -49,6 +50,7 @@ class FeedActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setContentView(R.layout.activity_feed)
         initImageLoader()
         checkContactPermission(android.Manifest.permission.READ_CONTACTS,"contact",CONTACT_RQ)
+        checkContactPermission(Manifest.permission.RECORD_AUDIO,"Record",RECORD_RQ)
 
         mAuth = FirebaseAuth.getInstance()
         db = FirebaseDatabase.getInstance().reference
@@ -141,6 +143,7 @@ class FeedActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
         when(requestCode){
             CONTACT_RQ -> innerChech("contact")
+            RECORD_RQ -> innerChech("Record")
         }
 
 

@@ -58,63 +58,106 @@
         android:background="#C0BEBE"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cirlceChat"></View>
+        app:layout_constraintTop_toBottomOf="@+id/cirlceChat" />
 
-    <EditText
-        android:id="@+id/edittextChat"
-        android:layout_width="0dp"
-        android:layout_height="40dp"
-        android:layout_marginBottom="3dp"
-        android:background="@drawable/edittextbg"
-        android:ems="10"
-        android:hint="Mesaj yazın.."
-        android:inputType="textMultiLine"
-        android:padding="10dp"
-        android:textSize="15sp"
+
+    <LinearLayout
+        android:id="@+id/noMicContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/imgMicChat"
-        app:layout_constraintStart_toEndOf="@+id/imgAddChat" />
+        app:layout_constraintStart_toStartOf="parent">
 
-    <ImageView
-        android:id="@+id/imgAddChat"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginBottom="5dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/ic_baseline_add_24" />
+        <ImageView
+            android:id="@+id/imgAddChat"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="3dp"
+            android:visibility="visible"
+            android:layout_marginBottom="5dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:srcCompat="@drawable/ic_baseline_add_24"
+            app:tint="@color/teal_700"/>
 
-    <ImageView
-        android:id="@+id/imgMicChat"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
-        android:layout_marginStart="3dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginTop="2dp"
-        app:layout_constraintBottom_toBottomOf="@+id/edittextChat"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/edittextChat"
-        app:layout_constraintTop_toTopOf="@+id/edittextChat"
-        app:srcCompat="@drawable/ic_baseline_mic_24" />
+        <com.devlomi.record_view.RecordView
+            android:id="@+id/recordView"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:visibility="gone"
+            app:slide_to_cancel_arrow="@drawable/recv_ic_arrow"
+            app:slide_to_cancel_arrow_color="#000000"
+            app:slide_to_cancel_bounds="8dp"
+            app:slide_to_cancel_text="İptal etmek için sola kaydır"
+            app:counter_time_color="@color/teal_700">
 
-    <ImageView
-        android:id="@+id/imgSendChat"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
-        android:layout_marginEnd="8dp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@+id/edittextChat"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/edittextChat"
-        app:srcCompat="@drawable/ic_baseline_send_24" />
+        </com.devlomi.record_view.RecordView>
+
+        <EditText
+            android:id="@+id/edittextChat"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:layout_marginBottom="3dp"
+            android:background="@drawable/edittextbg"
+            android:ems="10"
+            android:visibility="visible"
+            android:hint="Mesaj yazın.."
+            android:inputType="textMultiLine"
+            android:padding="10dp"
+            android:textSize="15sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/imgMicChat"
+            app:layout_constraintStart_toEndOf="@+id/imgAddChat" />
+
+        <com.devlomi.record_view.RecordButton
+            android:id="@+id/imgMicChat"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_marginStart="2dp"
+            android:layout_marginEnd="2dp"
+            android:scaleType="centerInside"
+            app:mic_icon="@drawable/recv_ic_mic_white"
+            android:backgroundTint="@color/teal_700"
+            android:visibility="visible"
+            android:background="@drawable/recv_bg_mic"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="1dp"
+            android:tint="@color/white"
+            />
+
+        <ImageView
+            android:id="@+id/imgSendChat"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginTop="5dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/edittextChat"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/edittextChat"
+            app:srcCompat="@drawable/ic_baseline_send_24"
+            app:tint="@color/teal_700" />
+
+
+    </LinearLayout>
+
+
+
+
+
+
+
 
     <View
         android:id="@+id/view4"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="#C0BEBE"
-        app:layout_constraintBottom_toTopOf="@+id/imgAddChat"
+        app:layout_constraintBottom_toTopOf="@+id/noMicContainer"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -147,7 +190,7 @@
         android:id="@+id/typingContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/edittextChat"
+        app:layout_constraintBottom_toTopOf="@+id/noMicContainer"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -173,7 +216,7 @@
         app:layout_constraintBottom_toTopOf="@+id/typingContainer"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        tools:visibility="visible">
+        tools:visibility="gone">
 
         <ImageView
             android:id="@+id/mgChatGoruldu"

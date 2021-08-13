@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Rect
 import android.media.MediaMetadataRetriever
+import android.media.MediaRecorder
 import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
@@ -25,7 +26,9 @@ import com.abedelazizshe.lightcompressorlibrary.CompressionListener
 import com.abedelazizshe.lightcompressorlibrary.VideoCompressor
 import com.abedelazizshe.lightcompressorlibrary.VideoQuality
 import com.abedelazizshe.lightcompressorlibrary.config.Configuration
+import com.devlomi.record_view.OnRecordListener
 import com.dinuscxj.refresh.RecyclerRefreshLayout
+import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.storage.*
@@ -39,6 +42,7 @@ import kotlinx.android.synthetic.main.activity_chat.*
 import kotlinx.android.synthetic.main.chat_child_getter.*
 import kotlinx.android.synthetic.main.fragment_progress.*
 import java.io.File
+import java.lang.Exception
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -76,7 +80,8 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
     var resimLink = ""
     val VIDEO_SEC = 200
     var video = ""
-
+    var auidoPath = ""
+    var mediaRecorder = MediaRecorder()
 
     var videoFullPath = ""
 
@@ -116,6 +121,7 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
         setupMesajlarRecyclerView()
         mesajlarıGetir()
         setTouchDelegate(imgBackChat,100)
+
 
         imgBackChat.setOnClickListener {
             db.child("chats").child(myID).child(uid).removeEventListener(childEventListener)
@@ -158,6 +164,7 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
                 mesajAtan.put("user_id",myID)
                 mesajAtan.put("mesajResim",resimLink)
                 mesajAtan.put("video",video)
+                mesajAtan.put("audio","")
 
                 yeniMesajKey = db.child("chats").child(myID).child(uid).push().key
 
@@ -173,6 +180,7 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
                 mesajAlan.put("user_id",myID)
                 mesajAlan.put("mesajResim",resimLink)
                 mesajAlan.put("video",video)
+                mesajAlan.put("audio","")
                 db.child("chats").child(uid).child(myID).child(yeniMesajKey!!).setValue(mesajAlan)
 
 
@@ -205,17 +213,147 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
 
 
         }
-        imgMicChat.setOnClickListener {
-            Toast.makeText(this,"Mic tıklandı",Toast.LENGTH_SHORT).show()
-            showDialog()
 
-        }
+
+        /*imgMicChat.setOnClickListener {
+            imgMicChat.setRecordView(recordView)
+            imgMicChat.isListenForRecord = true
+        }*/
+
+
+        /*recordView.setOnRecordListener(object : OnRecordListener{
+            override fun onStart() {
+                imgAddChat.visibility = View.GONE
+                edittextChat.visibility = View.GONE
+                imgSendChat.visibility = View.GONE
+                recordView.visibility = View.VISIBLE
+
+                setUpRecording()
+
+                try {
+                    mediaRecorder.prepare()
+                    mediaRecorder.start()
+                }catch (e : Exception){
+                    e.printStackTrace()
+                }
+
+
+            }
+
+            override fun onCancel() {
+                mediaRecorder.reset()
+                mediaRecorder.release()
+                var file = File(auidoPath)
+                if (file.exists()){
+                    file.delete()
+                }
+                imgAddChat.visibility = View.VISIBLE
+                edittextChat.visibility = View.VISIBLE
+                imgSendChat.visibility = View.VISIBLE
+                recordView.visibility = View.GONE
+
+
+            }
+
+            override fun onFinish(recordTime: Long, limitReached: Boolean) {
+                mediaRecorder.stop()
+                mediaRecorder.release()
+                imgAddChat.visibility = View.VISIBLE
+                edittextChat.visibility = View.VISIBLE
+                imgSendChat.visibility = View.VISIBLE
+                recordView.visibility = View.GONE
+
+                sendRecordingMessage(auidoPath)
+            }
+
+
+            override fun onLessThanSecond() {
+                mediaRecorder.reset()
+                mediaRecorder.release()
+                var file = File(auidoPath)
+                if (file.exists()){
+                    file.delete()
+                }
+
+                mediaRecorder.reset()
+                mediaRecorder.release()
+                imgAddChat.visibility = View.VISIBLE
+                edittextChat.visibility = View.VISIBLE
+                imgSendChat.visibility = View.VISIBLE
+                recordView.visibility = View.GONE
+
+            }
+
+        })*/
+
 
         imgAddChat.setOnClickListener {
             showDialog()
         }
 
     }
+
+    /*private fun sendRecordingMessage(audioPath : String){
+        var storageRef = FirebaseStorage.getInstance().reference
+        val Rndomuid = UUID.randomUUID().toString()
+        var path = storageRef.child("chatAudios").child(myID).child(uid).child(Rndomuid).child(System.currentTimeMillis().toString())
+        var uri = Uri.fromFile(File(audioPath))
+        path.putFile(uri).addOnSuccessListener {success ->
+            var task : Task<Uri> = success.storage.downloadUrl
+            task.addOnCompleteListener { Pathh ->
+                if (Pathh.isSuccessful){
+                    var url = Pathh.result.toString()
+
+                    var mesajAtan = HashMap<String,Any>()
+                    mesajAtan.put("mesaj","")
+                    mesajAtan.put("goruldu",true)
+                    mesajAtan.put("time",ServerValue.TIMESTAMP)
+                    mesajAtan.put("type","audioMessage")
+                    mesajAtan.put("user_id",myID)
+                    mesajAtan.put("mesajResim","")
+                    mesajAtan.put("video","")
+                    mesajAtan.put("audio",url)
+
+                    var fotoMesajKey = db.child("chats").child(myID).child(uid).push().key
+
+                    db.child("chats").child(myID).child(uid).child(fotoMesajKey!!).setValue(mesajAtan)
+
+
+
+                    var mesajAlan = HashMap<String,Any>()
+                    mesajAlan.put("mesaj","")
+                    mesajAlan.put("goruldu",false)
+                    mesajAlan.put("time",ServerValue.TIMESTAMP)
+                    mesajAlan.put("type","audioMessage")
+                    mesajAlan.put("user_id",myID)
+                    mesajAlan.put("mesajResim","")
+                    mesajAlan.put("video","")
+                    mesajAlan.put("audio",url)
+                    db.child("chats").child(uid).child(myID).child(fotoMesajKey!!).setValue(mesajAlan)
+
+
+
+
+                    var konusmaMesajAtan = HashMap<String,Any>()
+                    konusmaMesajAtan.put("time",ServerValue.TIMESTAMP)
+                    konusmaMesajAtan.put("goruldu",true)
+                    konusmaMesajAtan.put("son_mesaj","Ses")
+                    konusmaMesajAtan.put("typing",false)
+                    db.child("konusmalar").child(myID).child(uid).setValue(konusmaMesajAtan)
+
+
+                    var konusmaMesajAlan = HashMap<String,Any>()
+                    konusmaMesajAlan.put("time",ServerValue.TIMESTAMP)
+                    konusmaMesajAlan.put("goruldu",false)
+                    konusmaMesajAlan.put("son_mesaj","Ses")
+                    //konusmaMesajAlan.put("typing",false)
+                    db.child("konusmalar").child(uid).child(myID).setValue(konusmaMesajAlan)
+
+                }
+
+            }
+        }
+    }*/
 
     private fun resimSec() {
         val intent = Intent()
@@ -385,6 +523,19 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
         startActivityForResult(Intent.createChooser(intent, "Select Video"),VIDEO_SEC)
     }
 
+    /*private fun setUpRecording(){
+        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC)
+        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
+        mediaRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB)
+
+        var file = File(Environment.getExternalStorageDirectory().absolutePath,"Cimbomes/Media/Recording")
+        if (!file.exists()) {
+            file.mkdirs()
+        }
+        auidoPath = file.absolutePath + File.separator + System.currentTimeMillis() + ".3gp"
+        mediaRecorder.setOutputFile(auidoPath)
+    }*/
+
 
     private fun mesajlarıGetir() {
 
@@ -511,11 +662,11 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
             if (edittextChat.text.toString().length > 0){
                 imgSendChat.visibility = View.VISIBLE
-                imgMicChat.visibility = View.INVISIBLE
+                imgMicChat.visibility = View.GONE
                 imgMicChat.isEnabled = false
                 imgSendChat.isEnabled = true
             }else{
-                imgSendChat.visibility = View.INVISIBLE
+                imgSendChat.visibility = View.GONE
                 imgMicChat.visibility = View.VISIBLE
                 imgMicChat.isEnabled = true
                 imgSendChat.isEnabled = false
@@ -629,7 +780,7 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
                     mesajAtan.put("user_id",myID)
                     mesajAtan.put("mesajResim",it.toString())
                     mesajAtan.put("video",video)
-
+                    mesajAtan.put("audio","")
                     var fotoMesajKey = db.child("chats").child(myID).child(uid).push().key
 
                     db.child("chats").child(myID).child(uid).child(fotoMesajKey!!).setValue(mesajAtan)
@@ -644,6 +795,7 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
                     mesajAlan.put("user_id",myID)
                     mesajAlan.put("mesajResim",it.toString())
                     mesajAlan.put("video",video)
+                    mesajAlan.put("audio","")
                     db.child("chats").child(uid).child(myID).child(fotoMesajKey!!).setValue(mesajAlan)
 
 
@@ -705,6 +857,7 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
                     mesajAtan.put("user_id",myID)
                     mesajAtan.put("mesajResim","")
                     mesajAtan.put("video",it.toString())
+                    mesajAtan.put("audio","")
 
                     var fotoMesajKey = db.child("chats").child(myID).child(uid).push().key
 
@@ -720,6 +873,7 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
                     mesajAlan.put("user_id",myID)
                     mesajAlan.put("mesajResim","")
                     mesajAlan.put("video",it.toString())
+                    mesajAlan.put("audio","")
                     db.child("chats").child(uid).child(myID).child(fotoMesajKey!!).setValue(mesajAlan)
 
 

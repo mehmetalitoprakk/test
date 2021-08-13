@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
 
     <application
         android:allowBackup="true"
@@ -18,9 +19,6 @@
         <activity android:name=".activity.VideoViewActivity"></activity>
         <activity android:name=".activity.FullImageActivity" />
         <activity android:name=".activity.ChatActivity" />
-        <activity
-            android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
-            android:theme="@style/Base.Theme.AppCompat" />
         <activity android:name=".activity.FeedActivity" />
         <activity android:name=".activity.UserInfoActivity" />
         <activity android:name=".activity.ChechPhoneCodeActivity" />

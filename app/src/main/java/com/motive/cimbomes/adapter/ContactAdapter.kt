@@ -9,10 +9,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.motive.cimbomes.R
 import com.motive.cimbomes.model.Contact
 import com.motive.cimbomes.utils.UniversalImageLoader
-import com.squareup.picasso.Callback
-import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
-import java.lang.Exception
+
 
 class ContactAdapter(private val listener:OnItemClickListener,var ctx:Context) : RecyclerView.Adapter<ContactAdapter.ContactViewHolder>() {
     var datalist = emptyList<Contact>()

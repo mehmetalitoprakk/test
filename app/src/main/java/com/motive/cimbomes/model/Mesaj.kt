@@ -8,9 +8,10 @@ class Mesaj {
     var user_id : String? = null
     var mesajResim : String? = null
     var video : String? = null
+    var audio : String? = null
 
 
-    constructor(){}
+    constructor()
     constructor(
         mesaj: String?,
         goruldu: Boolean?,
@@ -18,7 +19,8 @@ class Mesaj {
         type: String?,
         user_id: String?,
         mesajResim: String?,
-        video: String?
+        video: String?,
+        audio: String?
     ) {
         this.mesaj = mesaj
         this.goruldu = goruldu
@@ -27,10 +29,11 @@ class Mesaj {
         this.user_id = user_id
         this.mesajResim = mesajResim
         this.video = video
+        this.audio = audio
     }
 
     override fun toString(): String {
-        return "Mesaj(mesaj=$mesaj, goruldu=$goruldu, time=$time, type=$type, user_id=$user_id, mesajResim=$mesajResim, video=$video)"
+        return "Mesaj(mesaj=$mesaj, goruldu=$goruldu, time=$time, type=$type, user_id=$user_id, mesajResim=$mesajResim, video=$video, audio=$audio)"
     }
 
 

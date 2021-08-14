@@ -1,5 +1,7 @@
 package com.motive.cimbomes.fragments
 
+import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.ContactsContract
@@ -13,12 +15,17 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import com.motive.cimbomes.R
+import com.motive.cimbomes.activity.GroupChatActivity
 import com.motive.cimbomes.adapter.SelectMemberAdapter
 import com.motive.cimbomes.adapter.SelectedContactAdapter
-import com.motive.cimbomes.model.Contact
-import com.motive.cimbomes.model.Users
+import com.motive.cimbomes.model.*
+import com.motive.cimbomes.utils.EventBusDataEvents
 import kotlinx.android.synthetic.main.fragment_select_group_member.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
 
 class SelectGroupMemberFragment : Fragment(), SelectMemberAdapter.OnItemClickListener,SelectedContactAdapter.OnItemClickListener {
     private lateinit var selectAdapter: SelectMemberAdapter
@@ -28,11 +35,14 @@ class SelectGroupMemberFragment : Fragment(), SelectMemberAdapter.OnItemClickLis
     private var dataList = mutableListOf<Contact>()
     private lateinit var mAuth : FirebaseAuth
     private lateinit var db : DatabaseReference
+    private lateinit var storage : StorageReference
     var list = arrayListOf<String>()
     var groupName = ""
     var imageUri = ""
     var groupImage : Uri? = null
     private var selectedList = mutableListOf<Contact>()
+    private var groupMembersList = mutableListOf<GroupMembers>()
+    private var newGroupKey :String? = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,6 +52,9 @@ class SelectGroupMemberFragment : Fragment(), SelectMemberAdapter.OnItemClickLis
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
+
+
+
         return inflater.inflate(R.layout.fragment_select_group_member, container, false)
 
 
@@ -51,15 +64,14 @@ class SelectGroupMemberFragment : Fragment(), SelectMemberAdapter.OnItemClickLis
         super.onViewCreated(view, savedInstanceState)
         db = FirebaseDatabase.getInstance().reference
         mAuth = FirebaseAuth.getInstance()
+        storage = FirebaseStorage.getInstance().reference
         recyclerViewSelected = selectedRecyclerView
         recyclerViewContacts = recyclerViewContact
 
-        var bundle = arguments
-        if (bundle != null){
-            groupName = bundle.getString("GroupName")!!
-            imageUri = bundle.getString("GroupImageUri")!!
-            groupImage = Uri.parse(imageUri)
-        }
+
+
+
+
 
 
 
@@ -124,6 +136,67 @@ class SelectGroupMemberFragment : Fragment(), SelectMemberAdapter.OnItemClickLis
         })
 
 
+        db.child("users").child(mAuth.currentUser!!.uid).addListenerForSingleValueEvent(object : ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                var me = snapshot.getValue(Users::class.java)
+
+                var admin = GroupMembers(true,mAuth.currentUser!!.uid,me!!.isim,me.soyisim,me.telefonNo,false)
+                groupMembersList.add(admin)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+
+            }
+
+        })
+
+
+        nextButtonContactsGroup.setOnClickListener {
+            createGroup()
+        }
+
+
+    }
+
+    private fun createGroup() {
+
+
+
+        for(i in selectedList){
+            var name = i.name
+            var uid = i.uid
+            var number = i.number
+            var member = GroupMembers(false,uid,name,"",number,false)
+            groupMembersList.add(member)
+        }
+
+
+        newGroupKey = db.child("groups").push().key.toString()
+        var newGroup = Groups(newGroupKey,mAuth.currentUser!!.uid,groupMembersList,System.currentTimeMillis(),"",groupName,false,null)
+
+        db.child("groups").child(newGroupKey!!).setValue(newGroup).addOnSuccessListener {
+            storage.child("groups").child(newGroupKey!!).child("groupImage").putFile(groupImage!!).addOnSuccessListener {
+                storage.child("groups").child(newGroupKey!!).child("groupImage").downloadUrl.addOnSuccessListener {
+                    var groupImageDb = it.toString()
+                    db.child("groups").child(newGroupKey!!).child("image").setValue(it.toString()).addOnSuccessListener {
+                        for (i in groupMembersList){
+                            var gorulduMu = false
+                            if (i.uid.toString() == mAuth.currentUser!!.uid){
+                                gorulduMu = true
+                            }
+                            var grupKonusma = GroupKonusma(gorulduMu,"",System.currentTimeMillis(),i.uid.toString(),groupImageDb)
+                            db.child("grupkonusmalar").child(newGroupKey!!).child(i.uid.toString()).setValue(grupKonusma)
+                        }
+                        val intent = Intent(requireContext(),GroupChatActivity::class.java)
+                        intent.putExtra("GroupKey",newGroupKey!!)
+                        Toast.makeText(requireContext(),"Grup Oluşturuldu",Toast.LENGTH_SHORT).show()
+                        startActivity(intent)
+                    }
+                }
+            }
+        }
+
+
     }
 
     override fun onItemClick(position: Int) {
@@ -155,6 +228,24 @@ class SelectGroupMemberFragment : Fragment(), SelectMemberAdapter.OnItemClickLis
         selectAdapter.setDataList(dataList)
         selectedAdapter.setDataList(selectedList)
 
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        EventBus.getDefault().register(this)
+    }
+
+    override fun onDetach() {
+        EventBus.getDefault().unregister(this)
+        super.onDetach()
+
+    }
+
+
+    @Subscribe(sticky = true)
+    internal fun onGrupBilgileriniGetir(grupBilgileri : EventBusDataEvents.SendGroupData){
+        groupName = grupBilgileri.groupName
+        groupImage = Uri.parse(grupBilgileri.groupImageUri)
     }
 
 

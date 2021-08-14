@@ -4,64 +4,63 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-
     android:layout_height="wrap_content">
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/konsuma_circle_img"
+        android:id="@+id/circleImageView"
         android:layout_width="55dp"
         android:layout_height="55dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        android:src="@drawable/default_profile_icon"
+        android:src="@drawable/human"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/user_name_konusma_tv"
+        android:id="@+id/groupKonusmaName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="6dp"
-        android:text="Kaan Kaplan"
+        android:text="Group Name"
         android:textColor="@color/black"
         android:textSize="16sp"
-        app:layout_constraintStart_toEndOf="@+id/konsuma_circle_img"
-        app:layout_constraintTop_toTopOf="@+id/konsuma_circle_img" />
+        app:layout_constraintStart_toEndOf="@+id/circleImageView"
+        app:layout_constraintTop_toTopOf="@+id/circleImageView" />
 
     <TextView
-        android:id="@+id/son_mesaj_konusma_tv"
+        android:id="@+id/groupKonusmaSonMesaj"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="1dp"
         android:layout_marginBottom="6dp"
-        android:text="Son Mesaj"
-        android:textColor="#808080"
-        app:layout_constraintBottom_toBottomOf="@+id/konsuma_circle_img"
-        app:layout_constraintStart_toEndOf="@+id/konsuma_circle_img"
-        app:layout_constraintTop_toBottomOf="@+id/user_name_konusma_tv" />
+        android:text="Son grup Mesajıdır"
+        app:layout_constraintBottom_toBottomOf="@+id/circleImageView"
+        app:layout_constraintStart_toEndOf="@+id/circleImageView"
+        app:layout_constraintTop_toBottomOf="@+id/groupKonusmaName" />
 
     <TextView
-        android:id="@+id/tarih_konusma_tv"
+        android:id="@+id/groupKonusmaTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="14dp"
         android:layout_marginEnd="16dp"
-        android:text="2g"
+        android:text="2d"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:id="@+id/imgOkunmadi"
+        android:id="@+id/imgOkunmadıNokta"
         android:layout_width="10dp"
         android:layout_height="10dp"
         android:layout_marginTop="8dp"
-        app:layout_constraintEnd_toEndOf="@+id/tarih_konusma_tv"
-        app:layout_constraintStart_toStartOf="@+id/tarih_konusma_tv"
-        app:layout_constraintTop_toBottomOf="@+id/tarih_konusma_tv"
-        app:srcCompat="@drawable/okunmadi_nokta" />
+        android:src="@drawable/okunmadi_nokta"
+        app:layout_constraintEnd_toEndOf="@+id/groupKonusmaTime"
+        app:layout_constraintStart_toStartOf="@+id/groupKonusmaTime"
+        app:layout_constraintTop_toBottomOf="@+id/groupKonusmaTime" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -50,7 +50,7 @@
             android:id="@+id/imgSenderView"
             android:layout_width="match_parent"
             android:visibility="visible"
-            android:layout_margin="10dp"
+            android:layout_margin="5dp"
             android:layout_gravity="center"
             android:scaleType="centerCrop"
             android:adjustViewBounds="true"

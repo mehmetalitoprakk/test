@@ -15,7 +15,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.storage.StorageReference
 import com.motive.cimbomes.R
+import com.motive.cimbomes.utils.EventBusDataEvents
 import kotlinx.android.synthetic.main.fragment_yeni_grup.*
+import org.greenrobot.eventbus.EventBus
 
 
 class YeniGrupFragment : Fragment() {
@@ -57,11 +59,11 @@ class YeniGrupFragment : Fragment() {
                     Toast.makeText(requireContext(),"Grup Fotoğrafı Seçiniz",Toast.LENGTH_SHORT).show()
                 }else{
                     var bundle = Bundle()
-                    bundle.putString("GroupName",groupNameET)
-                    bundle.putString("GroupImageUri",profilePhotoUri.toString())
+
                     var memberFragment = SelectGroupMemberFragment()
                     memberFragment.arguments = bundle
                     requireActivity().supportFragmentManager.beginTransaction().apply {
+                        EventBus.getDefault().postSticky(EventBusDataEvents.SendGroupData(groupNameET,profilePhotoUri.toString()))
                         replace(R.id.containerFragmnet,SelectGroupMemberFragment())
                         commit()
                         newGroupMainContainer.visibility = View.GONE

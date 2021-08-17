@@ -1,0 +1,126 @@
+package com.motive.cimbomes.adapter
+
+import android.content.Context
+import android.content.Intent
+import android.graphics.Typeface
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import com.motive.cimbomes.R
+import com.motive.cimbomes.activity.ChatActivity
+import com.motive.cimbomes.activity.GroupChatActivity
+import com.motive.cimbomes.model.GroupKonusma
+import com.motive.cimbomes.utils.TimeAgo
+import com.motive.cimbomes.utils.UniversalImageLoader
+import kotlinx.android.synthetic.main.groupkonusmachild.view.*
+
+class GroupKonusmaAdapter(var konusmalar : ArrayList<GroupKonusma>,var ctx : Context) : RecyclerView.Adapter<GroupKonusmaAdapter.GroupKonusmaViewHolder>() {
+    class GroupKonusmaViewHolder(view : View) : RecyclerView.ViewHolder(view) {
+        var grupName = ""
+        var pic = ""
+        var tumLayout = view as ConstraintLayout
+        var imgIV = tumLayout.groupImageKonusma
+        var groupNameTV = tumLayout.groupKonusmaName
+        var sonMesajTV = tumLayout.groupKonusmaSonMesaj
+        var timeTV = tumLayout.groupKonusmaTime
+        var goruldu = tumLayout.imgOkunmadıNokta
+
+
+        fun setData(oAnkiKonusma : GroupKonusma, ctx: Context){
+            var konusmaText = oAnkiKonusma.son_mesaj.toString()
+            konusmaText = konusmaText.replace("\n"," ")
+            konusmaText=konusmaText.trim()
+            groupNameTV.text = oAnkiKonusma.groupName
+            //TODO Max grup name ayarlanıcak
+            //TODO SELECT MEMBER FRAGMENT BACK TUSU
+
+            if (konusmaText.length > 30){
+                sonMesajTV.text = konusmaText.substring(0,30)+"..."
+            }else if (konusmaText == ""){
+                sonMesajTV.text = "Eklendiniz"
+            }else{
+                sonMesajTV.text = konusmaText
+            }
+            timeTV.text = TimeAgo.getTimeAgoForComments(oAnkiKonusma.time!!.toLong())
+            UniversalImageLoader.setImage(oAnkiKonusma.groupImage!!,imgIV,null,"")
+
+            if (oAnkiKonusma.goruldu == false){
+                goruldu.visibility = View.VISIBLE
+                sonMesajTV.setTextColor(ctx.resources.getColor(R.color.black))
+                sonMesajTV.setTypeface(Typeface.DEFAULT_BOLD)
+                groupNameTV.setTypeface(Typeface.DEFAULT_BOLD)
+                timeTV.setTextColor(ctx.resources.getColor(R.color.black))
+                timeTV.setTypeface(Typeface.DEFAULT_BOLD)
+            }else{
+                goruldu.visibility = View.INVISIBLE
+                sonMesajTV.setTextColor(ctx.resources.getColor(R.color.defaultext))
+                sonMesajTV.setTypeface(Typeface.DEFAULT)
+                groupNameTV.setTypeface(Typeface.DEFAULT)
+                timeTV.setTextColor(ctx.resources.getColor(R.color.defaultext))
+                timeTV.setTypeface(Typeface.DEFAULT)
+            }
+
+            tumLayout.setOnClickListener {
+                var intent = Intent(ctx, GroupChatActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+                intent.putExtra("GroupKey",oAnkiKonusma.groupID)
+                FirebaseDatabase.getInstance().reference.child("grupkonusmalar").child(FirebaseAuth.getInstance().currentUser!!.uid).child(oAnkiKonusma.groupID!!).child("goruldu").setValue(true).addOnCompleteListener {
+                    ctx.startActivity(intent)
+                }
+            }
+
+
+
+            grupBilgileriniGetir(oAnkiKonusma.groupID)
+
+        }
+
+        private fun grupBilgileriniGetir(grupid: String?) {
+            FirebaseDatabase.getInstance().reference.child("grupkonusmalar").child(FirebaseAuth.getInstance().currentUser!!.uid).child(grupid!!).addListenerForSingleValueEvent(object : ValueEventListener{
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.getValue() != null){
+                        var bulunanGrup = snapshot.getValue(GroupKonusma::class.java)
+                        if (bulunanGrup!!.son_mesaj == ""){
+                            sonMesajTV.text = "Eklendiniz"
+                        }else{
+                            sonMesajTV.text = bulunanGrup!!.son_mesaj
+                        }
+                        groupNameTV.text = bulunanGrup!!.groupName
+
+                        timeTV.text = TimeAgo.getTimeAgoForComments(bulunanGrup.time!!.toLong())
+                        if (bulunanGrup.groupImage != null){
+                            UniversalImageLoader.setImage(bulunanGrup.groupImage!!,imgIV,null,"")
+                        }
+
+
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+
+                }
+
+            })
+        }
+
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GroupKonusmaViewHolder {
+        var view = LayoutInflater.from(ctx).inflate(R.layout.groupkonusmachild,parent,false)
+        return GroupKonusmaViewHolder(view)
+    }
+
+    override fun onBindViewHolder(holder: GroupKonusmaViewHolder, position: Int) {
+        holder.setData(konusmalar.get(position),ctx)
+    }
+
+    override fun getItemCount(): Int {
+        return konusmalar.size
+    }
+}

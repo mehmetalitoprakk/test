@@ -140,7 +140,7 @@ class SelectGroupMemberFragment : Fragment(), SelectMemberAdapter.OnItemClickLis
             override fun onDataChange(snapshot: DataSnapshot) {
                 var me = snapshot.getValue(Users::class.java)
 
-                var admin = GroupMembers(true,mAuth.currentUser!!.uid,me!!.isim,me.soyisim,me.telefonNo,false)
+                var admin = GroupMembers(true,mAuth.currentUser!!.uid,me!!.isim,me.soyisim,me.telefonNo,false,me.profilePic)
                 groupMembersList.add(admin)
             }
 
@@ -160,13 +160,11 @@ class SelectGroupMemberFragment : Fragment(), SelectMemberAdapter.OnItemClickLis
 
     private fun createGroup() {
 
-
-
         for(i in selectedList){
             var name = i.name
             var uid = i.uid
             var number = i.number
-            var member = GroupMembers(false,uid,name,"",number,false)
+            var member = GroupMembers(false,uid,name,"",number,false,i.image)
             groupMembersList.add(member)
         }
 
@@ -184,13 +182,14 @@ class SelectGroupMemberFragment : Fragment(), SelectMemberAdapter.OnItemClickLis
                             if (i.uid.toString() == mAuth.currentUser!!.uid){
                                 gorulduMu = true
                             }
-                            var grupKonusma = GroupKonusma(gorulduMu,"",System.currentTimeMillis(),i.uid.toString(),groupImageDb)
-                            db.child("grupkonusmalar").child(newGroupKey!!).child(i.uid.toString()).setValue(grupKonusma)
+                            var grupKonusma = GroupKonusma(gorulduMu,"",System.currentTimeMillis(),i.uid.toString(),groupImageDb,newGroupKey,groupName)
+                            db.child("grupkonusmalar").child(i.uid.toString()!!).child(newGroupKey!!).setValue(grupKonusma)
                         }
                         val intent = Intent(requireContext(),GroupChatActivity::class.java)
                         intent.putExtra("GroupKey",newGroupKey!!)
                         Toast.makeText(requireContext(),"Grup Oluşturuldu",Toast.LENGTH_SHORT).show()
                         startActivity(intent)
+                        requireActivity().finish()
                     }
                 }
             }

@@ -16,7 +16,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Cimbomes">
-        <activity android:name=".activity.GroupChatActivity"></activity>
+        <activity android:name=".activity.GroupInfoActivity"></activity>
+        <activity android:name=".activity.GroupChatActivity" />
         <activity android:name=".activity.VideoViewActivity" />
         <activity android:name=".activity.FullImageActivity" />
         <activity android:name=".activity.ChatActivity" />

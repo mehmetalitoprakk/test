@@ -7,7 +7,7 @@
     android:layout_height="wrap_content">
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/circleImageView"
+        android:id="@+id/groupImageKonusma"
         android:layout_width="55dp"
         android:layout_height="55dp"
         android:layout_marginStart="16dp"
@@ -27,8 +27,8 @@
         android:text="Group Name"
         android:textColor="@color/black"
         android:textSize="16sp"
-        app:layout_constraintStart_toEndOf="@+id/circleImageView"
-        app:layout_constraintTop_toTopOf="@+id/circleImageView" />
+        app:layout_constraintStart_toEndOf="@+id/groupImageKonusma"
+        app:layout_constraintTop_toTopOf="@+id/groupImageKonusma" />
 
     <TextView
         android:id="@+id/groupKonusmaSonMesaj"
@@ -38,8 +38,8 @@
         android:layout_marginTop="1dp"
         android:layout_marginBottom="6dp"
         android:text="Son grup Mesajıdır"
-        app:layout_constraintBottom_toBottomOf="@+id/circleImageView"
-        app:layout_constraintStart_toEndOf="@+id/circleImageView"
+        app:layout_constraintBottom_toBottomOf="@+id/groupImageKonusma"
+        app:layout_constraintStart_toEndOf="@+id/groupImageKonusma"
         app:layout_constraintTop_toBottomOf="@+id/groupKonusmaName" />
 
     <TextView

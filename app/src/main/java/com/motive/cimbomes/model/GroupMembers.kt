@@ -7,6 +7,7 @@ class GroupMembers {
     var surname : String? = null
     var number : String? = null
     var typing : Boolean? = null
+    var image : String? = null
 
     constructor(){}
     constructor(
@@ -15,7 +16,8 @@ class GroupMembers {
         name: String?,
         surname: String?,
         number: String?,
-        typing: Boolean?
+        typing: Boolean?,
+        image: String?
     ) {
         this.groupAdmin = groupAdmin
         this.uid = uid
@@ -23,10 +25,11 @@ class GroupMembers {
         this.surname = surname
         this.number = number
         this.typing = typing
+        this.image = image
     }
 
     override fun toString(): String {
-        return "GroupMembers(groupAdmin=$groupAdmin, uid=$uid, name=$name, surname=$surname, number=$number, typing=$typing)"
+        return "GroupMembers(groupAdmin=$groupAdmin, uid=$uid, name=$name, surname=$surname, number=$number, typing=$typing, image=$image)"
     }
 
 

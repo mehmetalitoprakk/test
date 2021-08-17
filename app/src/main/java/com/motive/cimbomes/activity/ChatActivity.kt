@@ -122,6 +122,12 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
         mesajlarıGetir()
         setTouchDelegate(imgBackChat,100)
 
+        cirlceChat.setOnClickListener {
+            val intent = Intent(this,FullImageActivity::class.java)
+            intent.putExtra("fullImage",image)
+            startActivity(intent)
+        }
+
 
         imgBackChat.setOnClickListener {
             db.child("chats").child(myID).child(uid).removeEventListener(childEventListener)

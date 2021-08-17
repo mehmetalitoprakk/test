@@ -31,14 +31,18 @@ import com.google.firebase.storage.UploadTask
 import com.motive.cimbomes.R
 import com.motive.cimbomes.adapter.GroupMessagesAdapter
 import com.motive.cimbomes.fragments.ProgressFragment
+import com.motive.cimbomes.model.GroupKonusma
 import com.motive.cimbomes.model.GroupMembers
 import com.motive.cimbomes.model.Groups
 import com.motive.cimbomes.model.Mesaj
+import com.motive.cimbomes.utils.EventBusDataEvents
 import com.motive.cimbomes.utils.URIPathHelper
 import com.motive.cimbomes.utils.UniversalImageLoader
 import kotlinx.android.synthetic.main.activity_chat.*
 import kotlinx.android.synthetic.main.activity_group_chat.*
 import kotlinx.android.synthetic.main.fragment_progress.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
 import java.io.File
 import java.util.*
 import kotlin.collections.ArrayList
@@ -75,7 +79,13 @@ class GroupChatActivity : AppCompatActivity() {
     var video = ""
 
 
+    var groupImage = ""
+
+
     var indexSira = ""
+
+    var groupName = ""
+    var members = mutableListOf<GroupMembers>()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -92,8 +102,26 @@ class GroupChatActivity : AppCompatActivity() {
         setupGroupInfo()
         setupGroupsRecyclerView()
         mesajlariGetir()
+        uyelerigetir()
 
         yaziyorBilgisiniGuncelle()
+        setTouchDelegate(groupBackBtn,100)
+        setTouchDelegate(tvgroupInfo,100)
+
+        groupBackBtn.setOnClickListener {
+            startActivity(Intent(this,FeedActivity::class.java))
+            overridePendingTransition(R.anim.slide_from_left,R.anim.slide_to_right)
+            finish()
+        }
+
+        tvgroupInfo.setOnClickListener {
+            val intent = Intent(this,GroupInfoActivity::class.java)
+            intent.putExtra("grupID",groupKey)
+            intent.putExtra("grupImage",groupImage)
+            intent.putExtra("grupName",groupName)
+            EventBus.getDefault().postSticky(EventBusDataEvents.SendGroupInfo(members))
+            startActivity(intent)
+        }
 
 
         typingRef.addListenerForSingleValueEvent(object : ValueEventListener{
@@ -122,10 +150,29 @@ class GroupChatActivity : AppCompatActivity() {
 
                 db.child("groups").child(groupKey).child("messages").child(newMesajKey).setValue(mesaj)
 
+                var konusmaGonderen = GroupKonusma(true,mesajText,System.currentTimeMillis(),mAuth.currentUser!!.uid,groupImage,groupKey,groupName)
+                db.child("grupkonusmalar").child(mAuth.currentUser!!.uid).child(groupKey).setValue(konusmaGonderen)
+                Log.e("KONTROL",members.toString())
+
+                for (i in members){
+                    if (i.uid != mAuth.currentUser!!.uid){
+                        var konusmaAlanlar = GroupKonusma(false,mesajText,System.currentTimeMillis(),i.uid,groupImage,groupKey,groupName)
+                        db.child("grupkonusmalar").child(i.uid!!).child(groupKey).setValue(konusmaAlanlar)
+                    }
+
+                }
+
+
                 editTextMessageGroup.setText("")
 
 
             }
+        }
+
+        groupImageView.setOnClickListener {
+            val intent = Intent(this,FullImageActivity::class.java)
+            intent.putExtra("fullImage",groupImage)
+            startActivity(intent)
         }
 
         groupAddPhotoOrVideo.setOnClickListener {
@@ -157,6 +204,25 @@ class GroupChatActivity : AppCompatActivity() {
         })
     }
 
+    private fun uyelerigetir() {
+        typingRef.addValueEventListener(object : ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.getValue() != null){
+                    for (i in snapshot.children){
+                        var user = i.getValue(GroupMembers::class.java)
+                        members.add(user!!)
+                    }
+                }
+
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+
+            }
+
+        })
+    }
+
     private fun yaziyorBilgisiniGuncelle() {
         db.child("groups").child(groupKey).child("member").addValueEventListener(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -183,7 +249,7 @@ class GroupChatActivity : AppCompatActivity() {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
+
             }
 
         })
@@ -216,18 +282,6 @@ class GroupChatActivity : AppCompatActivity() {
 
     }
 
-    private var typingEventListener = object : ValueEventListener{
-        override fun onDataChange(snapshot: DataSnapshot) {
-            if (snapshot.getValue() != null){
-
-            }
-        }
-
-        override fun onCancelled(error: DatabaseError) {
-            TODO("Not yet implemented")
-        }
-
-    }
 
     private fun mesajlariGetir() {
         childEventListener = db.child("groups").child(groupKey).child("messages").addChildEventListener(object : ChildEventListener{
@@ -273,6 +327,8 @@ class GroupChatActivity : AppCompatActivity() {
                     var group = snapshot.getValue(Groups::class.java)
                     var grupIsmi = group!!.groupName
                     var ımage = group.image
+                    groupImage = group.image!!
+                    groupName = group!!.groupName!!
                     UniversalImageLoader.setImage(ımage!!,groupImageView,null,"")
                     groupTitleTV.text = grupIsmi
                 }
@@ -543,4 +599,12 @@ class GroupChatActivity : AppCompatActivity() {
 
         }
     }
+
+    override fun onBackPressed() {
+        startActivity(Intent(this,FeedActivity::class.java))
+        overridePendingTransition(R.anim.slide_from_left,R.anim.slide_to_right)
+        finish()
+    }
+
+
 }

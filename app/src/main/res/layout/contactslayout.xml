@@ -53,10 +53,24 @@
                 android:id="@+id/imgContact"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
+                android:visibility="gone"
                 android:layout_alignParentEnd="true"
                 android:layout_centerInParent="true"
                 android:layout_marginEnd="10dp"
-                android:src="@drawable/ic_info" />
+                app:tint="@color/teal_700"
+                android:src="@drawable/ic_baseline_logout_24" />
+
+            <TextView
+                android:id="@+id/isAdmin"
+                android:visibility="gone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Yönetici"
+                android:textSize="15sp"
+                android:layout_toLeftOf="@+id/imgContact"
+                android:layout_centerInParent="true"
+                android:layout_marginRight="20dp"/>
+
         </RelativeLayout>
     </androidx.cardview.widget.CardView>
 

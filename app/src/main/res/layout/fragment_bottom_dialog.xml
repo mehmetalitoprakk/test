@@ -5,12 +5,20 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
+    <View
+        android:layout_width="100dp"
+        android:layout_height="3dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/defaultext"
+        android:layout_gravity="center"/>
+
 
     <TextView
         android:id="@+id/bottomsheetisim"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="İsim"
+        android:layout_marginTop="10dp"
         android:padding="10dp"
         android:textSize="15sp"
         android:gravity="center"
@@ -45,6 +53,18 @@
         android:gravity="center"
         android:textSize="20sp"
         android:textColor="@color/yellow"/>
+
+    <TextView
+        android:id="@+id/bottomShhetNotYonetici"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Yöneticilikten Çıkar"
+        android:visibility="gone"
+        android:padding="10dp"
+        android:gravity="center"
+        android:textSize="20sp"
+        android:textColor="@color/yellow"/>
+
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
@@ -71,7 +91,13 @@
         android:padding="10dp"
         android:gravity="center"
         android:textSize="20sp"
+        android:enabled="true"
+        android:clickable="true"
         android:textColor="@color/teal_700"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/backround"/>
 
 
 

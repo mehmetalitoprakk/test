@@ -16,7 +16,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Cimbomes">
-        <activity android:name=".activity.GroupInfoActivity"></activity>
+        <activity
+            android:name=".activity.UserDetail"
+            android:exported="true" />
+        <activity android:name=".activity.GroupInfoActivity" />
         <activity android:name=".activity.GroupChatActivity" />
         <activity android:name=".activity.VideoViewActivity" />
         <activity android:name=".activity.FullImageActivity" />

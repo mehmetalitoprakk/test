@@ -66,6 +66,13 @@ class GroupInfoActivity : AppCompatActivity(),GroupInfoMembersAdapter.OnItemClic
             })
 
 
+        getMembers()
+
+        groupInfoBack.setOnClickListener {
+            super.onBackPressed()
+        }
+
+
         groupInfoName.text = groupName
         groupInfoImage.load(groupImage){
             crossfade(true)
@@ -88,6 +95,26 @@ class GroupInfoActivity : AppCompatActivity(),GroupInfoMembersAdapter.OnItemClic
 
     }
 
+    private fun getMembers() {
+        db.child("groups").child(groupKey).child("member").addValueEventListener(object : ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.getValue()!= null){
+                    mList.clear()
+                    for (i in snapshot.children){
+                        var member = i.getValue(GroupMembers::class.java)
+                        mList.add(member!!)
+                    }
+                    mAdapter.notifyDataSetChanged()
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+
+        })
+    }
+
     private fun setupRecyclerView() {
         mList.clear()
         recyclerView = groupInfoRecyclerView
@@ -106,7 +133,6 @@ class GroupInfoActivity : AppCompatActivity(),GroupInfoMembersAdapter.OnItemClic
     @Subscribe(sticky = true)
     internal fun onInfoAl(member : EventBusDataEvents.SendGroupInfo){
         members = member.members
-
         setupRecyclerView()
 
     }
@@ -117,23 +143,27 @@ class GroupInfoActivity : AppCompatActivity(),GroupInfoMembersAdapter.OnItemClic
 
     }
 
-
-
     override fun onStop() {
         super.onStop()
         EventBus.getDefault().unregister(this)
     }
 
+
+
+
     override fun onItemClick(position: Int) {
         var clickedItem = mList.get(position)
         println(clickedItem)
         val bottomSheetDialog = BottomSheetFragment()
-        if (isAdmin){
-            EventBus.getDefault().postSticky(EventBusDataEvents.SendBottomSheet(clickedItem))
-            bottomSheetDialog.show(supportFragmentManager,"bottomsheet")
-        }else{
-            println("Admin Değil")
+        if (clickedItem.uid != FirebaseAuth.getInstance().currentUser!!.uid){
+            if (isAdmin){
+                EventBus.getDefault().postSticky(EventBusDataEvents.SendBottomSheet(clickedItem,groupKey,position))
+                bottomSheetDialog.show(supportFragmentManager,"bottomsheet")
+            }else{
+                println("Admin Değil")
+            }
         }
+
 
 
     }

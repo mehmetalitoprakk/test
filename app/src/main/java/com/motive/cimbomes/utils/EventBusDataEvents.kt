@@ -7,5 +7,5 @@ class EventBusDataEvents {
     internal class SendGroupData(var groupName: String,var groupImageUri : String?)
     internal class SendGroupMembers(var members : MutableList<GroupMembers>)
     internal class SendGroupInfo(var members : MutableList<GroupMembers>)
-    internal class SendBottomSheet(var groupMember : GroupMembers)
+    internal class SendBottomSheet(var groupMember : GroupMembers,var groupKey: String, var position : Int)
 }

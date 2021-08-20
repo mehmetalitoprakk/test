@@ -77,8 +77,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-storage-ktx'
     implementation 'com.google.firebase:firebase-database-ktx'
     implementation 'com.google.firebase:firebase-functions-ktx'
-    implementation 'com.google.firebase:firebase-inappmessaging-ktx'
-    implementation 'com.google.firebase:firebase-inappmessaging-display-ktx'
+    //implementation 'com.google.firebase:firebase-inappmessaging-ktx'
+    //implementation 'com.google.firebase:firebase-inappmessaging-display-ktx'
 
     //Recycler Refresh Layout
     implementation 'com.dinuscxj:recyclerrefreshlayout:2.0.5'

@@ -62,7 +62,7 @@ class MessageAdapter(var mesahlar: ArrayList<Mesaj>, var ctx: Context, var liste
                 img.load(oankiMesaj.mesajResim){
                     crossfade(true)
                     crossfade(400)
-                    placeholder(R.drawable.image_placeholder)
+                    placeholder(R.drawable.placeholder)
                     scale(Scale.FIT)
                 }
 
@@ -88,7 +88,7 @@ class MessageAdapter(var mesahlar: ArrayList<Mesaj>, var ctx: Context, var liste
                         memoryCacheKey(MemoryCache.Key("my_key"))
                         crossfade(true)
                         crossfade(400)
-                        placeholder(R.drawable.image_placeholder)
+                        placeholder(R.drawable.placeholder)
                         scale(Scale.FIT)
                     }
                 }

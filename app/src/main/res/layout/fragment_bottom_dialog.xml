@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+
+    <TextView
+        android:id="@+id/bottomsheetisim"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="İsim"
+        android:padding="10dp"
+        android:textSize="15sp"
+        android:gravity="center"
+        android:textColor="@color/black"
+        />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/backround"/>
+
+    <TextView
+        android:id="@+id/bottomsheetbilgi"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Bilgi"
+        android:padding="10dp"
+        android:gravity="center"
+        android:textSize="20sp"
+        android:textColor="@color/yellow"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/backround"/>
+
+    <TextView
+        android:id="@+id/bottomsheetyönetici"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Grup Yöneticisi Yap"
+        android:padding="10dp"
+        android:gravity="center"
+        android:textSize="20sp"
+        android:textColor="@color/yellow"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/backround"/>
+
+    <TextView
+        android:id="@+id/bottomshhetMesajGönder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Mesaj Gönder"
+        android:padding="10dp"
+        android:gravity="center"
+        android:textSize="20sp"
+        android:textColor="@color/yellow"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/backround"/>
+    <TextView
+        android:id="@+id/bottomsheetgruptancıkar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Gruptan Çıkar"
+        android:padding="10dp"
+        android:gravity="center"
+        android:textSize="20sp"
+        android:textColor="@color/teal_700"/>
+
+
+
+
+
+</LinearLayout>

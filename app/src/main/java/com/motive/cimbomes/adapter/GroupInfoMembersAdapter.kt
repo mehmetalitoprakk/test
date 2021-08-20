@@ -1,5 +1,6 @@
 package com.motive.cimbomes.adapter
 
+
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -9,17 +10,22 @@ import androidx.recyclerview.widget.RecyclerView
 import com.motive.cimbomes.R
 import com.motive.cimbomes.model.GroupMembers
 import com.motive.cimbomes.utils.UniversalImageLoader
-import kotlinx.android.synthetic.main.contact_child.view.*
+
 import kotlinx.android.synthetic.main.contactslayout.view.*
 
-class GroupInfoMembersAdapter(var members : ArrayList<GroupMembers>,var ctx :  Context) : RecyclerView.Adapter<GroupInfoMembersAdapter.GroupInfoMembersViewHolder>() {
-    class GroupInfoMembersViewHolder(view : View) : RecyclerView.ViewHolder(view){
+class GroupInfoMembersAdapter(var members : ArrayList<GroupMembers>,var ctx :  Context,private var listener : OnItemClickListener) : RecyclerView.Adapter<GroupInfoMembersAdapter.GroupInfoMembersViewHolder>() {
+
+
+
+    inner class GroupInfoMembersViewHolder(view : View) : RecyclerView.ViewHolder(view),View.OnClickListener{
         var tumLayoutRel = view as RelativeLayout
         var img = tumLayoutRel.imgContactUserInfo
         var nameInfo = tumLayoutRel.txtContactName
         var numberInfo = tumLayoutRel.txtContactStatus
         var imgMember = tumLayoutRel.imgContact
         var isadmin = tumLayoutRel.isAdmin
+
+
         fun setData(member : GroupMembers,ctx: Context){
             imgMember.visibility = View.GONE
             nameInfo.text = member.name
@@ -29,16 +35,32 @@ class GroupInfoMembersAdapter(var members : ArrayList<GroupMembers>,var ctx :  C
             }
             if (member.groupAdmin == true){
                 isadmin.visibility = View.VISIBLE
-                imgMember.visibility = View.GONE
+
             }else{
-                imgMember.visibility = View.VISIBLE
+                isadmin.visibility = View.GONE
             }
 
         }
 
 
 
+        init {
+            //Tıklayan kişi admin mi 
+            view.setOnClickListener(this)
+        }
+
+        override fun onClick(v: View?) {
+            val position = adapterPosition
+            if (position != RecyclerView.NO_POSITION){
+                listener.onItemClick(position)
+            }
+        }
+
     }
+    interface OnItemClickListener{
+        fun onItemClick(position: Int)
+    }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GroupInfoMembersViewHolder {
         var view = LayoutInflater.from(ctx).inflate(R.layout.contactslayout,parent,false)

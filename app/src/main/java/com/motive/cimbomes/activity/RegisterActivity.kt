@@ -71,7 +71,7 @@ class RegisterActivity : AppCompatActivity() {
                                     }
                                 }
                                 if (telNoKullanimdami == false){
-                                    Log.e("ISVALİD","BURAYA GİRDİ -1")
+                                    Log.e("ISVALİD","BURAYA GİRDİ -11")
                                     registerProgress.visibility = View.GONE
                                     reigsterileriButton.isEnabled = true
                                     val intent = Intent(this@RegisterActivity,ChechPhoneCodeActivity::class.java)

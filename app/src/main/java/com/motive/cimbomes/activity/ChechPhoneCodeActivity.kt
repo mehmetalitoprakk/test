@@ -32,11 +32,15 @@ class ChechPhoneCodeActivity : AppCompatActivity() {
         setContentView(R.layout.activity_chech_phone_code)
         buttonPhoneCodeOnayla.isEnabled = false
 
+
         mAuth = FirebaseAuth.getInstance()
         gelenTelNo = intent.getStringExtra("phone")!!
 
+
         tvTelefonNo.text = gelenTelNo
         setTouchDelegate(imgBackPhoneCode,100)
+
+
 
         imgBackPhoneCode.setOnClickListener {
             startActivity(Intent(this,RegisterActivity::class.java))
@@ -44,22 +48,24 @@ class ChechPhoneCodeActivity : AppCompatActivity() {
             finish()
         }
 
-        pinview.addTextChangedListener(watcher)
 
+        pinview.addTextChangedListener(watcher)
 
 
 
         setupCallback()
 
+
+
         val options = PhoneAuthOptions.newBuilder(mAuth)
             .setPhoneNumber(gelenTelNo)       // Phone number to verify
-            .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
-            .setActivity(this)                 // Activity (for callback binding)
+            .setTimeout(60L, TimeUnit.SECONDS)  // Timeout and unit
+            .setActivity(this)                // Activity (for callback binding)
             .setCallbacks(callbacks)          // OnVerificationStateChangedCallbacks
             .build()
 
-        PhoneAuthProvider.verifyPhoneNumber(options)
 
+        PhoneAuthProvider.verifyPhoneNumber(options)
 
 
 
@@ -70,7 +76,6 @@ class ChechPhoneCodeActivity : AppCompatActivity() {
                 intent.putExtra("dbphone",gelenTelNo)
                 startActivity(intent)
                 finish()
-
             }else{
                 val intent = Intent(this,UserInfoActivity::class.java)
                 intent.putExtra("dbphone",gelenTelNo)
@@ -83,6 +88,7 @@ class ChechPhoneCodeActivity : AppCompatActivity() {
 
     val watcher = object : TextWatcher{
         override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
 
         }
 
@@ -99,10 +105,7 @@ class ChechPhoneCodeActivity : AppCompatActivity() {
         override fun afterTextChanged(s: Editable?) {
 
         }
-
     }
-
-
 
 
     private fun setTouchDelegate(view: View, dimen: Int) {
@@ -117,8 +120,6 @@ class ChechPhoneCodeActivity : AppCompatActivity() {
             parent.touchDelegate = TouchDelegate(delegateArea, view)
         }
     }
-
-
 
 
 
@@ -163,7 +164,4 @@ class ChechPhoneCodeActivity : AppCompatActivity() {
             }
         }
     }
-
-
-
 }

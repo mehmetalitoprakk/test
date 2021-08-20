@@ -6,8 +6,6 @@ import android.os.Bundle
 import android.view.Menu
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
 import com.motive.cimbomes.R
 import com.motive.cimbomes.adapter.GroupInfoMembersAdapter
 import com.motive.cimbomes.model.GroupMembers
@@ -18,8 +16,11 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import coil.load
 import coil.size.Scale
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.*
+import com.motive.cimbomes.utils.BottomSheetFragment
 
-class GroupInfoActivity : AppCompatActivity() {
+class GroupInfoActivity : AppCompatActivity(),GroupInfoMembersAdapter.OnItemClickListener {
     lateinit var db : DatabaseReference
     var groupKey = ""
     var groupName = ""
@@ -29,6 +30,7 @@ class GroupInfoActivity : AppCompatActivity() {
     lateinit var mAdapter : GroupInfoMembersAdapter
     lateinit var layoutManager: LinearLayoutManager
     var mList = ArrayList<GroupMembers>()
+    var isAdmin = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,11 +41,36 @@ class GroupInfoActivity : AppCompatActivity() {
 
         db = FirebaseDatabase.getInstance().reference
 
+        db.child("groups").child(groupKey).child("member")
+            .addValueEventListener(object : ValueEventListener{
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.getValue() != null){
+                        for (i in snapshot.children){
+                            var member = i.getValue(GroupMembers::class.java)
+                            if (member!!.uid == FirebaseAuth.getInstance().currentUser!!.uid){
+                                if (member.groupAdmin == true){
+                                    isAdmin = true
+                                }else{
+                                    isAdmin = false
+                                }
+                            }
+                        }
+                    }
+
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+
+                }
+
+            })
+
+
         groupInfoName.text = groupName
         groupInfoImage.load(groupImage){
             crossfade(true)
             crossfade(400)
-            placeholder(R.drawable.image_placeholder)
+            placeholder(R.drawable.placeholder)
             scale(Scale.FIT)
             groupInfoImage.setOnClickListener {
                 val intent = Intent(this@GroupInfoActivity,FullImageActivity::class.java)
@@ -58,39 +85,58 @@ class GroupInfoActivity : AppCompatActivity() {
 
 
 
+
     }
 
     private fun setupRecyclerView() {
+        mList.clear()
         recyclerView = groupInfoRecyclerView
         layoutManager = LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false)
         for (i in members){
             mList.add(i)
         }
-        mAdapter = GroupInfoMembersAdapter(mList,this)
+        mAdapter = GroupInfoMembersAdapter(mList,this,this)
         println(mList)
 
         recyclerView.layoutManager = layoutManager
         recyclerView.adapter = mAdapter
+        katilimciTV.text ="${mList.size.toString()} KATILIMCI"
     }
 
     @Subscribe(sticky = true)
     internal fun onInfoAl(member : EventBusDataEvents.SendGroupInfo){
         members = member.members
+
         setupRecyclerView()
-        katilimciTV.text ="${mList.size.toString()} KATILIMCI "
 
     }
 
     override fun onStart() {
         super.onStart()
         EventBus.getDefault().register(this)
+
     }
+
+
 
     override fun onStop() {
         super.onStop()
         EventBus.getDefault().unregister(this)
     }
 
+    override fun onItemClick(position: Int) {
+        var clickedItem = mList.get(position)
+        println(clickedItem)
+        val bottomSheetDialog = BottomSheetFragment()
+        if (isAdmin){
+            EventBus.getDefault().postSticky(EventBusDataEvents.SendBottomSheet(clickedItem))
+            bottomSheetDialog.show(supportFragmentManager,"bottomsheet")
+        }else{
+            println("Admin Değil")
+        }
+
+
+    }
 
 
 }

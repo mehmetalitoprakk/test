@@ -17,7 +17,7 @@ class FullImageActivity : AppCompatActivity() {
         fullImageView.load(fulImage){
             crossfade(true)
             crossfade(400)
-            placeholder(R.drawable.image_placeholder)
+            placeholder(R.drawable.placeholder)
             scale(Scale.FIT)
         }
     }

@@ -56,7 +56,7 @@ class GroupMessagesAdapter(var mesajlar : ArrayList<Mesaj>,var ctx : Context) : 
                 img.load(oankiMesaj.mesajResim){
                     crossfade(true)
                     crossfade(400)
-                    placeholder(R.drawable.image_placeholder)
+                    placeholder(R.drawable.placeholder)
                     scale(Scale.FIT)
                 }
 
@@ -82,7 +82,7 @@ class GroupMessagesAdapter(var mesajlar : ArrayList<Mesaj>,var ctx : Context) : 
                         memoryCacheKey(MemoryCache.Key("my_key"))
                         crossfade(true)
                         crossfade(400)
-                        placeholder(R.drawable.image_placeholder)
+                        placeholder(R.drawable.placeholder)
                         scale(Scale.FIT)
                     }
                 }

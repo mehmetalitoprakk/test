@@ -8,4 +8,5 @@ class EventBusDataEvents {
     internal class SendGroupMembers(var members : MutableList<GroupMembers>)
     internal class SendGroupInfo(var members : MutableList<GroupMembers>)
     internal class SendBottomSheet(var groupMember : GroupMembers,var groupKey: String, var position : Int)
+    internal class SendEditGroupSheet(var groupKey: String,var isCreator : Boolean)
 }

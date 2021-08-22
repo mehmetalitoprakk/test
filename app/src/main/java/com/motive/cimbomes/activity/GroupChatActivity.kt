@@ -103,6 +103,7 @@ class GroupChatActivity : AppCompatActivity() {
         setupGroupsRecyclerView()
         mesajlariGetir()
         uyelerigetir()
+        controlGroup()
 
         yaziyorBilgisiniGuncelle()
         setTouchDelegate(groupBackBtn,100)
@@ -565,6 +566,22 @@ class GroupChatActivity : AppCompatActivity() {
         }
     }
 
+    private fun controlGroup() {
+        db.child("groups").child(groupKey).addValueEventListener(object : ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.getValue() == null){
+                    startActivity(Intent(this@GroupChatActivity,FeedActivity::class.java))
+                    finish()
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+
+            }
+
+        })
+    }
+
     fun uploadStorageVideo(result: String) {
         var fileUri = Uri.parse("file://"+result)
         val Rndomuid = UUID.randomUUID().toString()
@@ -604,6 +621,11 @@ class GroupChatActivity : AppCompatActivity() {
         startActivity(Intent(this,FeedActivity::class.java))
         overridePendingTransition(R.anim.slide_from_left,R.anim.slide_to_right)
         finish()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        setupGroupInfo()
     }
 
 

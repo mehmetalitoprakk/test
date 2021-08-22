@@ -143,9 +143,6 @@ class AnasayfaFragment : Fragment() {
                 tumKonusmalar.add(0,guncellenecekKonusma)
                 adapter.notifyItemInserted(0)
             }
-
-
-
         }
 
         override fun onChildRemoved(snapshot: DataSnapshot) {

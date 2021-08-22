@@ -36,10 +36,9 @@ class SelectGroupMemberFragment : Fragment(), SelectMemberAdapter.OnItemClickLis
     private lateinit var mAuth : FirebaseAuth
     private lateinit var db : DatabaseReference
     private lateinit var storage : StorageReference
-    var list = arrayListOf<String>()
-    var groupName = ""
-    var imageUri = ""
-    var groupImage : Uri? = null
+    private var list = arrayListOf<String>()
+    private var groupName = ""
+    private var groupImage : Uri? = null
     private var selectedList = mutableListOf<Contact>()
     private var groupMembersList = mutableListOf<GroupMembers>()
     private var newGroupKey :String? = ""
@@ -83,6 +82,7 @@ class SelectGroupMemberFragment : Fragment(), SelectMemberAdapter.OnItemClickLis
         recyclerViewSelected.adapter = selectedAdapter
 
 
+
         val contacts = requireActivity().contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,null,null,null,null)
         while (contacts!!.moveToNext()){
             val name = contacts.getString(contacts.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME))
@@ -104,7 +104,6 @@ class SelectGroupMemberFragment : Fragment(), SelectMemberAdapter.OnItemClickLis
 
         db.child("users").addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-
                 if (snapshot.getValue() != null){
                     for (user in snapshot.children){
                         var kullanici = user.getValue(Users::class.java)

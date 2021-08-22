@@ -17,6 +17,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Cimbomes">
         <activity
+            android:name=".activity.AddMemberGroupActivity"
+            android:exported="true" />
+        <activity
             android:name=".activity.UserDetail"
             android:exported="true" />
         <activity android:name=".activity.GroupInfoActivity" />

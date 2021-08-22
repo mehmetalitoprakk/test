@@ -22,12 +22,10 @@ class GroupInfoMembersAdapter(var members : ArrayList<GroupMembers>,var ctx :  C
         var img = tumLayoutRel.imgContactUserInfo
         var nameInfo = tumLayoutRel.txtContactName
         var numberInfo = tumLayoutRel.txtContactStatus
-        var imgMember = tumLayoutRel.imgContact
         var isadmin = tumLayoutRel.isAdmin
 
 
         fun setData(member : GroupMembers,ctx: Context){
-            imgMember.visibility = View.GONE
             nameInfo.text = member.name
             numberInfo.text = member.number
             if (member.image != null){

@@ -42,12 +42,9 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
         db = FirebaseDatabase.getInstance().reference
 
 
-        db.child("groups").child(groupKey).child("creator").addListenerForSingleValueEvent(object : ValueEventListener{
-            override fun onDataChange(snapshot: DataSnapshot) {
-                var uid = snapshot.getValue().toString()
-                if (uid == FirebaseAuth.getInstance().currentUser!!.uid.toString()){
-                    isCreator = true
-                }
+        db.child("groups").child(groupKey).child("creator").get().addOnSuccessListener {
+            if (it.value == FirebaseAuth.getInstance().currentUser!!.uid){
+                isCreator = true
                 if (!groupmember.groupAdmin!!){
                     bottomsheetyönetici.visibility = View.VISIBLE
                     bottomShhetNotYonetici.visibility = View.GONE
@@ -62,14 +59,10 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
                     }
 
                 }
-
             }
+        }
 
-            override fun onCancelled(error: DatabaseError) {
 
-            }
-
-        })
 
         bottomsheetgruptancıkar.setOnClickListener {
             //TODO UI GUNCELLENİCEK VE INFO ACTİVİTY DE UYE DEGİLSE ANASAYFA YONLENDİRMESİ YAPILICAK
@@ -79,12 +72,11 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
                 db.child("groups").child(groupKey).child("member").addListenerForSingleValueEvent(object : ValueEventListener{
                     override fun onDataChange(snapshot: DataSnapshot) {
                         if (snapshot.getValue()!=null){
-                            Log.e("KONTROL","null gelmedi")
-                            for ((index,element) in snapshot.children.withIndex()){
-                                var user = element.getValue(GroupMembers::class.java)
+                            for (i in snapshot.children){
+                                var user = i.getValue(GroupMembers::class.java)
                                 if (user!!.uid == groupmember.uid){
-                                    Log.e("KONTROL","user bulundu")
-                                    db.child("groups").child(groupKey).child("member").child(index.toString()).removeValue()
+                                    i.ref.removeValue()
+                                    break
                                 }
                             }
                         }
@@ -112,22 +104,24 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
             dismiss()
         }
 
-        bottomsheetgruptancıkar.setOnClickListener {
-            db.child("groups").child(groupKey).child("member").child(pos).removeValue().addOnCompleteListener {
-                db.child("grupkonusmalar").child(groupmember.uid!!).child(groupKey).removeValue().addOnSuccessListener {
-                    dismiss()
-                }
-            }
-        }
+
 
         bottomsheetisim.text = groupmember.name + " " + groupmember.surname
 
         bottomsheetyönetici.setOnClickListener {
+
             db.child("groups").child(groupKey).child("member").addListenerForSingleValueEvent(object : ValueEventListener{
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.getValue() != null){
-                        db.child("groups").child(groupKey).child("member").child(pos).child("groupAdmin").setValue(true).addOnCompleteListener {
-                            dismiss()
+                        for (i in snapshot.children){
+                            val user = i.getValue(GroupMembers::class.java)
+                            if (user!!.uid == groupmember.uid){
+                                i.ref.child("groupAdmin").setValue(true).addOnCompleteListener {
+                                    dismiss()
+                                }
+                                break
+
+                            }
                         }
                     }
                 }
@@ -145,12 +139,20 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
             requireActivity().finish()
         }
 
+
         bottomShhetNotYonetici.setOnClickListener {
             db.child("groups").child(groupKey).child("member").addListenerForSingleValueEvent(object : ValueEventListener{
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.getValue() != null){
-                        db.child("groups").child(groupKey).child("member").child(pos).child("groupAdmin").setValue(false).addOnCompleteListener {
-                            dismiss()
+                        for (i in snapshot.children){
+                            val user = i.getValue(GroupMembers::class.java)
+                            if (user!!.uid == groupmember.uid){
+                                i.ref.child("groupAdmin").setValue(false).addOnCompleteListener {
+                                    dismiss()
+                                }
+                                break
+
+                            }
                         }
                     }
                 }

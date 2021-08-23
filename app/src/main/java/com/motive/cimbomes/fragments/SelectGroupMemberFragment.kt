@@ -158,6 +158,8 @@ class SelectGroupMemberFragment : Fragment(), SelectMemberAdapter.OnItemClickLis
     }
 
     private fun createGroup() {
+        nextButtonContactsGroup.isEnabled = false
+        createGrupProgress.visibility = View.VISIBLE
 
         for(i in selectedList){
             var name = i.name
@@ -186,11 +188,22 @@ class SelectGroupMemberFragment : Fragment(), SelectMemberAdapter.OnItemClickLis
                         }
                         val intent = Intent(requireContext(),GroupChatActivity::class.java)
                         intent.putExtra("GroupKey",newGroupKey!!)
-                        Toast.makeText(requireContext(),"Grup Oluşturuldu",Toast.LENGTH_SHORT).show()
                         startActivity(intent)
                         requireActivity().finish()
+                    }.addOnFailureListener {
+                        Toast.makeText(requireContext(),"Beklenmeyen birşeyler oldu.",Toast.LENGTH_SHORT).show()
+                        createGrupProgress.visibility = View.GONE
+                        nextButtonContactsGroup.isEnabled = true
                     }
+                }.addOnFailureListener {
+                    Toast.makeText(requireContext(),"Beklenmeyen birşeyler oldu.",Toast.LENGTH_SHORT).show()
+                    createGrupProgress.visibility = View.GONE
+                    nextButtonContactsGroup.isEnabled = true
                 }
+            }.addOnFailureListener {
+                Toast.makeText(requireContext(),"Beklenmeyen birşeyler oldu.",Toast.LENGTH_SHORT).show()
+                createGrupProgress.visibility = View.GONE
+                nextButtonContactsGroup.isEnabled = true
             }
         }
 

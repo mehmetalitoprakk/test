@@ -26,7 +26,7 @@ class GroupInfoMembersAdapter(var members : ArrayList<GroupMembers>,var ctx :  C
 
 
         fun setData(member : GroupMembers,ctx: Context){
-            nameInfo.text = member.name
+            nameInfo.text = member.name + " " + member.surname
             numberInfo.text = member.number
             if (member.image != null){
                 UniversalImageLoader.setImage(member.image!!,img,null,"")

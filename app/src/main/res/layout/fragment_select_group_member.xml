@@ -6,6 +6,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragments.SelectGroupMemberFragment">
 
+
+
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/selectedRecyclerView"
         android:layout_width="match_parent"
@@ -44,6 +47,13 @@
         android:layout_below="@id/seperator"
         android:layout_marginTop="5dp"
         tools:listitem="@layout/contactslayout"/>
+
+    <ProgressBar
+        android:id="@+id/createGrupProgress"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:visibility="gone"
+        android:layout_centerInParent="true"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/nextButtonContactsGroup"

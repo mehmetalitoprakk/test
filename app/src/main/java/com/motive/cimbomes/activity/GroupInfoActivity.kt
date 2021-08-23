@@ -47,6 +47,7 @@ class GroupInfoActivity : AppCompatActivity(),GroupInfoMembersAdapter.OnItemClic
         groupName = intent.getStringExtra("grupName")!!
 
         db = FirebaseDatabase.getInstance().reference
+        mList.clear()
 
         getinfo()
         controlGroup()
@@ -139,13 +140,22 @@ class GroupInfoActivity : AppCompatActivity(),GroupInfoMembersAdapter.OnItemClic
     }
 
     private fun getinfo() {
-        db.child("groups").child(groupKey).addValueEventListener(object : ValueEventListener{
+        db.child("groups").child(groupKey).child("groupName").addValueEventListener(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.getValue() != null){
-                    var group = snapshot.getValue(Groups::class.java)
-                    groupName = group!!.groupName!!
-                    groupImage = group.image!!
+                    groupName = snapshot.value.toString()
                     groupInfoName.text = groupName
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                throw error.toException()
+            }
+        })
+        db.child("groups").child(groupKey).child("image").addValueEventListener(object : ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.getValue() != null){
+                    groupImage = snapshot.value.toString()
                     groupInfoImage.load(groupImage){
                         crossfade(true)
                         crossfade(400)
@@ -161,6 +171,7 @@ class GroupInfoActivity : AppCompatActivity(),GroupInfoMembersAdapter.OnItemClic
             }
 
             override fun onCancelled(error: DatabaseError) {
+
             }
 
         })
@@ -168,6 +179,7 @@ class GroupInfoActivity : AppCompatActivity(),GroupInfoMembersAdapter.OnItemClic
 
 
     private fun getMembers() {
+        mList.clear()
         db.child("groups").child(groupKey).child("member").addValueEventListener(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.getValue()!= null){
@@ -176,30 +188,25 @@ class GroupInfoActivity : AppCompatActivity(),GroupInfoMembersAdapter.OnItemClic
                         var member = i.getValue(GroupMembers::class.java)
                         mList.add(member!!)
                     }
+                    katilimciTV.text ="${mList.size.toString()} KATILIMCI"
                     mAdapter.notifyDataSetChanged()
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
+
             }
 
         })
     }
 
     private fun setupRecyclerView() {
-        mList.clear()
         recyclerView = groupInfoRecyclerView
         layoutManager = LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false)
-        for (i in members){
-            mList.add(i)
-        }
         mAdapter = GroupInfoMembersAdapter(mList,this,this)
-        println(mList)
-
         recyclerView.layoutManager = layoutManager
         recyclerView.adapter = mAdapter
-        katilimciTV.text ="${mList.size.toString()} KATILIMCI"
+
     }
 
     @Subscribe(sticky = true)

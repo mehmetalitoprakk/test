@@ -7,12 +7,13 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.motive.cimbomes.R
 import com.motive.cimbomes.model.Contact
+import com.motive.cimbomes.model.GroupMembers
 import com.motive.cimbomes.utils.UniversalImageLoader
 import de.hdodenhof.circleimageview.CircleImageView
 
 class EditGroupContactAdapter(private var listener : OnItemClickListener) : RecyclerView.Adapter<EditGroupContactAdapter.EditGroupContactViewHolder>() {
-    var datalist = emptyList<Contact>()
-    internal fun setDataList(datalist : List<Contact>){
+    var datalist = emptyList<GroupMembers>()
+    internal fun setDataList(datalist : List<GroupMembers>){
         this.datalist = datalist
         notifyDataSetChanged()
     }
@@ -48,8 +49,8 @@ class EditGroupContactAdapter(private var listener : OnItemClickListener) : Recy
     }
 
     override fun onBindViewHolder(holder: EditGroupContactViewHolder, position: Int) {
-        holder.name.text = datalist[position].name
-        holder.number.text = datalist.get(position).number
+        holder.name.text = datalist[position].name + " " +  datalist[position].surname
+        holder.number.text = datalist[position].number
         if (datalist[position].image != null){
             UniversalImageLoader.setImage(datalist[position].image!!,holder.image,null,"")
         }

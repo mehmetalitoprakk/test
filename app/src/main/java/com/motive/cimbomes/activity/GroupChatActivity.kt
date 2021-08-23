@@ -322,22 +322,29 @@ class GroupChatActivity : AppCompatActivity() {
     }
 
     private fun setupGroupInfo() {
-        db.child("groups").child(groupKey).addListenerForSingleValueEvent(object : ValueEventListener{
+        db.child("groups").child(groupKey).child("groupName").addValueEventListener(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.getValue() != null){
-                    var group = snapshot.getValue(Groups::class.java)
-                    var grupIsmi = group!!.groupName
-                    var ımage = group.image
-                    groupImage = group.image!!
-                    groupName = group!!.groupName!!
-                    UniversalImageLoader.setImage(ımage!!,groupImageView,null,"")
-                    groupTitleTV.text = grupIsmi
+                    groupName = snapshot.value.toString()
+                    groupTitleTV.text = snapshot.value.toString()
                 }
-
             }
 
             override fun onCancelled(error: DatabaseError) {
 
+            }
+
+        })
+        db.child("groups").child(groupKey).child("image").addValueEventListener(object : ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.getValue() != null){
+                    groupImage = snapshot.value.toString()
+                    UniversalImageLoader.setImage(groupImage!!,groupImageView,null,"")
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
             }
 
         })
@@ -371,7 +378,7 @@ class GroupChatActivity : AppCompatActivity() {
                 MyAdapter.notifyDataSetChanged()
                 myRecyclerView.scrollToPosition(NUMBER_OF_MESSAGE_PER_PAGE)
 
-                Log.e("KONTROL", ilkMesajID)
+
                 println("RESİM ID" + okunanmesaj!!.mesajResim!!)
             }
 
@@ -433,7 +440,7 @@ class GroupChatActivity : AppCompatActivity() {
             resimUri = data.data
             //resimYukle()
             uploadStorage(resimUri!!)
-            Log.e("KONTROL PATH",resimUri.toString())
+
         }
 
 
@@ -456,8 +463,6 @@ class GroupChatActivity : AppCompatActivity() {
     private fun compressVideo(video: Uri) {
         var yeniOlusturulanDosyaninKlasoru = File(Environment.getExternalStorageDirectory().absolutePath+"/Android/data/${applicationContext.packageName}/files/Movies/")
         yeniOlusturulanDosyaninKlasoru.parentFile.mkdirs()
-        Log.e("KONTROL","İFE GİRMEDİ")
-        Log.e("KONTROLCOMPRESS", yeniOlusturulanDosyaninKlasoru.path)
         var dialog = ProgressFragment()
         VideoCompressor.start(
             this,
@@ -474,7 +479,6 @@ class GroupChatActivity : AppCompatActivity() {
                 }
 
                 override fun onProgress(percent: Float) {
-                    Log.e("PROGRESS","%${percent}")
 
                 }
 
@@ -487,7 +491,7 @@ class GroupChatActivity : AppCompatActivity() {
                 override fun onSuccess() {
                     dialog.dismiss()
                     uploadStorageVideo(yeniOlusturulanDosyaninKlasoru.path)
-                    Log.e("KONTROLCOMPRESS", "SUCCCES")
+
 
                 }
 
@@ -586,9 +590,9 @@ class GroupChatActivity : AppCompatActivity() {
         var fileUri = Uri.parse("file://"+result)
         val Rndomuid = UUID.randomUUID().toString()
         var myref = storageReference.child("groupChats").child(groupKey).child(System.currentTimeMillis().toString()).child(Rndomuid)
-        Log.e("KONTROL","VİDEO STORAGE FONKSİYONUNA GİRDİ")
+
         if (fileUri != null){
-            Log.e("KONTROL","VİDEO STORAGE FONKSİYONUNA GİRDİ2")
+
             val progressDialog = ProgressFragment()
             progressDialog.show(this.supportFragmentManager,"videoLoading")
             progressDialog.isCancelable = false

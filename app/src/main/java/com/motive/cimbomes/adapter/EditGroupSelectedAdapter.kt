@@ -6,13 +6,14 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.motive.cimbomes.R
 import com.motive.cimbomes.model.Contact
+import com.motive.cimbomes.model.GroupMembers
 import com.motive.cimbomes.utils.UniversalImageLoader
 import de.hdodenhof.circleimageview.CircleImageView
 
 class EditGroupSelectedAdapter(private var listener : OnItemClickListener) : RecyclerView.Adapter<EditGroupSelectedAdapter.EditGroupSelectedViewHolder>() {
-    var datalist = emptyList<Contact>()
+    var datalist = emptyList<GroupMembers>()
 
-    internal fun setDataList(datalist : List<Contact>){
+    internal fun setDataList(datalist : List<GroupMembers>){
         this.datalist = datalist
         notifyDataSetChanged()
     }

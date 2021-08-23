@@ -76,6 +76,7 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
                                 var user = i.getValue(GroupMembers::class.java)
                                 if (user!!.uid == groupmember.uid){
                                     i.ref.removeValue()
+                                    dismiss()
                                     break
                                 }
                             }
@@ -135,6 +136,7 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
             intent.putExtra("tiklananid",groupmember!!.uid!!)
             intent.putExtra("tiklananisim",groupmember.name + " " + groupmember.surname)
             intent.putExtra("tiklananfoto",groupmember.image)
+            dismiss()
             startActivity(intent)
             requireActivity().finish()
         }

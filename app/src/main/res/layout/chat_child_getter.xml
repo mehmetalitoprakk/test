@@ -6,24 +6,76 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/tvMessageSender"
+
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
         android:background="@drawable/message_getter"
-        android:gravity="start"
-        android:maxWidth="300dp"
-        android:padding="10dp"
-        android:text="TextVixdsaasdxsxadxasdxsdaxasdxdsaxasdew"
-        android:textAlignment="textStart"
-        android:textColor="@color/white"
-        android:textSize="12sp"
+        android:orientation="vertical"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" >
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="8dp"
+        >
 
-    </TextView>
+        <TextView
+            android:id="@+id/tvNameGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Mustafa"
+            android:textSize="11sp"
+            android:paddingStart="6dp"
+            android:paddingTop="2dp"
+            android:textColor="@color/black"
+            android:visibility="visible"/>
+
+
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:orientation="horizontal"
+        >
+
+
+
+        <TextView
+            android:id="@+id/tvMessageSender"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:maxWidth="300dp"
+            android:padding="6dp"
+            android:text="dsasdasdasdadsasd"
+            android:textAlignment="textStart"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" >
+
+        </TextView>
+
+        <TextView
+            android:id="@+id/tvTimeSender"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="22.30"
+            android:padding="3dp"
+            android:layout_marginStart="6dp"
+            android:layout_marginBottom="0.5dp"
+            android:textSize="12sp"
+            android:textColor="@color/backround"
+            android:layout_gravity="bottom"/>
+
+
+    </LinearLayout>
+
+    </LinearLayout>
+
+
     <FrameLayout
         android:id="@+id/imgSenderContainer"
         android:layout_width="250dp"
@@ -55,6 +107,18 @@
             android:layout_height="match_parent"
             android:adjustViewBounds="true"
             />
+
+        <TextView
+            android:id="@+id/timeFotoSender"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="22.13"
+            android:layout_gravity="bottom|end"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:padding="3dp"
+            android:layout_marginBottom="2dp"
+            android:layout_marginEnd="3dp"/>
 
 
     </FrameLayout>
@@ -92,6 +156,18 @@
             android:layout_gravity="center">
 
         </ImageView>
+
+        <TextView
+            android:id="@+id/timeVideoSender"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="22.13"
+            android:layout_gravity="bottom|end"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:padding="3dp"
+            android:layout_marginBottom="2dp"
+            android:layout_marginEnd="3dp"/>
 
     </FrameLayout>
 

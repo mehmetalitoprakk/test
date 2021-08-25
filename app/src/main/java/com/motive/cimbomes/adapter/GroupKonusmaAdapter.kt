@@ -20,6 +20,9 @@ import com.motive.cimbomes.model.GroupKonusma
 import com.motive.cimbomes.utils.TimeAgo
 import com.motive.cimbomes.utils.UniversalImageLoader
 import kotlinx.android.synthetic.main.groupkonusmachild.view.*
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 class GroupKonusmaAdapter(var konusmalar : ArrayList<GroupKonusma>,var ctx : Context) : RecyclerView.Adapter<GroupKonusmaAdapter.GroupKonusmaViewHolder>() {
     class GroupKonusmaViewHolder(view : View) : RecyclerView.ViewHolder(view) {
@@ -109,6 +112,12 @@ class GroupKonusmaAdapter(var konusmalar : ArrayList<GroupKonusma>,var ctx : Con
             })
         }
 
+    }
+
+    fun convertLongToTime(time: Long): String {
+        val date = Date(time)
+        val format = SimpleDateFormat("HH:mm")
+        return format.format(date)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GroupKonusmaViewHolder {

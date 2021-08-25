@@ -1,5 +1,6 @@
 package com.motive.cimbomes.fragments
 
+import android.graphics.Typeface
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -13,10 +14,7 @@ import com.motive.cimbomes.R
 import com.motive.cimbomes.adapter.GroupKonusmaAdapter
 import com.motive.cimbomes.adapter.KonusmalarAdapter
 import com.motive.cimbomes.model.GroupKonusma
-import com.motive.cimbomes.model.GroupMembers
-import com.motive.cimbomes.model.Groups
 import com.motive.cimbomes.model.Konusma
-import kotlinx.android.synthetic.main.activity_chat.*
 import kotlinx.android.synthetic.main.fragment_anasayfa.*
 
 
@@ -51,8 +49,17 @@ class AnasayfaFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         mAuth = FirebaseAuth.getInstance()
-        gruplarTV.visibility = View.GONE
-        tvSohbetler.visibility = View.GONE
+        staticView.visibility = View.VISIBLE
+        grupTiklandi()
+
+
+        gruplarTV.setOnClickListener {
+            grupTiklandi()
+        }
+
+        sohbetlerTV.setOnClickListener {
+            sohbetlerTiklandı()
+        }
 
 
         setupGrupKonusmaRecyclerView()
@@ -60,6 +67,23 @@ class AnasayfaFragment : Fragment() {
         setupKonusmalarRecyclerView()
 
 
+    }
+    private fun grupTiklandi(){
+        gruplarTV.setTypeface(Typeface.DEFAULT_BOLD)
+        gruplarView.visibility = View.VISIBLE
+        sohbetlerTV.setTypeface(Typeface.DEFAULT)
+        sohbetlerView.visibility = View.GONE
+        staricGroupsRV.visibility = View.VISIBLE
+        chatsRV.visibility = View.INVISIBLE
+    }
+
+    private fun sohbetlerTiklandı(){
+        gruplarTV.setTypeface(Typeface.DEFAULT)
+        gruplarView.visibility = View.GONE
+        sohbetlerTV.setTypeface(Typeface.DEFAULT_BOLD)
+        sohbetlerView.visibility =View.VISIBLE
+        chatsRV.visibility = View.VISIBLE
+        staricGroupsRV.visibility = View.INVISIBLE
     }
 
     private fun grupKonusmalariGetir() {
@@ -89,7 +113,6 @@ class AnasayfaFragment : Fragment() {
     private var myGroupListener = object : ChildEventListener{
         override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
             var eklenecekGrupKonusma = snapshot.getValue(GroupKonusma::class.java)
-            gruplarTV.visibility = View.VISIBLE
             grupKonusmalar.add(0,eklenecekGrupKonusma!!)
             grupAdapter.notifyItemInserted(0)
         }
@@ -127,7 +150,6 @@ class AnasayfaFragment : Fragment() {
         override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
             var eklenecekKonusma = snapshot.getValue(Konusma::class.java)
             eklenecekKonusma!!.user_id = snapshot.key
-            tvSohbetler.visibility = View.VISIBLE
             tumKonusmalar.add(0,eklenecekKonusma!!)
             adapter.notifyItemInserted(0)
         }
@@ -214,6 +236,7 @@ class AnasayfaFragment : Fragment() {
         grupLinearLayoutManager = LinearLayoutManager(requireContext(),LinearLayoutManager.VERTICAL,false)
         grupAdapter = GroupKonusmaAdapter(grupKonusmalar,requireContext())
 
+
         groupsRecyclerView.layoutManager = grupLinearLayoutManager
         groupsRecyclerView.adapter = grupAdapter
 
@@ -228,7 +251,6 @@ class AnasayfaFragment : Fragment() {
         recyclerView = chatsRV
         linearLayoutManager = LinearLayoutManager(requireContext(),LinearLayoutManager.VERTICAL,false)
         adapter = KonusmalarAdapter(tumKonusmalar,requireContext())
-
         recyclerView.layoutManager = linearLayoutManager
         recyclerView.adapter = adapter
 

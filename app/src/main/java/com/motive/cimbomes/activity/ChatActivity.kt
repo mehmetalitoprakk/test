@@ -36,6 +36,7 @@ import com.motive.cimbomes.R
 import com.motive.cimbomes.adapter.MessageAdapter
 import com.motive.cimbomes.fragments.ProgressFragment
 import com.motive.cimbomes.model.Mesaj
+import com.motive.cimbomes.utils.TimeAgo
 import com.motive.cimbomes.utils.URIPathHelper
 import com.motive.cimbomes.utils.UniversalImageLoader
 import kotlinx.android.synthetic.main.activity_chat.*
@@ -43,6 +44,7 @@ import kotlinx.android.synthetic.main.chat_child_getter.*
 import kotlinx.android.synthetic.main.fragment_progress.*
 import java.io.File
 import java.lang.Exception
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -128,6 +130,24 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
             startActivity(intent)
         }
 
+        chatIsim.setOnClickListener {
+            db.child("users").child(uid).child("telefonNo").get().addOnSuccessListener {
+                val number = it.value.toString()
+                val intent = Intent(this,UserDetail::class.java)
+                intent.putExtra("nameInfo",name)
+                intent.putExtra("surnameInfo","")
+                intent.putExtra("uidInfo",uid)
+                intent.putExtra("phoneInfo",number)
+                intent.putExtra("imageInfo",image)
+                intent.putExtra("from","chat")
+                startActivity(intent)
+            }
+
+
+
+
+        }
+
 
         imgBackChat.setOnClickListener {
             db.child("chats").child(myID).child(uid).removeEventListener(childEventListener)
@@ -171,6 +191,9 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
                 mesajAtan.put("mesajResim",resimLink)
                 mesajAtan.put("video",video)
                 mesajAtan.put("audio","")
+
+
+                val tim = ServerValue.TIMESTAMP
 
                 yeniMesajKey = db.child("chats").child(myID).child(uid).push().key
 
@@ -297,6 +320,13 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
             showDialog()
         }
 
+    }
+
+
+    fun convertLongToTime(time: Long): String {
+        val date = Date(time)
+        val format = SimpleDateFormat("yyyy.MM.dd HH:mm")
+        return format.format(date)
     }
 
     /*private fun sendRecordingMessage(audioPath : String){

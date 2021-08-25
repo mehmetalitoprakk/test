@@ -52,7 +52,10 @@ class YeniGrupFragment : Fragment() {
         btnNewGroup.setOnClickListener {
             val groupNameET = etNewGroupName.text.toString().trim()
             if (groupNameET.isNullOrEmpty() || groupNameET.length < 3){
-                etNewGroupName.setError("Grup ismi 3 harften fazla olmalıdır.")
+                etNewGroupName.setError("Grup ismi 3 harften az olmamalıdır.")
+                etNewGroupName.requestFocus()
+            }else if (groupNameET.length > 25){
+                etNewGroupName.setError("Grup ismi 25 harften fazla olmamalıdır.")
                 etNewGroupName.requestFocus()
             }else{
                 if (profilePhotoUri == null){

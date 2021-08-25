@@ -62,7 +62,16 @@ class UserInfoActivity : AppCompatActivity() {
 
 
         buttonTamamlaUserInfo.setOnClickListener {
-            registertoFirebase()
+            val isimKontrol = etUserInfoName.text.toString()
+            val soyisimKontrol = etUserInfoSurname.text.toString()
+            if (isimKontrol.length < 3){
+                etUserInfoName.setError("Adınız en az üç karakterden oluşmalıdır")
+            }else if (soyisimKontrol.length < 3){
+                etUserInfoSurname.setError("Soyadınız en az üç karakterden oluşmalıdır")
+            }else{
+                registertoFirebase()
+            }
+
         }
 
         addPhotoUserInfo.setOnClickListener {

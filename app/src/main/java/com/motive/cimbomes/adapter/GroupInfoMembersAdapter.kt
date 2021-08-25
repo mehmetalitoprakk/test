@@ -2,11 +2,13 @@ package com.motive.cimbomes.adapter
 
 
 import android.content.Context
+import android.provider.ContactsContract
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.FirebaseAuth
 import com.motive.cimbomes.R
 import com.motive.cimbomes.model.GroupMembers
 import com.motive.cimbomes.utils.UniversalImageLoader
@@ -23,11 +25,43 @@ class GroupInfoMembersAdapter(var members : ArrayList<GroupMembers>,var ctx :  C
         var nameInfo = tumLayoutRel.txtContactName
         var numberInfo = tumLayoutRel.txtContactStatus
         var isadmin = tumLayoutRel.isAdmin
+        val numberList = arrayListOf<String>()
+        val formattedList = arrayListOf<String>()
+
+
 
 
         fun setData(member : GroupMembers,ctx: Context){
+
+
+
+            val contacts = ctx.contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,null,null,null,null)
+            while (contacts!!.moveToNext()) {
+                val name = contacts.getString(contacts.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME))
+                val number = contacts.getString(contacts.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))
+                numberList.add(number)
+            }
+
+
+            val gelenNumber = member.number!!.replace("\\s".toRegex(),"").replace("+9","")
+
+            for (i in numberList){
+                var number = i.replace("\\s".toRegex(),"").replace("+9","")
+                formattedList.add(number)
+            }
+
+            if (gelenNumber in formattedList){
+                numberInfo.text = member.number
+            }else if(member.uid == FirebaseAuth.getInstance().currentUser!!.uid){
+                numberInfo.text = member.number
+            }else{
+                numberInfo.text = ""
+            }
+
+
+
             nameInfo.text = member.name + " " + member.surname
-            numberInfo.text = member.number
+
             if (member.image != null){
                 UniversalImageLoader.setImage(member.image!!,img,null,"")
             }

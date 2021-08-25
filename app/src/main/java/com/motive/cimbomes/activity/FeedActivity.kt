@@ -41,6 +41,7 @@ class FeedActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     val CONTACT_RQ = 101
     val RECORD_RQ = 102
     lateinit var toolbars : androidx.appcompat.widget.Toolbar
+    var isAdmin = false
 
     var contactPermissinVerildiMi = false
 
@@ -51,6 +52,8 @@ class FeedActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         initImageLoader()
         checkContactPermission(android.Manifest.permission.READ_CONTACTS,"contact",CONTACT_RQ)
         checkContactPermission(Manifest.permission.RECORD_AUDIO,"Record",RECORD_RQ)
+
+        Log.e("KONTROL","ONCREATE GİRDİ FEED")
 
         mAuth = FirebaseAuth.getInstance()
         db = FirebaseDatabase.getInstance().reference
@@ -70,11 +73,31 @@ class FeedActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         headerProgress = header.findViewById(R.id.headerprogress)
         setCurrentFragment(AnasayfaFragment())
 
+        var toogle = ActionBarDrawerToggle(
+            this,
+            drawerLayout,
+            toolbars,
+            R.string.navigation_drawer_open,
+            R.string.navigation_drawer_close
+        )
+        drawerLayout.addDrawerListener(toogle)
+        toogle.syncState()
+
+        navView.setNavigationItemSelectedListener(this)
+        var menu = navView.menu
+        val admin = menu.findItem(R.id.admin)
+
 
         db.child("users").child(mAuth.currentUser!!.uid).addValueEventListener(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 var user = snapshot.getValue(Users::class.java)
                 headerIsim.text = user!!.isim + user!!.soyisim
+                val admin = user.isAdmin
+                if (admin!!){
+                    menu.findItem(R.id.admin).isVisible = true
+                }else{
+                    menu.findItem(R.id.admin).isVisible = false
+                }
                 UniversalImageLoader.setImage(user.profilePic!!,circle,headerProgress,"")
 
             }
@@ -87,17 +110,6 @@ class FeedActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
 
 
-        var toogle = ActionBarDrawerToggle(
-            this,
-            drawerLayout,
-            toolbars,
-            R.string.navigation_drawer_open,
-            R.string.navigation_drawer_close
-        )
-        drawerLayout.addDrawerListener(toogle)
-        toogle.syncState()
-
-        navView.setNavigationItemSelectedListener(this)
 
 
     }
@@ -217,7 +229,9 @@ class FeedActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.logout ->{
 
             }
-
+            R.id.admin ->{
+                //TODO ADMİN AYARLARI YAPILICAK GRUP YONETİMİ SAYFASI AÇILICAK
+            }
         }
         return true
     }

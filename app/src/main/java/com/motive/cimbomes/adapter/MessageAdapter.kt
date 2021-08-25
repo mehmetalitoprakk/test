@@ -19,10 +19,15 @@ import com.motive.cimbomes.R
 import com.motive.cimbomes.activity.FullImageActivity
 import com.motive.cimbomes.activity.VideoViewActivity
 import com.motive.cimbomes.model.Mesaj
+import com.motive.cimbomes.utils.TimeAgo
 import kotlinx.android.synthetic.main.chat_child_sender.view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 import kotlin.coroutines.coroutineContext
 
 
@@ -36,6 +41,10 @@ class MessageAdapter(var mesahlar: ArrayList<Mesaj>, var ctx: Context, var liste
         var videoContainer = tumLayout.videoContainer
         var imgViewThumbail = tumLayout.imgViewVideo
         var playButtonVideo = tumLayout.playButtonVideo
+        var timeTV = tumLayout.tvTimeSender
+        var timeFotoTV = tumLayout.timeFotoSender
+        var timeVideoTv = tumLayout.timeVideoSender
+        var nameSender = tumLayout.tvNameGroup
 
 
         init {
@@ -44,17 +53,22 @@ class MessageAdapter(var mesahlar: ArrayList<Mesaj>, var ctx: Context, var liste
 
         fun setData(oankiMesaj: Mesaj){
 
+
             if (oankiMesaj.type == "text"){
+                nameSender.visibility = View.GONE
                 mesaj.visibility = View.VISIBLE
                 mesaj.text = oankiMesaj.mesaj
+                timeTV.text = convertLongToTime(oankiMesaj.time!!.toLong())
                 imgConainer.visibility = View.GONE
                 videoContainer.visibility = View.GONE
                 imgViewThumbail.visibility = View.GONE
                 playButtonVideo.visibility = View.GONE
             }else if(oankiMesaj.type == "image"){
+                nameSender.visibility = View.GONE
                 imgConainer.visibility = View.VISIBLE
                 mesaj.visibility = View.GONE
                 img.visibility = View.VISIBLE
+                timeFotoTV.text = convertLongToTime(oankiMesaj.time!!.toLong())
                 videoContainer.visibility = View.GONE
                 imgViewThumbail.visibility = View.GONE
                 playButtonVideo.visibility = View.GONE
@@ -74,12 +88,14 @@ class MessageAdapter(var mesahlar: ArrayList<Mesaj>, var ctx: Context, var liste
                 }
 
             }else if(oankiMesaj.type == "video"){
+                nameSender.visibility = View.GONE
                 videoContainer.visibility = View.VISIBLE
                 mesaj.visibility = View.GONE
                 imgConainer.visibility = View.GONE
                 img.visibility = View.GONE
                 imgViewThumbail.visibility = View.VISIBLE
                 playButtonVideo.visibility = View.VISIBLE
+                timeVideoTv.text = convertLongToTime(oankiMesaj.time!!.toLong())
                 var thumbnail :Bitmap? = null
                 CoroutineScope(Dispatchers.Default).launch {
                     thumbnail = retriveVideoFrameFromVideo(oankiMesaj.video)
@@ -149,6 +165,12 @@ class MessageAdapter(var mesahlar: ArrayList<Mesaj>, var ctx: Context, var liste
 
     override fun getItemCount(): Int {
         return mesahlar.size
+    }
+
+    fun convertLongToTime(time: Long): String {
+        val date = Date(time)
+        val format = SimpleDateFormat("HH:mm")
+        return format.format(date)
     }
 
 

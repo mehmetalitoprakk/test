@@ -15,6 +15,7 @@ import coil.memory.MemoryCache
 import coil.request.CachePolicy
 import coil.size.Scale
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 import com.motive.cimbomes.R
 import com.motive.cimbomes.activity.FullImageActivity
 import com.motive.cimbomes.activity.VideoViewActivity
@@ -23,6 +24,10 @@ import kotlinx.android.synthetic.main.chat_child_sender.view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 class GroupMessagesAdapter(var mesajlar : ArrayList<Mesaj>,var ctx : Context) : RecyclerView.Adapter<GroupMessagesAdapter.GroupMessagesViewHolder>() {
     inner class GroupMessagesViewHolder(view : View) : RecyclerView.ViewHolder(view) {
@@ -34,21 +39,36 @@ class GroupMessagesAdapter(var mesajlar : ArrayList<Mesaj>,var ctx : Context) : 
         var videoContainer = tumLayout.videoContainer
         var imgViewThumbail = tumLayout.imgViewVideo
         var playButtonVideo = tumLayout.playButtonVideo
-
+        var nameTv = tumLayout.tvNameGroup
+        var timeTV = tumLayout.tvTimeSender
 
         fun setData(oankiMesaj: Mesaj){
+
+
 
             if (oankiMesaj.type == "text"){
                 mesaj.visibility = View.VISIBLE
                 mesaj.text = oankiMesaj.mesaj
+                timeTV.text = convertLongToTime(oankiMesaj.time!!.toLong())
                 imgConainer.visibility = View.GONE
                 videoContainer.visibility = View.GONE
                 imgViewThumbail.visibility = View.GONE
                 playButtonVideo.visibility = View.GONE
+                if (oankiMesaj.user_id == FirebaseAuth.getInstance().currentUser!!.uid){
+                    nameTv.visibility = View.GONE
+                }else{
+                    nameTv.visibility = View.VISIBLE
+                    FirebaseDatabase.getInstance().reference.child("users").child(oankiMesaj.user_id!!).child("isim").get().addOnSuccessListener {
+                        nameTv.text = it.value.toString()
+                    }
+                }
+
+
             }else if(oankiMesaj.type == "image"){
                 imgConainer.visibility = View.VISIBLE
                 mesaj.visibility = View.GONE
                 img.visibility = View.VISIBLE
+                timeTV.text = convertLongToTime(oankiMesaj.time!!.toLong())
                 videoContainer.visibility = View.GONE
                 imgViewThumbail.visibility = View.GONE
                 playButtonVideo.visibility = View.GONE
@@ -72,6 +92,7 @@ class GroupMessagesAdapter(var mesajlar : ArrayList<Mesaj>,var ctx : Context) : 
                 mesaj.visibility = View.GONE
                 imgConainer.visibility = View.GONE
                 img.visibility = View.GONE
+                timeTV.text = convertLongToTime(oankiMesaj.time!!.toLong())
                 imgViewThumbail.visibility = View.VISIBLE
                 playButtonVideo.visibility = View.VISIBLE
                 var thumbnail : Bitmap? = null
@@ -130,6 +151,14 @@ class GroupMessagesAdapter(var mesajlar : ArrayList<Mesaj>,var ctx : Context) : 
             return 2
         }
     }
+
+    fun convertLongToTime(time: Long): String {
+        val date = Date(time)
+        val format = SimpleDateFormat("HH:mm")
+        return format.format(date)
+    }
+
+
 
 
     @Throws(Throwable::class)

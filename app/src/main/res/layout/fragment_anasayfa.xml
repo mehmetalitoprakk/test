@@ -20,12 +20,15 @@
 
     <TextView
         android:id="@+id/gruplarTV"
-        android:layout_width="wrap_content"
+        android:layout_width="160dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="2dp"
         android:text="Gruplar"
-        android:textColor="@color/black"
-        android:textSize="16sp"
+        android:textAlignment="center"
+        android:textColor="@color/yellow"
+        android:textSize="24sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/searchView"
         tools:visibility="visible" />
@@ -33,11 +36,14 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/staricGroupsRV"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_marginTop="5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/gruplarTV" />
+        app:layout_constraintTop_toBottomOf="@+id/staticView"
+        tools:visibility="visible" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/chatsRV"
@@ -47,30 +53,57 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvSohbetler" />
+        app:layout_constraintTop_toBottomOf="@+id/staticView"
+        tools:visibility="invisible" />
 
     <View
-        android:id="@+id/view2"
+        android:id="@+id/staticView"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="5dp"
         android:background="#C0BEBE"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/staricGroupsRV">
+        app:layout_constraintTop_toBottomOf="@+id/gruplarTV"></View>
+
+    <View
+        android:id="@+id/gruplarView"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="@color/black"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@+id/gruplarTV"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/gruplarTV"
+        app:layout_constraintTop_toBottomOf="@+id/staticView"
+        tools:visibility="visible">
+
+    </View>
+
+    <View
+        android:id="@+id/sohbetlerView"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="@color/black"
+        app:layout_constraintEnd_toEndOf="@+id/sohbetlerTV"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/sohbetlerTV"
+        app:layout_constraintTop_toBottomOf="@+id/staticView">
 
     </View>
 
     <TextView
-        android:id="@+id/tvSohbetler"
-        android:layout_width="wrap_content"
+        android:id="@+id/sohbetlerTV"
+        android:layout_width="160dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginEnd="20dp"
         android:text="Sohbetler"
-        android:textColor="@color/black"
-        android:textSize="16sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/view2"
-        tools:visibility="visible" />
+        android:textAlignment="center"
+        android:textColor="@color/teal_700"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/searchView" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

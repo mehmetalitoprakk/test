@@ -94,97 +94,94 @@
             android:layout_margin="2dp"
             android:text="05380100116" />
 
-        <View
-            android:layout_width="wrap_content"
-            android:layout_height="1dp"
-            android:layout_marginTop="5dp"
-            android:background="#807F7F" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="30dp"
-            android:background="@color/backround" />
 
-        <View
-            android:layout_width="wrap_content"
-            android:layout_height="1dp"
-            android:background="#807F7F" />
 
-        <TextView
-            android:id="@+id/userInfoSendMessage"
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/mesajGonderUserInfoContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="7dp"
-            android:padding="10dp"
-            android:text="Mesaj Gönder"
-            android:textColor="@color/yellow"
-            android:textSize="18sp" />
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:backgroundTint="@color/yellow"
+            android:outlineAmbientShadowColor="@color/yellow"
+            app:cardCornerRadius="10dp">
 
-        <View
-            android:layout_width="wrap_content"
-            android:layout_height="1dp"
-            android:background="#807F7F" />
+            <TextView
+                android:id="@+id/userInfoSendMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="7dp"
+                android:padding="10dp"
+                android:layout_gravity="center"
+                android:text="Mesaj Gönder"
+                android:textColor="@color/teal_700"
+                android:textStyle="bold"
+                android:textSize="18sp" />
+
+        </androidx.cardview.widget.CardView>
+
+
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:backgroundTint="@color/yellow"
+            android:outlineAmbientShadowColor="@color/yellow"
+            app:cardCornerRadius="10dp">
 
         <TextView
             android:id="@+id/userInfoBlockUser"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="7dp"
             android:padding="10dp"
             android:text="Kişiyi Engelle"
+            android:textStyle="bold"
+            android:layout_gravity="center"
             android:textColor="@color/teal_700"
             android:textSize="18sp" />
+        </androidx.cardview.widget.CardView>
 
-        <View
-            android:layout_width="wrap_content"
-            android:layout_height="1dp"
-            android:background="#807F7F" />
 
         <TextView
             android:id="@+id/userInfoSikayetEt"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="7dp"
             android:padding="10dp"
+            android:layout_gravity="center"
             android:text="Şikayet Et"
             android:textColor="@color/teal_700"
             android:textSize="18sp" />
 
-        <View
-            android:layout_width="wrap_content"
-            android:layout_height="1dp"
-            android:background="#807F7F" />
 
-        <View
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="25dp"
-            android:background="@color/backround" />
-
-        <View
-            android:layout_width="wrap_content"
-            android:layout_height="1dp"
-            android:background="#807F7F" />
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="bottom|center"
+            android:layout_marginBottom="15dp"
+            >
 
         <TextView
             android:id="@+id/userInfoCancel"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="10dp"
             android:text="Vazgeç"
-            android:textAlignment="center"
+            android:layout_gravity="center_horizontal"
             android:textColor="@color/teal_700"
             android:textSize="18sp" />
 
-        <View
-            android:layout_width="wrap_content"
-            android:layout_height="1dp"
-            android:background="#807F7F" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/backround" />
-
+        </LinearLayout>
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

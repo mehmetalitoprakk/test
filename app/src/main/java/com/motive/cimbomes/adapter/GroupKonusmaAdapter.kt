@@ -34,6 +34,7 @@ class GroupKonusmaAdapter(var konusmalar : ArrayList<GroupKonusma>,var ctx : Con
         var sonMesajTV = tumLayout.groupKonusmaSonMesaj
         var timeTV = tumLayout.groupKonusmaTime
         var goruldu = tumLayout.imgOkunmadıNokta
+        var statik = tumLayout.groupKonusmaKaliciGrup
 
 
         fun setData(oAnkiKonusma : GroupKonusma, ctx: Context){
@@ -41,7 +42,6 @@ class GroupKonusmaAdapter(var konusmalar : ArrayList<GroupKonusma>,var ctx : Con
             konusmaText = konusmaText.replace("\n"," ")
             konusmaText=konusmaText.trim()
             groupNameTV.text = oAnkiKonusma.groupName
-            //TODO Max grup name ayarlanıcak
             //TODO SELECT MEMBER FRAGMENT BACK TUSU
 
             if (konusmaText.length > 30){
@@ -81,7 +81,18 @@ class GroupKonusmaAdapter(var konusmalar : ArrayList<GroupKonusma>,var ctx : Con
 
 
             grupBilgileriniGetir(oAnkiKonusma.groupID)
+            grupStatikMi(oAnkiKonusma.groupID)
 
+        }
+
+        private fun grupStatikMi(key: String?) {
+            FirebaseDatabase.getInstance().reference.child("groups").child(key!!).child("static").get().addOnSuccessListener {
+                if (it.value == true){
+                    statik.visibility = View.VISIBLE
+                }else if (it.value == false){
+                    statik.visibility = View.GONE
+                }
+            }
         }
 
         private fun grupBilgileriniGetir(grupid: String?) {

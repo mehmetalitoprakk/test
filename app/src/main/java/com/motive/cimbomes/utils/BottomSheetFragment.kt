@@ -65,7 +65,6 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
 
 
         bottomsheetgruptancıkar.setOnClickListener {
-            //TODO UI GUNCELLENİCEK VE INFO ACTİVİTY DE UYE DEGİLSE ANASAYFA YONLENDİRMESİ YAPILICAK
             Log.e("KONTROL","TIKLANDI")
             db.child("grupkonusmalar").child(groupmember.uid!!).child(groupKey).removeValue().addOnSuccessListener {
                 Log.e("KONTROL","konsumalardan silindi")

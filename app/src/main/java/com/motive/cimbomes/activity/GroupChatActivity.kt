@@ -77,15 +77,11 @@ class GroupChatActivity : AppCompatActivity() {
     var resimLink = ""
     val VIDEO_SEC = 200
     var video = ""
-
-
     var groupImage = ""
-
-
     var indexSira = ""
-
     var groupName = ""
     var members = mutableListOf<GroupMembers>()
+    private var statikMi = false
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -116,10 +112,12 @@ class GroupChatActivity : AppCompatActivity() {
         }
 
         tvgroupInfo.setOnClickListener {
+
             val intent = Intent(this,GroupInfoActivity::class.java)
             intent.putExtra("grupID",groupKey)
             intent.putExtra("grupImage",groupImage)
             intent.putExtra("grupName",groupName)
+            intent.putExtra("isStatic",statikMi)
             EventBus.getDefault().postSticky(EventBusDataEvents.SendGroupInfo(members))
             startActivity(intent)
         }
@@ -146,8 +144,9 @@ class GroupChatActivity : AppCompatActivity() {
         imgSendGroup.setOnClickListener {
             var mesajText = editTextMessageGroup.text.toString().trim()
             if (mesajText.length>0){
-                var mesaj = Mesaj(mesajText,true,System.currentTimeMillis(),"text",mAuth.currentUser!!.uid,"","","")
                 var newMesajKey = db.child("groups").child(groupKey).child("messages").push().key.toString()
+                var mesaj = Mesaj(mesajText,true,System.currentTimeMillis(),"text",mAuth.currentUser!!.uid,"","","",newMesajKey)
+
 
                 db.child("groups").child(groupKey).child("messages").child(newMesajKey).setValue(mesaj)
 
@@ -333,8 +332,15 @@ class GroupChatActivity : AppCompatActivity() {
             override fun onCancelled(error: DatabaseError) {
 
             }
-
         })
+
+        db.child("groups").child(groupKey).child("static").get().addOnSuccessListener {
+            if (it.value == true){
+                statikMi = true
+            }else if (it.value == false){
+                statikMi = false
+            }
+        }
         db.child("groups").child(groupKey).child("image").addValueEventListener(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.getValue() != null){
@@ -344,7 +350,7 @@ class GroupChatActivity : AppCompatActivity() {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
+
             }
 
         })
@@ -548,8 +554,9 @@ class GroupChatActivity : AppCompatActivity() {
             progressDialog.isCancelable = false
             myref.putFile(result).addOnSuccessListener {
                 myref.downloadUrl.addOnSuccessListener {
-                    var fotoMesaj = Mesaj("",true,System.currentTimeMillis(),"image",mAuth.currentUser!!.uid,it.toString(),"","")
                     var newMesajKey = db.child("groups").child(groupKey).child("messages").push().key.toString()
+                    var fotoMesaj = Mesaj("",true,System.currentTimeMillis(),"image",mAuth.currentUser!!.uid,it.toString(),"","",newMesajKey)
+
                     db.child("groups").child(groupKey).child("messages").child(newMesajKey).setValue(fotoMesaj)
 
                     progressDialog.dismiss()
@@ -598,9 +605,9 @@ class GroupChatActivity : AppCompatActivity() {
             progressDialog.isCancelable = false
             myref.putFile(fileUri).addOnSuccessListener {
                 myref.downloadUrl.addOnSuccessListener {
-
-                    var videoMesaj = Mesaj("",true,System.currentTimeMillis(),"video",mAuth.currentUser!!.uid,"",it.toString(),"")
                     var newMesajKey = db.child("groups").child(groupKey).child("messages").push().key.toString()
+                    var videoMesaj = Mesaj("",true,System.currentTimeMillis(),"video",mAuth.currentUser!!.uid,"",it.toString(),"",newMesajKey)
+
                     db.child("groups").child(groupKey).child("messages").child(newMesajKey).setValue(videoMesaj)
 
                     progressDialog.dismiss()

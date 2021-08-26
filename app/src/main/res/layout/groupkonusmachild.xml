@@ -13,7 +13,6 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        android:src="@drawable/human"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -24,7 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="6dp"
-        android:text="Group Name"
+        android:text=""
         android:textColor="@color/black"
         android:textSize="16sp"
         app:layout_constraintStart_toEndOf="@+id/groupImageKonusma"
@@ -37,7 +36,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="1dp"
         android:layout_marginBottom="6dp"
-        android:text="Son grup Mesajıdır"
+        android:text=""
         app:layout_constraintBottom_toBottomOf="@+id/groupImageKonusma"
         app:layout_constraintStart_toEndOf="@+id/groupImageKonusma"
         app:layout_constraintTop_toBottomOf="@+id/groupKonusmaName" />
@@ -48,7 +47,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="14dp"
         android:layout_marginEnd="16dp"
-        android:text="2d"
+        android:text=""
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -61,6 +60,19 @@
         app:layout_constraintEnd_toEndOf="@+id/groupKonusmaTime"
         app:layout_constraintStart_toStartOf="@+id/groupKonusmaTime"
         app:layout_constraintTop_toBottomOf="@+id/groupKonusmaTime" />
+
+    <TextView
+        android:id="@+id/groupKonusmaKaliciGrup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+        android:text="KALICI"
+        android:visibility="gone"
+        android:textColor="#084C61"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/groupKonusmaTime"
+        app:layout_constraintEnd_toStartOf="@+id/groupKonusmaTime"
+        app:layout_constraintTop_toTopOf="@+id/groupKonusmaTime" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

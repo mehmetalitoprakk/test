@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".utils.MesajlarBottomSheet">
+
+
+    <View
+        android:layout_width="100dp"
+        android:layout_height="3dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/defaultext"
+        android:layout_gravity="center"/>
+
+    <TextView
+        android:id="@+id/mesajlarBottomSheetBendenSil"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Mesajı Benden Sil"
+        android:padding="10dp"
+        android:gravity="center"
+        android:textSize="20sp"
+        android:textColor="@color/teal_700"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/backround"/>
+    <TextView
+        android:id="@+id/mesajlarBottomSheetHerkestenSil"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Mesajı Herkesten Sil"
+        android:padding="10dp"
+        android:gravity="center"
+        android:textSize="20sp"
+        android:textColor="@color/teal_700"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/backround"/>
+
+    <TextView
+        android:id="@+id/mesajlarBottomSheetMesajiKaydet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Mesajı Kaydet"
+        android:padding="10dp"
+        android:gravity="center"
+        android:textSize="20sp"
+        android:textColor="@color/yellow"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginBottom="5dp"
+        android:background="@color/backround"/>
+
+
+</LinearLayout>

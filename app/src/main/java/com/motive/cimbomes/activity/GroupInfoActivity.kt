@@ -20,7 +20,10 @@ import coil.load
 import coil.size.Scale
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import com.google.firebase.firestore.auth.User
+import com.motive.cimbomes.model.GroupKonusma
 import com.motive.cimbomes.model.Groups
+import com.motive.cimbomes.model.Users
 import com.motive.cimbomes.utils.BottomSheetEditGroupFragment
 import com.motive.cimbomes.utils.BottomSheetFragment
 import kotlinx.android.synthetic.main.fragment_bottom_sheet_edit_group.*
@@ -38,6 +41,7 @@ class GroupInfoActivity : AppCompatActivity(),GroupInfoMembersAdapter.OnItemClic
     var isAdmin = false
     var isCreator = false
     var creatorID = ""
+    var isStatic = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,12 +49,14 @@ class GroupInfoActivity : AppCompatActivity(),GroupInfoMembersAdapter.OnItemClic
         groupKey = intent.getStringExtra("grupID")!!
         groupImage = intent.getStringExtra("grupImage")!!
         groupName = intent.getStringExtra("grupName")!!
+        isStatic = intent.getBooleanExtra("isStatic",false)
 
         db = FirebaseDatabase.getInstance().reference
         mList.clear()
 
         getinfo()
         controlGroup()
+
 
         db.child("groups").child(groupKey).child("member")
             .addValueEventListener(object : ValueEventListener{
@@ -87,8 +93,14 @@ class GroupInfoActivity : AppCompatActivity(),GroupInfoMembersAdapter.OnItemClic
 
 
 
+        if (isStatic){
+            println("statik tetiklendi")
+            statikListener()
+        }else{
+            println("members tetiklendi")
+            getMembers()
+        }
 
-        getMembers()
 
         groupInfoBack.setOnClickListener {
             super.onBackPressed()
@@ -118,6 +130,95 @@ class GroupInfoActivity : AppCompatActivity(),GroupInfoMembersAdapter.OnItemClic
 
 
 
+
+
+
+    }
+
+
+    fun userListener(oldMemberList : ArrayList<GroupMembers>,oldMembersID : ArrayList<String>){
+        var yeniListe = mutableListOf<GroupMembers>()
+        db.child("groups").child(groupKey).child("member").addValueEventListener(object : ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                mList.clear()
+                for (i in snapshot.children){
+                    println("eklendi" + i.getValue(GroupMembers::class.java)!!.name)
+                    mList.add(i.getValue(GroupMembers::class.java)!!)
+                }
+                katilimciTV.text ="${mList.size.toString()} KATILIMCI"
+                mAdapter.notifyDataSetChanged()
+
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+
+            }
+
+        })
+
+
+
+        db.child("users").addChildEventListener(object : ChildEventListener{
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                var user = snapshot.getValue(Users::class.java)
+                println(user.toString() + " 77777")
+                if (user!!.uid.toString() !in oldMembersID){
+                    mList.clear()
+                    val newMember = GroupMembers(false,user.uid,user.isim,user.soyisim,user.telefonNo,false,user.profilePic)
+                    var newKonusma = GroupKonusma(false,"Eklendiniz",System.currentTimeMillis(),user!!.uid,groupImage,groupKey,groupName)
+                    Log.e("HATA", "     " + groupKey)
+                    db.child("grupkonusmalar").child(user.uid!!).child(groupKey).setValue(newKonusma).addOnSuccessListener {
+                        oldMemberList.add(newMember)
+                        yeniListe.addAll(oldMemberList)
+                        db.child("groups").child(groupKey).child("member").setValue(yeniListe).addOnSuccessListener {
+
+                        }
+
+                    }
+                }
+            }
+
+
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+
+            }
+
+            override fun onChildRemoved(snapshot: DataSnapshot) {
+
+            }
+
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+
+            }
+
+        })
+    }
+
+    private fun statikListener() {
+        val oldMembers = arrayListOf<GroupMembers>()
+        val oldMemberID = arrayListOf<String>()
+        val membersID = arrayListOf<String>()
+        mList.clear()
+        db.child("groups").child(groupKey).child("member").addListenerForSingleValueEvent(object : ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.getValue() != null){
+                    for (i in snapshot.children){
+                        val member = i.getValue(GroupMembers::class.java)
+                        oldMembers.add(member!!)
+                        oldMemberID.add(member.uid.toString())
+                    }
+                    userListener(oldMembers,oldMemberID)
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {
+
+            }
+
+        })
 
 
 
@@ -191,6 +292,7 @@ class GroupInfoActivity : AppCompatActivity(),GroupInfoMembersAdapter.OnItemClic
                     katilimciTV.text ="${mList.size.toString()} KATILIMCI"
                     mAdapter.notifyDataSetChanged()
                 }
+
             }
 
             override fun onCancelled(error: DatabaseError) {

@@ -36,12 +36,11 @@ import com.motive.cimbomes.R
 import com.motive.cimbomes.adapter.MessageAdapter
 import com.motive.cimbomes.fragments.ProgressFragment
 import com.motive.cimbomes.model.Mesaj
-import com.motive.cimbomes.utils.TimeAgo
-import com.motive.cimbomes.utils.URIPathHelper
-import com.motive.cimbomes.utils.UniversalImageLoader
+import com.motive.cimbomes.utils.*
 import kotlinx.android.synthetic.main.activity_chat.*
 import kotlinx.android.synthetic.main.chat_child_getter.*
 import kotlinx.android.synthetic.main.fragment_progress.*
+import org.greenrobot.eventbus.EventBus
 import java.io.File
 import java.lang.Exception
 import java.text.SimpleDateFormat
@@ -182,6 +181,8 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
             var mesajText = edittextChat.text.toString().trim()
 
             if (mesajText.trim().length>0){
+                yeniMesajKey = db.child("chats").child(myID).child(uid).push().key
+
                 var mesajAtan = HashMap<String,Any>()
                 mesajAtan.put("mesaj",mesajText)
                 mesajAtan.put("goruldu",true)
@@ -191,11 +192,12 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
                 mesajAtan.put("mesajResim",resimLink)
                 mesajAtan.put("video",video)
                 mesajAtan.put("audio","")
+                mesajAtan.put("mesajKey",yeniMesajKey.toString())
 
 
                 val tim = ServerValue.TIMESTAMP
 
-                yeniMesajKey = db.child("chats").child(myID).child(uid).push().key
+
 
                 db.child("chats").child(myID).child(uid).child(yeniMesajKey!!).setValue(mesajAtan)
 
@@ -210,6 +212,7 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
                 mesajAlan.put("mesajResim",resimLink)
                 mesajAlan.put("video",video)
                 mesajAlan.put("audio","")
+                mesajAlan.put("mesajKey",yeniMesajKey.toString())
                 db.child("chats").child(uid).child(myID).child(yeniMesajKey!!).setValue(mesajAlan)
 
 
@@ -505,7 +508,6 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
             }
 
             override fun onChildRemoved(snapshot: DataSnapshot) {
-
             }
 
             override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
@@ -589,12 +591,10 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
                 mesajGorulduBilgisiniGuncelle(snapshot!!.key.toString())
                 sonMesajGorulduBilgisiniGuncelle(snapshot!!.key.toString())
 
-
                 MyAdapter.notifyItemInserted(mesajlar.size-1)
                 myRecyclerView.scrollToPosition(mesajlar.size-1)
 
 
-                println("Resim Kontrol")
 
             }
 
@@ -603,6 +603,32 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
             }
 
             override fun onChildRemoved(snapshot: DataSnapshot) {
+                var mesajj = snapshot.getValue(Mesaj::class.java)
+                var key = snapshot.key.toString()
+                var oncekimesaj = ""
+                var removedindex : Int? = null
+
+                for ((index,element) in mesajlar.withIndex()){
+                    if (element.mesajKey.toString() == key){
+                        removedindex = index
+                        if (removedindex != 0 ){
+                            var once = mesajlar.get(removedindex - 1)
+                            oncekimesaj = once.mesaj.toString()
+                        }
+                    }
+                }
+                if (removedindex != null) {
+                    if (mesajlar.size == removedindex + 1){
+                        db.child("konusmalar").child(myID).child(uid).child("son_mesaj").setValue(oncekimesaj).addOnSuccessListener {
+                            mesajlar.removeAt(removedindex!!)
+                            MyAdapter.notifyItemRemoved(removedindex)
+                        }
+                    }else{
+                        mesajlar.removeAt(removedindex!!)
+                        MyAdapter.notifyItemRemoved(removedindex)
+                    }
+
+                }
 
 
             }
@@ -741,6 +767,12 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
 
     override fun onItemClick(position: Int) {
         var clickedItem = mesajlar[position]
+        var mesajKey = clickedItem.mesajKey.toString()
+        var gonderenID = clickedItem.user_id.toString()
+        println("chat" + mesajKey.toString())
+        EventBus.getDefault().postSticky(EventBusDataEvents.SendMessageInfo(mesajKey,gonderenID,uid.toString()))
+        val dialog = MesajlarBottomSheet()
+        dialog.show(supportFragmentManager,"mesajInfo")
     }
 
     override fun onBackPressed() {
@@ -809,6 +841,7 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
             myref.putFile(result).addOnSuccessListener {
                 myref.downloadUrl.addOnSuccessListener {
                     var mesajAtan = HashMap<String,Any>()
+                    var fotoMesajKey = db.child("chats").child(myID).child(uid).push().key
                     mesajAtan.put("mesaj","")
                     mesajAtan.put("goruldu",true)
                     mesajAtan.put("time",ServerValue.TIMESTAMP)
@@ -817,7 +850,8 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
                     mesajAtan.put("mesajResim",it.toString())
                     mesajAtan.put("video",video)
                     mesajAtan.put("audio","")
-                    var fotoMesajKey = db.child("chats").child(myID).child(uid).push().key
+                    mesajAtan.put("mesajKey",fotoMesajKey.toString())
+
 
                     db.child("chats").child(myID).child(uid).child(fotoMesajKey!!).setValue(mesajAtan)
 
@@ -832,6 +866,7 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
                     mesajAlan.put("mesajResim",it.toString())
                     mesajAlan.put("video",video)
                     mesajAlan.put("audio","")
+                    mesajAlan.put("mesajKey",fotoMesajKey.toString())
                     db.child("chats").child(uid).child(myID).child(fotoMesajKey!!).setValue(mesajAlan)
 
 
@@ -884,7 +919,7 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
             progressDialog.isCancelable = false
             myref.putFile(fileUri).addOnSuccessListener {
                 myref.downloadUrl.addOnSuccessListener {
-
+                    var fotoMesajKey = db.child("chats").child(myID).child(uid).push().key
                     var mesajAtan = HashMap<String,Any>()
                     mesajAtan.put("mesaj","")
                     mesajAtan.put("goruldu",true)
@@ -894,8 +929,9 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
                     mesajAtan.put("mesajResim","")
                     mesajAtan.put("video",it.toString())
                     mesajAtan.put("audio","")
+                    mesajAtan.put("mesajKey",fotoMesajKey.toString())
 
-                    var fotoMesajKey = db.child("chats").child(myID).child(uid).push().key
+
 
                     db.child("chats").child(myID).child(uid).child(fotoMesajKey!!).setValue(mesajAtan)
 
@@ -910,6 +946,7 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
                     mesajAlan.put("mesajResim","")
                     mesajAlan.put("video",it.toString())
                     mesajAlan.put("audio","")
+                    mesajAlan.put("mesajKey",fotoMesajKey.toString())
                     db.child("chats").child(uid).child(myID).child(fotoMesajKey!!).setValue(mesajAlan)
 
 

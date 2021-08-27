@@ -84,7 +84,7 @@ class BottomSheetEditGroupFragment : BottomSheetDialogFragment() {
 
 
         editGroupGrubuSil.setOnClickListener {
-            grubuSil()
+            grubuSilDialog()
         }
 
 
@@ -94,6 +94,7 @@ class BottomSheetEditGroupFragment : BottomSheetDialogFragment() {
     }
 
     private fun grubuSil() {
+        grubuSilProgress.visibility = View.VISIBLE
         db.child("groups").child(groupKey).removeValue().addOnSuccessListener {
             db.child("grupkonusmalar").addListenerForSingleValueEvent(object : ValueEventListener{
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -102,6 +103,8 @@ class BottomSheetEditGroupFragment : BottomSheetDialogFragment() {
                             for (j in i.children){
                                 if (j.key == groupKey){
                                     j.ref.removeValue()
+                                    grubuSilProgress.visibility = View.GONE
+                                    Toast.makeText(requireContext(),"Grup başarıyla silindi.",Toast.LENGTH_SHORT).show()
                                     startActivity(Intent(requireContext(),FeedActivity::class.java))
                                     requireActivity().finish()
                                 }
@@ -111,7 +114,7 @@ class BottomSheetEditGroupFragment : BottomSheetDialogFragment() {
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    TODO("Not yet implemented")
+
                 }
 
             })
@@ -189,6 +192,22 @@ class BottomSheetEditGroupFragment : BottomSheetDialogFragment() {
             Toast.makeText(requireContext(),"Bir hata meydana geldi.",Toast.LENGTH_SHORT).show()
             progressDialog.dismiss()
             dismiss()
+        }
+    }
+
+
+    fun grubuSilDialog(){
+        var builder = AlertDialog.Builder(requireContext())
+
+        with(builder){
+            setTitle("Grubu Silmek İstediğinize Emin Misiniz ?")
+            setPositiveButton("Evet"){dialog,which ->
+                grubuSil()
+            }
+            setNegativeButton("İptal"){ dialog, which ->
+                dismiss()
+            }
+            show()
         }
     }
 

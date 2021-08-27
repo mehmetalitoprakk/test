@@ -13,6 +13,11 @@
         <entry key="..\:/Vakkas kaplan/AndroidStudioProjects/Cimbomes/app/src/main/res/layout/fragment_bottom_dialog.xml" value="0.36666666666666664" />
         <entry key="..\:/Vakkas kaplan/AndroidStudioProjects/Cimbomes/app/src/main/res/layout/groupmemberslayout.xml" value="0.36666666666666664" />
         <entry key="..\:/saved/AndroidStudioProjects/Cimbomes/app/src/main/res/layout/activity_add_member_group.xml" value="0.35260416666666666" />
+        <entry key="..\:/saved/AndroidStudioProjects/Cimbomes/app/src/main/res/layout/activity_chat.xml" value="0.36666666666666664" />
+        <entry key="..\:/saved/AndroidStudioProjects/Cimbomes/app/src/main/res/layout/activity_chech_phone_code.xml" value="0.36666666666666664" />
+        <entry key="..\:/saved/AndroidStudioProjects/Cimbomes/app/src/main/res/layout/activity_feed.xml" value="0.36666666666666664" />
+        <entry key="..\:/saved/AndroidStudioProjects/Cimbomes/app/src/main/res/layout/activity_full_image.xml" value="0.36666666666666664" />
+        <entry key="..\:/saved/AndroidStudioProjects/Cimbomes/app/src/main/res/layout/activity_group_chat.xml" value="0.36666666666666664" />
         <entry key="..\:/saved/AndroidStudioProjects/Cimbomes/app/src/main/res/layout/activity_group_info.xml" value="0.36666666666666664" />
         <entry key="..\:/saved/AndroidStudioProjects/Cimbomes/app/src/main/res/layout/activity_register.xml" value="0.36666666666666664" />
         <entry key="..\:/saved/AndroidStudioProjects/Cimbomes/app/src/main/res/layout/activity_user_detail.xml" value="0.33" />
@@ -24,12 +29,15 @@
         <entry key="..\:/saved/AndroidStudioProjects/Cimbomes/app/src/main/res/layout/fragment_anasayfa.xml" value="0.22" />
         <entry key="..\:/saved/AndroidStudioProjects/Cimbomes/app/src/main/res/layout/fragment_bottom_dialog.xml" value="0.33" />
         <entry key="..\:/saved/AndroidStudioProjects/Cimbomes/app/src/main/res/layout/fragment_bottom_sheet_edit_group.xml" value="0.33" />
+        <entry key="..\:/saved/AndroidStudioProjects/Cimbomes/app/src/main/res/layout/fragment_group_messages_bottom_sheet.xml" value="0.33" />
+        <entry key="..\:/saved/AndroidStudioProjects/Cimbomes/app/src/main/res/layout/fragment_grup_yonetimi.xml" value="0.25" />
         <entry key="..\:/saved/AndroidStudioProjects/Cimbomes/app/src/main/res/layout/fragment_kaydedilen_mesajlar.xml" value="0.36666666666666664" />
         <entry key="..\:/saved/AndroidStudioProjects/Cimbomes/app/src/main/res/layout/fragment_mesajlar_bottom_sheet.xml" value="0.36666666666666664" />
         <entry key="..\:/saved/AndroidStudioProjects/Cimbomes/app/src/main/res/layout/fragment_select_group_member.xml" value="0.36666666666666664" />
         <entry key="..\:/saved/AndroidStudioProjects/Cimbomes/app/src/main/res/layout/fragment_yeni_grup.xml" value="0.22" />
         <entry key="..\:/saved/AndroidStudioProjects/Cimbomes/app/src/main/res/layout/groupkonusmachild.xml" value="0.36666666666666664" />
         <entry key="..\:/saved/AndroidStudioProjects/Cimbomes/app/src/main/res/layout/header.xml" value="0.21302083333333333" />
+        <entry key="..\:/saved/AndroidStudioProjects/Cimbomes/app/src/main/res/layout/kalici_gruplar_child.xml" value="0.3351449275362319" />
         <entry key="..\:/saved/AndroidStudioProjects/Cimbomes/app/src/main/res/layout/saved_messages_row.xml" value="0.33" />
         <entry key="..\:/saved/AndroidStudioProjects/Cimbomes/app/src/main/res/menu/navmenu.xml" value="0.36666666666666664" />
       </map>

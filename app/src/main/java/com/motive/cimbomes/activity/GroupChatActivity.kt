@@ -30,6 +30,7 @@ import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.UploadTask
 import com.motive.cimbomes.R
 import com.motive.cimbomes.adapter.GroupMessagesAdapter
+import com.motive.cimbomes.fragments.GroupMessagesBottomSheet
 import com.motive.cimbomes.fragments.ProgressFragment
 import com.motive.cimbomes.model.GroupKonusma
 import com.motive.cimbomes.model.GroupMembers
@@ -48,7 +49,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
-class GroupChatActivity : AppCompatActivity() {
+class GroupChatActivity : AppCompatActivity(),GroupMessagesAdapter.OnItemLongClickListener {
     private lateinit var mAuth: FirebaseAuth
     private lateinit var db : DatabaseReference
     private lateinit var storageReference: StorageReference
@@ -306,7 +307,48 @@ class GroupChatActivity : AppCompatActivity() {
             }
 
             override fun onChildRemoved(snapshot: DataSnapshot) {
+                var mesajj = snapshot.getValue(Mesaj::class.java)
+                var key = snapshot.key.toString()
+                var oncekimesaj = ""
+                var removedindex : Int? = null
 
+                for ((index,element) in mesajlar.withIndex()){
+                    if (element.mesajKey.toString() == key){
+                        removedindex = index
+                        if (removedindex != 0 ){
+                            var once = mesajlar.get(removedindex - 1)
+                            oncekimesaj = once.mesaj.toString()
+                        }
+                    }
+                }
+
+                if (removedindex != null) {
+                    if (mesajlar.size == removedindex + 1){
+                        db.child("grupkonusmalar").addListenerForSingleValueEvent(object : ValueEventListener{
+                            override fun onDataChange(snapshot: DataSnapshot) {
+                                if (snapshot.getValue() != null){
+                                    for (i in snapshot.children){
+                                        val ref = i.ref.child(groupKey).child("son_mesaj")
+                                        if (ref != null){
+                                            ref.setValue(oncekimesaj)
+                                        }
+                                    }
+                                    mesajlar.removeAt(removedindex)
+                                    MyAdapter.notifyItemRemoved(removedindex)
+                                }
+                            }
+
+                            override fun onCancelled(error: DatabaseError) {
+
+                            }
+
+                        })
+                    }else{
+                        mesajlar.removeAt(removedindex)
+                        MyAdapter.notifyItemRemoved(removedindex)
+                    }
+
+                }
             }
 
             override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
@@ -362,7 +404,7 @@ class GroupChatActivity : AppCompatActivity() {
         myRecyclerView = groupChatRV
         myRecyclerView.layoutManager = myLayoutManager
 
-        MyAdapter = GroupMessagesAdapter(mesajlar,this)
+        MyAdapter = GroupMessagesAdapter(mesajlar,this,this)
         myRecyclerView.adapter = MyAdapter
     }
 
@@ -637,6 +679,17 @@ class GroupChatActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         setupGroupInfo()
+    }
+
+    override fun onItemLongClicked(position: Int): Boolean {
+        var clickedMessage = mesajlar[position]
+        var mesajKey = clickedMessage.mesajKey.toString()
+        var gonderenID = clickedMessage.user_id.toString()
+        var grupMesaji = clickedMessage
+        EventBus.getDefault().postSticky(EventBusDataEvents.SendGroupMessageInfo(mesajKey,gonderenID,groupKey,grupMesaji))
+        val dialog = GroupMessagesBottomSheet()
+        dialog.show(supportFragmentManager,"grupMesajInfo")
+        return false
     }
 
 

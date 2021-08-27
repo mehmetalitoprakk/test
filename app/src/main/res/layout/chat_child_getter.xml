@@ -22,11 +22,12 @@
             android:id="@+id/tvNameGroup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Mustafa"
+            android:text=""
+            android:textStyle="bold"
             android:textSize="11sp"
             android:paddingStart="6dp"
             android:paddingTop="2dp"
-            android:textColor="@color/black"
+            android:textColor="#00A0B0"
             android:visibility="visible"/>
 
 

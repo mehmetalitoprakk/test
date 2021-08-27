@@ -91,7 +91,7 @@ class FeedActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         db.child("users").child(mAuth.currentUser!!.uid).addValueEventListener(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 var user = snapshot.getValue(Users::class.java)
-                headerIsim.text = user!!.isim + user!!.soyisim
+                headerIsim.text = user!!.isim + " " + user!!.soyisim
                 val admin = user.isAdmin
                 if (admin!!){
                     menu.findItem(R.id.admin).isVisible = true
@@ -230,7 +230,8 @@ class FeedActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
             }
             R.id.admin ->{
-                //TODO ADMİN AYARLARI YAPILICAK GRUP YONETİMİ SAYFASI AÇILICAK
+                setCurrentFragment(GrupYonetimiFragment())
+                toolbars.setTitle("Grup Yönetimi")
             }
         }
         return true

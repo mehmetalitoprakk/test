@@ -14,12 +14,14 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthProvider
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.motive.cimbomes.R
 import com.motive.cimbomes.fragments.ProgressFragment
+import com.motive.cimbomes.model.GroupKonusma
+import com.motive.cimbomes.model.GroupMembers
+import com.motive.cimbomes.model.Groups
 import com.motive.cimbomes.model.Users
 import kotlinx.android.synthetic.main.activity_user_info.*
 
@@ -109,11 +111,53 @@ class UserInfoActivity : AppCompatActivity() {
                                         storageReference.child("users").child(mAuth.currentUser!!.uid).child("profile_picture").downloadUrl
                                                 .addOnSuccessListener {
                                                     db.child("users").child(mAuth.currentUser!!.uid).child("profilePic").setValue(it.toString()).addOnSuccessListener {
-                                                        progressDialog.dismiss()
-                                                        val intent = Intent(this@UserInfoActivity,FeedActivity::class.java)
-                                                        startActivity(intent)
-                                                        overridePendingTransition(R.anim.slide_from_right,R.anim.slide_to_left)
-                                                        finish()
+                                                        db.child("groups").addListenerForSingleValueEvent(object : ValueEventListener{
+                                                            override fun onDataChange(snapshot: DataSnapshot) {
+                                                                if (snapshot.getValue() != null){
+                                                                    for (i in snapshot.children){
+                                                                        val group = i.getValue(Groups::class.java)
+                                                                        if (group!!.static == true){
+                                                                            val member = GroupMembers(false,mAuth.currentUser!!.uid,user.isim,user.soyisim,user.telefonNo,false,user.profilePic)
+                                                                            val list = mutableListOf<GroupMembers>()
+                                                                            i.ref.child("member").addListenerForSingleValueEvent(object : ValueEventListener{
+                                                                                override fun onDataChange(
+                                                                                    snapshot: DataSnapshot
+                                                                                ) {
+                                                                                    for (i in snapshot.children){
+                                                                                        list.add(i.getValue(GroupMembers::class.java)!!)
+                                                                                    }
+                                                                                    list.add(member)
+
+                                                                                    i.ref.child("member").setValue(list).addOnSuccessListener {
+                                                                                        val konusma = GroupKonusma(false,"Eklendiniz",System.currentTimeMillis(),user.uid,group.image,group.groupID,group.groupName)
+                                                                                        db.child("grupkonusmalar").child(user.uid!!).child(group.groupID!!).setValue(konusma)
+                                                                                    }
+
+                                                                                }
+
+                                                                                override fun onCancelled(
+                                                                                    error: DatabaseError
+                                                                                ) {
+
+                                                                                }
+
+                                                                            })
+                                                                        }
+                                                                    }
+                                                                    progressDialog.dismiss()
+                                                                    val intent = Intent(this@UserInfoActivity,FeedActivity::class.java)
+                                                                    startActivity(intent)
+                                                                    overridePendingTransition(R.anim.slide_from_right,R.anim.slide_to_left)
+                                                                    finish()
+
+                                                                }
+                                                            }
+
+                                                            override fun onCancelled(error: DatabaseError) {
+                                                                TODO("Not yet implemented")
+                                                            }
+
+                                                        })
                                                     }.addOnFailureListener {
                                                         Toast.makeText(this@UserInfoActivity,"Bir hata oluştu, lütfen daha sonra tekrar deneyin.",Toast.LENGTH_SHORT).show()
                                                         progressDialog.dismiss()

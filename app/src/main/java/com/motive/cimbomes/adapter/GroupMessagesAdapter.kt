@@ -5,9 +5,8 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever
 import android.os.Build
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
@@ -29,8 +28,9 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
-class GroupMessagesAdapter(var mesajlar : ArrayList<Mesaj>,var ctx : Context) : RecyclerView.Adapter<GroupMessagesAdapter.GroupMessagesViewHolder>() {
-    inner class GroupMessagesViewHolder(view : View) : RecyclerView.ViewHolder(view) {
+class GroupMessagesAdapter(var mesajlar : ArrayList<Mesaj>,var ctx : Context,var listeneriki : OnItemLongClickListener) : RecyclerView.Adapter<GroupMessagesAdapter.GroupMessagesViewHolder>() {
+
+    inner class GroupMessagesViewHolder(view : View) : RecyclerView.ViewHolder(view),View.OnLongClickListener {
         var tumLayout = view as ConstraintLayout
         var mesaj = tumLayout.tvMessageSender
         var img =tumLayout.imgSenderView
@@ -42,8 +42,11 @@ class GroupMessagesAdapter(var mesajlar : ArrayList<Mesaj>,var ctx : Context) : 
         var nameTv = tumLayout.tvNameGroup
         var timeTV = tumLayout.tvTimeSender
 
-        fun setData(oankiMesaj: Mesaj){
+        init {
+            view.setOnLongClickListener(this)
+        }
 
+        fun setData(oankiMesaj: Mesaj){
 
 
             if (oankiMesaj.type == "text"){
@@ -122,6 +125,19 @@ class GroupMessagesAdapter(var mesajlar : ArrayList<Mesaj>,var ctx : Context) : 
 
         }
 
+        override fun onLongClick(v: View?): Boolean {
+            val position = adapterPosition
+            if (position != RecyclerView.NO_POSITION){
+                listeneriki.onItemLongClicked(position)
+                return false
+            }
+            return true
+        }
+
+    }
+
+    interface OnItemLongClickListener {
+        fun onItemLongClicked(position: Int) : Boolean
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GroupMessagesViewHolder {
@@ -178,4 +194,6 @@ class GroupMessagesAdapter(var mesajlar : ArrayList<Mesaj>,var ctx : Context) : 
         }
         return bitmap
     }
+
+
 }

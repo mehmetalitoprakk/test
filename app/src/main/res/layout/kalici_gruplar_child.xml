@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/imageViewKaliciGruplar"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:src="@drawable/human"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/grupNameKaliciGruplar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:text="ŞAMPİYON GALATASARAY"
+        android:textColor="@color/teal_700"
+        android:textSize="17sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/grubuGörButtonKaliciGruplar"
+        app:layout_constraintStart_toEndOf="@+id/imageViewKaliciGruplar"
+        app:layout_constraintTop_toTopOf="@+id/imageViewKaliciGruplar" />
+
+    <TextView
+        android:id="@+id/üyeSayisiKaliciGruplar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="Üye Sayisi"
+        android:textColor="@color/black"
+        app:layout_constraintStart_toStartOf="@+id/grupNameKaliciGruplar"
+        app:layout_constraintTop_toBottomOf="@+id/grupNameKaliciGruplar" />
+
+    <TextView
+        android:id="@+id/adminSayisiKaliciGruplar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="5dp"
+        android:text="Yönetici Sayisi"
+        android:textColor="@color/black"
+        app:layout_constraintStart_toEndOf="@+id/üyeSayisiKaliciGruplar"
+        app:layout_constraintTop_toBottomOf="@+id/grupNameKaliciGruplar" />
+
+    <TextView
+        android:id="@+id/textView19"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="7000"
+        android:textColor="@color/yellow"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@+id/üyeSayisiKaliciGruplar"
+        app:layout_constraintStart_toStartOf="@+id/üyeSayisiKaliciGruplar"
+        app:layout_constraintTop_toBottomOf="@+id/üyeSayisiKaliciGruplar" />
+
+    <TextView
+        android:id="@+id/textView20"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="30"
+        android:textColor="@color/teal_700"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@+id/adminSayisiKaliciGruplar"
+        app:layout_constraintStart_toStartOf="@+id/adminSayisiKaliciGruplar"
+        app:layout_constraintTop_toBottomOf="@+id/adminSayisiKaliciGruplar" />
+
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/grubuGörButtonKaliciGruplar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="5dp"
+        android:backgroundTint="@color/yellow"
+        android:src="@drawable/ic_next"
+        android:tint="@color/yellow"
+        app:layout_constraintBottom_toBottomOf="@+id/imageViewKaliciGruplar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/imageViewKaliciGruplar"
+        app:rippleColor="@color/black"
+        app:useCompatPadding="false" />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginTop="16dp"
+        android:background="@color/backround"
+        app:layout_constraintEnd_toEndOf="@+id/grubuGörButtonKaliciGruplar"
+        app:layout_constraintStart_toStartOf="@+id/imageViewKaliciGruplar"
+        app:layout_constraintTop_toBottomOf="@+id/textView19" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

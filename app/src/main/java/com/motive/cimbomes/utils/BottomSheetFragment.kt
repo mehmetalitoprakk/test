@@ -16,6 +16,7 @@ import com.motive.cimbomes.activity.ChatActivity
 import com.motive.cimbomes.activity.UserDetail
 import com.motive.cimbomes.adapter.GroupInfoMembersAdapter
 import com.motive.cimbomes.model.GroupMembers
+import com.motive.cimbomes.model.Users
 import kotlinx.android.synthetic.main.fragment_bottom_dialog.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -26,6 +27,8 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
     lateinit var groupKey : String
     var isCreator = false
     lateinit var pos : String
+    var isAdmin = false
+    var tiklananAdminMi = false
 
 
 
@@ -41,25 +44,29 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
         db = FirebaseDatabase.getInstance().reference
 
+        if (isAdmin){
+
+            bottomsheetgruptancıkar.visibility = View.VISIBLE
+            bottomsheetyönetici.visibility = View.VISIBLE
+            bottomShhetNotYonetici.visibility = View.VISIBLE
+        }else{
+
+            bottomsheetgruptancıkar.visibility = View.GONE
+            bottomsheetyönetici.visibility = View.GONE
+            bottomShhetNotYonetici.visibility = View.GONE
+        }
+
+
+
+
 
         db.child("groups").child(groupKey).child("creator").get().addOnSuccessListener {
             if (it.value == FirebaseAuth.getInstance().currentUser!!.uid){
                 isCreator = true
-                if (!groupmember.groupAdmin!!){
-                    bottomsheetyönetici.visibility = View.VISIBLE
-                    bottomShhetNotYonetici.visibility = View.GONE
-                }else if (groupmember.groupAdmin!!){
-                    if (isCreator){
-                        bottomsheetyönetici.visibility = View.GONE
-                        bottomShhetNotYonetici.visibility = View.VISIBLE
-                    }else if(!isCreator){
-                        bottomsheetyönetici.visibility = View.GONE
-                        bottomShhetNotYonetici.visibility = View.GONE
-                        bottomsheetgruptancıkar.visibility = View.GONE
-                    }
-
-                }
+            }else{
+                isCreator = false
             }
+            setSettings()
         }
 
 
@@ -165,6 +172,29 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
 
     }
 
+    private fun setSettings() {
+        if (!groupmember.groupAdmin!!){
+            if (isAdmin){
+                bottomsheetyönetici.visibility = View.VISIBLE
+                bottomShhetNotYonetici.visibility = View.GONE
+            }else{
+                bottomsheetyönetici.visibility = View.GONE
+                bottomShhetNotYonetici.visibility = View.GONE
+            }
+
+        }else if (groupmember.groupAdmin!!){
+            if (isCreator){
+                bottomsheetyönetici.visibility = View.GONE
+                bottomShhetNotYonetici.visibility = View.VISIBLE
+            }else if(!isCreator){
+                bottomsheetyönetici.visibility = View.GONE
+                bottomShhetNotYonetici.visibility = View.GONE
+                bottomsheetgruptancıkar.visibility = View.GONE
+            }
+
+        }
+    }
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         EventBus.getDefault().register(this)
@@ -179,7 +209,7 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
     internal fun onMemberAl(member : EventBusDataEvents.SendBottomSheet){
         groupmember = member.groupMember
         groupKey = member.groupKey
-        pos = member.position!!.toString()
+        isAdmin = member.admin
     }
 
 }

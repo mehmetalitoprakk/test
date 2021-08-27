@@ -48,7 +48,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
-class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
+class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener,MessageAdapter.OnItemLongClickListener {
     private lateinit var uid : String
     private lateinit var name : String
     private lateinit var image : String
@@ -477,7 +477,6 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
                             videoBitrate = null /*Int, ignore, or null*/
                     )
             )
-
     }
 
 
@@ -508,6 +507,7 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
             }
 
             override fun onChildRemoved(snapshot: DataSnapshot) {
+
             }
 
             override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
@@ -617,6 +617,8 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
                         }
                     }
                 }
+
+
                 if (removedindex != null) {
                     if (mesajlar.size == removedindex + 1){
                         db.child("konusmalar").child(myID).child(uid).child("son_mesaj").setValue(oncekimesaj).addOnSuccessListener {
@@ -683,7 +685,7 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
         myRecyclerView = rvChat
 
         myRecyclerView.layoutManager = myLayoutManager
-        MyAdapter = MessageAdapter(mesajlar,this,this)
+        MyAdapter = MessageAdapter(mesajlar,this,this,this)
         myRecyclerView.adapter = MyAdapter
     }
 
@@ -774,6 +776,19 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
         val dialog = MesajlarBottomSheet()
         dialog.show(supportFragmentManager,"mesajInfo")
     }
+
+    override fun onItemLongClicked(position: Int): Boolean {
+        var clickedItem = mesajlar[position]
+        var mesajKey = clickedItem.mesajKey.toString()
+        var gonderenID = clickedItem.user_id.toString()
+        println("chat" + mesajKey.toString())
+        EventBus.getDefault().postSticky(EventBusDataEvents.SendMessageInfo(mesajKey,gonderenID,uid.toString()))
+        val dialog = MesajlarBottomSheet()
+        dialog.show(supportFragmentManager,"mesajInfo")
+
+        return false
+    }
+
 
     override fun onBackPressed() {
         db.child("chats").child(myID).child(uid).removeEventListener(childEventListener)
@@ -983,6 +998,8 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener {
 
         }
     }
+
+
 
 
 }

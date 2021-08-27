@@ -8,6 +8,9 @@ import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+
+import android.widget.Toast
+
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
@@ -31,8 +34,8 @@ import kotlin.collections.HashMap
 import kotlin.coroutines.coroutineContext
 
 
-class MessageAdapter(var mesahlar: ArrayList<Mesaj>, var ctx: Context, var listener: OnItemClickListener) : RecyclerView.Adapter<MessageAdapter.MesajViewHolder>() {
-    inner class MesajViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView),View.OnClickListener {
+class MessageAdapter(var mesahlar: ArrayList<Mesaj>, var ctx: Context, var listener: OnItemClickListener,var listeneriki : OnItemLongClickListener) : RecyclerView.Adapter<MessageAdapter.MesajViewHolder>() {
+    inner class MesajViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView),View.OnClickListener,View.OnLongClickListener {
         var tumLayout = itemView as ConstraintLayout
         var mesaj = tumLayout.tvMessageSender
         var img =tumLayout.imgSenderView
@@ -48,7 +51,8 @@ class MessageAdapter(var mesahlar: ArrayList<Mesaj>, var ctx: Context, var liste
 
 
         init {
-            itemView.setOnClickListener(this)
+            itemView.setOnLongClickListener(this)
+            //itemView.setOnClickListener(this)
         }
 
         fun setData(oankiMesaj: Mesaj){
@@ -130,6 +134,18 @@ class MessageAdapter(var mesahlar: ArrayList<Mesaj>, var ctx: Context, var liste
             }
         }
 
+        override fun onLongClick(v: View?): Boolean {
+            val position = adapterPosition
+            if (position != RecyclerView.NO_POSITION){
+                listeneriki.onItemLongClicked(position)
+                return false
+            }
+            return true
+        }
+
+    }
+    interface OnItemLongClickListener {
+        fun onItemLongClicked(position: Int) : Boolean
     }
 
     interface OnItemClickListener{

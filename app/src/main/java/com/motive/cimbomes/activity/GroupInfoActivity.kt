@@ -54,6 +54,8 @@ class GroupInfoActivity : AppCompatActivity(),GroupInfoMembersAdapter.OnItemClic
         db = FirebaseDatabase.getInstance().reference
         mList.clear()
 
+        setupRecyclerView()
+
         getinfo()
         controlGroup()
 
@@ -95,7 +97,7 @@ class GroupInfoActivity : AppCompatActivity(),GroupInfoMembersAdapter.OnItemClic
 
         if (isStatic){
             println("statik tetiklendi")
-            statikListener()
+            getMembers()
         }else{
             println("members tetiklendi")
             getMembers()
@@ -350,10 +352,11 @@ class GroupInfoActivity : AppCompatActivity(),GroupInfoMembersAdapter.OnItemClic
         val bottomSheetDialog = BottomSheetFragment()
         if (clickedItem.uid != FirebaseAuth.getInstance().currentUser!!.uid){
             if (isAdmin){
-                EventBus.getDefault().postSticky(EventBusDataEvents.SendBottomSheet(clickedItem,groupKey,position))
+                EventBus.getDefault().postSticky(EventBusDataEvents.SendBottomSheet(clickedItem,groupKey,position,true))
                 bottomSheetDialog.show(supportFragmentManager,"bottomsheet")
             }else{
-                println("Admin Değil")
+                EventBus.getDefault().postSticky(EventBusDataEvents.SendBottomSheet(clickedItem,groupKey,position,false))
+                bottomSheetDialog.show(supportFragmentManager,"bottomsheet")
             }
         }
 

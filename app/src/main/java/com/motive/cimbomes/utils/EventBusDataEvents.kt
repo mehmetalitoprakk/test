@@ -8,8 +8,9 @@ class EventBusDataEvents {
     internal class SendGroupData(var groupName: String,var groupImageUri : String?)
     internal class SendGroupMembers(var members : MutableList<GroupMembers>)
     internal class SendGroupInfo(var members : MutableList<GroupMembers>)
-    internal class SendBottomSheet(var groupMember : GroupMembers,var groupKey: String, var position : Int)
+    internal class SendBottomSheet(var groupMember : GroupMembers,var groupKey: String, var position : Int,var admin : Boolean)
     internal class SendEditGroupSheet(var groupKey: String,var isCreator : Boolean)
     internal class SendMessageInfo(var mesajKey : String,var gonderenID : String,var mesajiAlanId : String)
     internal class SendSavedMessageInfo(var mesajlar : ArrayList<Mesaj>)
+    internal class SendGroupMessageInfo(var mesajKey: String, var gonderenID: String,var groupID :String,var mesajGroup : Mesaj)
 }

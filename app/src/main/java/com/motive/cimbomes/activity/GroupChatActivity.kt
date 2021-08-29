@@ -1,12 +1,12 @@
 package com.motive.cimbomes.activity
 
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Rect
 import android.net.Uri
+import android.os.*
 import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-import android.os.Environment
 import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
@@ -682,6 +682,15 @@ class GroupChatActivity : AppCompatActivity(),GroupMessagesAdapter.OnItemLongCli
     }
 
     override fun onItemLongClicked(position: Int): Boolean {
+        val v = (getSystemService(Context.VIBRATOR_SERVICE) as Vibrator)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            v.vibrate(
+                VibrationEffect.createOneShot(100,
+                VibrationEffect.DEFAULT_AMPLITUDE))
+        }
+        else {
+            v.vibrate(100)
+        }
         var clickedMessage = mesajlar[position]
         var mesajKey = clickedMessage.mesajKey.toString()
         var gonderenID = clickedMessage.user_id.toString()

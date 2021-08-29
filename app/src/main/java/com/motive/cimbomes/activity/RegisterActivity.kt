@@ -49,45 +49,13 @@ class RegisterActivity : AppCompatActivity() {
             countrcode = cpp.selectedCountryCode.toString()
             val fullTelNo = "+"+countrcode+telNo
             phoneNumber = fullTelNo
-            Log.e("TEL", fullTelNo + "   " + phoneNumber)
             if (isValidPhone(fullTelNo)){
-                Log.e("ISVALİD","BURAYA GİRDİ -1")
                 if (registerphoneET.text.toString().length == 10){
-                    Log.e("ISVALİD","BURAYA GİRDİ -2")
-                    var telNoKullanimdami = false
-                    mDatabaseReference.child("users").addListenerForSingleValueEvent(object : ValueEventListener{
-                        override fun onDataChange(snapshot: DataSnapshot) {
-                            Log.e("db","databaseye girdi")
-                            if (snapshot.getValue() != null){
-                                for (user in snapshot.children){
-                                    var okunanKullanici = user.getValue(Users::class.java)
-                                    if (okunanKullanici!!.telefonNo == phoneNumber){
-                                        Log.e("EŞİT","BURAYA GİRDİ -5")
-                                        Toast.makeText(this@RegisterActivity,"Telefon numarası kullanımda!",Toast.LENGTH_SHORT).show()
-                                        telNoKullanimdami = true
-                                        registerProgress.visibility = View.GONE
-                                        reigsterileriButton.isEnabled = true
-                                        break
-                                    }
-                                }
-                                if (telNoKullanimdami == false){
-                                    Log.e("ISVALİD","BURAYA GİRDİ -11")
-                                    registerProgress.visibility = View.GONE
-                                    reigsterileriButton.isEnabled = true
-                                    val intent = Intent(this@RegisterActivity,ChechPhoneCodeActivity::class.java)
-                                    intent.putExtra("phone",phoneNumber)
-                                    startActivity(intent)
-                                    overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left)
-                                    finish()
-                                }
-                            }
-                        }
-
-                        override fun onCancelled(error: DatabaseError) {
-
-                        }
-
-                    })
+                    val intent = Intent(this@RegisterActivity,ChechPhoneCodeActivity::class.java)
+                    intent.putExtra("phone",phoneNumber)
+                    startActivity(intent)
+                    overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left)
+                    finish()
 
 
                 }else{

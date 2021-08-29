@@ -15,32 +15,32 @@ import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.*
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.iid.FirebaseInstanceId
 import com.motive.cimbomes.R
+import com.motive.cimbomes.model.Users
 import kotlinx.android.synthetic.main.activity_chech_phone_code.*
 import java.util.concurrent.TimeUnit
 
 class ChechPhoneCodeActivity : AppCompatActivity() {
     var gelenTelNo = ""
-    lateinit var callbacks: PhoneAuthProvider.OnVerificationStateChangedCallbacks
-    var verificationID = ""
     var gelenKod = ""
-    lateinit var mAuth: FirebaseAuth
-    lateinit var resendToken : PhoneAuthProvider.ForceResendingToken
+    private lateinit var mAuth: FirebaseAuth
+    private var forceResendingToken : PhoneAuthProvider.ForceResendingToken? = null
+    private var mCallBacks : PhoneAuthProvider.OnVerificationStateChangedCallbacks? = null
+    private var mVericitaionId : String? = null
+    private val TAG = "PHONE_AUTH"
+
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chech_phone_code)
         buttonPhoneCodeOnayla.isEnabled = false
-
-
-        mAuth = FirebaseAuth.getInstance()
-        gelenTelNo = intent.getStringExtra("phone")!!
-
-
-        tvTelefonNo.text = gelenTelNo
-        setTouchDelegate(imgBackPhoneCode,100)
-
-
 
         imgBackPhoneCode.setOnClickListener {
             startActivity(Intent(this,RegisterActivity::class.java))
@@ -48,43 +48,161 @@ class ChechPhoneCodeActivity : AppCompatActivity() {
             finish()
         }
 
+        mAuth = FirebaseAuth.getInstance()
+        gelenTelNo = intent.getStringExtra("phone")!!
+        println(gelenTelNo)
 
+
+        tvTelefonNo.text = gelenTelNo
+        setTouchDelegate(imgBackPhoneCode,100)
         pinview.addTextChangedListener(watcher)
 
-
-
-        setupCallback()
-
-
-
-        val options = PhoneAuthOptions.newBuilder(mAuth)
-            .setPhoneNumber(gelenTelNo)       // Phone number to verify
-            .setTimeout(60L, TimeUnit.SECONDS)  // Timeout and unit
-            .setActivity(this)                // Activity (for callback binding)
-            .setCallbacks(callbacks)          // OnVerificationStateChangedCallbacks
-            .build()
-
-
-        PhoneAuthProvider.verifyPhoneNumber(options)
-
-
-
         buttonPhoneCodeOnayla.setOnClickListener {
+            phoneauthProgressBar.visibility = View.VISIBLE
+            buttonPhoneCodeOnayla.isEnabled = false
             val kullaniciKod = pinview.text.toString()
-            if (kullaniciKod == gelenKod){
-                val intent = Intent(this,UserInfoActivity::class.java)
-                intent.putExtra("dbphone",gelenTelNo)
-                startActivity(intent)
-                finish()
-            }else{
-                val intent = Intent(this,UserInfoActivity::class.java)
-                intent.putExtra("dbphone",gelenTelNo)
-                startActivity(intent)
-                finish()
-                Toast.makeText(this,"Onay kodu hatalı!",Toast.LENGTH_SHORT).show()
+            verifyPhoneNumberWithCode(mVericitaionId!!,kullaniciKod)
+        }
+
+        mCallBacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks(){
+            override fun onVerificationCompleted(phoneAuthCredential : PhoneAuthCredential) {
+                signInWithPhoneAuthCredential(phoneAuthCredential)
+
+            }
+
+            override fun onVerificationFailed(e: FirebaseException) {
+                Log.e(TAG,e.message.toString())
+                phoneauthProgressBar.visibility = View.GONE
+                buttonPhoneCodeOnayla.isEnabled = true
+                Toast.makeText(this@ChechPhoneCodeActivity,"Bir hata oluştu, ${e.message}",Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onCodeSent(verificationID: String, token: PhoneAuthProvider.ForceResendingToken) {
+                mVericitaionId = verificationID
+                forceResendingToken = token
+
             }
         }
+
+        startPhoneNumberVerification(gelenTelNo)
+
+
+        resendCode.setOnClickListener {
+            resendVerificationCode(gelenTelNo,forceResendingToken!!)
+            Toast.makeText(this,"Onay Kodu Tekrar Gönderildi",Toast.LENGTH_SHORT).show()
+        }
+
     }
+    private fun startPhoneNumberVerification(phone : String){
+
+        val options = PhoneAuthOptions.newBuilder(mAuth)
+            .setPhoneNumber(phone)
+            .setTimeout(60L,TimeUnit.SECONDS)
+            .setActivity(this)
+            .setCallbacks(mCallBacks!!)
+            .build()
+
+        PhoneAuthProvider.verifyPhoneNumber(options)
+    }
+
+    private fun resendVerificationCode(phone: String,token: PhoneAuthProvider.ForceResendingToken){
+
+        val options = PhoneAuthOptions.newBuilder(mAuth)
+            .setPhoneNumber(phone)
+            .setTimeout(60L,TimeUnit.SECONDS)
+            .setActivity(this)
+            .setCallbacks(mCallBacks!!)
+            .setForceResendingToken(token)
+            .build()
+
+        PhoneAuthProvider.verifyPhoneNumber(options)
+    }
+
+    private fun verifyPhoneNumberWithCode(verificationId : String,code:String){
+        val credential = PhoneAuthProvider.getCredential(verificationId,code)
+        signInWithPhoneAuthCredential(credential)
+    }
+
+    private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
+        mAuth.signInWithCredential(credential)
+            .addOnSuccessListener {
+                FirebaseDatabase.getInstance().reference.child("users").addListenerForSingleValueEvent(object : ValueEventListener{
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        val telNumbers = arrayListOf<String>()
+                        for (i in snapshot.children){
+                            val user = i.getValue(Users::class.java)
+                            telNumbers.add(user!!.telefonNo!!)
+                        }
+                        if (telNumbers.contains(gelenTelNo)){
+                            getFcmTokenForExistsUser()
+                        }else if(gelenTelNo !in telNumbers){
+                            getFcmTokenForNotExistsUser()
+
+                        }
+
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+
+                    }
+
+                })
+
+
+            }
+            .addOnFailureListener {
+                //Login Failure
+                Log.e(TAG,it.message.toString())
+                Toast.makeText(this,"Bir hata oluştu, ${it.message}",Toast.LENGTH_SHORT).show()
+                startActivity(Intent(this,RegisterActivity::class.java))
+                overridePendingTransition(R.anim.slide_from_left,R.anim.slide_to_right)
+                finish()
+
+            }
+    }
+
+    private fun getFcmTokenForNotExistsUser() {
+        FirebaseInstanceId.getInstance().instanceId.addOnSuccessListener {
+            var token = it.token
+            addToDatabaseNewTokenForNotExist(token)
+        }
+    }
+
+    private fun getFcmTokenForExistsUser() {
+        FirebaseInstanceId.getInstance().instanceId.addOnSuccessListener {
+            var token = it.token
+            addToDatabaseNewToken(token)
+
+        }
+    }
+
+    private fun addToDatabaseNewTokenForNotExist(token: String) {
+        if (FirebaseAuth.getInstance().currentUser != null){
+            FirebaseDatabase.getInstance().reference.child("users").child(FirebaseAuth.getInstance().currentUser!!.uid).child("fcmToken")
+                .setValue(token).addOnSuccessListener {
+                    val intent = Intent(this@ChechPhoneCodeActivity,UserInfoActivity::class.java)
+                    intent.putExtra("dbphone",gelenTelNo)
+                    startActivity(intent)
+                    overridePendingTransition(R.anim.slide_from_right,R.anim.slide_to_left)
+                    finish()
+                }
+        }
+
+    }
+
+    private fun addToDatabaseNewToken(token: String) {
+        if (FirebaseAuth.getInstance().currentUser != null){
+            FirebaseDatabase.getInstance().reference.child("users").child(FirebaseAuth.getInstance().currentUser!!.uid).child("fcmToken")
+                .setValue(token).addOnSuccessListener {
+                    val intent = Intent(this@ChechPhoneCodeActivity,FeedActivity::class.java)
+                    startActivity(intent)
+                    overridePendingTransition(R.anim.slide_from_right,R.anim.slide_to_left)
+                    finish()
+                }
+        }
+
+    }
+
 
     val watcher = object : TextWatcher{
         override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -107,7 +225,6 @@ class ChechPhoneCodeActivity : AppCompatActivity() {
         }
     }
 
-
     private fun setTouchDelegate(view: View, dimen: Int) {
         val parent = view.parent as View
         parent.post {
@@ -123,45 +240,5 @@ class ChechPhoneCodeActivity : AppCompatActivity() {
 
 
 
-    private fun setupCallback() {
-        callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
-            override fun onVerificationCompleted(credential: PhoneAuthCredential) {
-                if (credential.smsCode.isNullOrEmpty()){
-                    gelenKod = credential.smsCode!!
-                    println("ON VERİFİ ÇALIŞTI")
-                }
-                gelenKod = credential.smsCode!!
-
-
-            }
-
-            override fun onVerificationFailed(e: FirebaseException) {
-
-                Log.e("TAG", "onVerificationFailed", e)
-
-                if (e is FirebaseAuthInvalidCredentialsException) {
-                    Toast.makeText(this@ChechPhoneCodeActivity,"Telefon numarası istenen formata uygun değil. Lütfen geçerli bir telefon numarası giriniz.",
-                        Toast.LENGTH_SHORT).show()
-                } else if (e is FirebaseTooManyRequestsException) {
-                    Toast.makeText(this@ChechPhoneCodeActivity,"Çok fazla kod gönderildi, lütfen bir süre bekleyin ve tekrar deneyin.",
-                        Toast.LENGTH_SHORT).show()
-                } else if (e is FirebaseNetworkException){
-                    Toast.makeText(this@ChechPhoneCodeActivity,"Lütfen internet bağlantınızı kontrol edin.",
-                        Toast.LENGTH_SHORT).show()
-                }
-
-
-            }
-
-            override fun onCodeSent(
-                verificationId: String,
-                token: PhoneAuthProvider.ForceResendingToken
-            ) {
-                println("ON CODE SEND ÇALIŞTI")
-                verificationID = verificationId
-                resendToken = token
-            }
-        }
-    }
 }

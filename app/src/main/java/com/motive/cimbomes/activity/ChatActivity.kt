@@ -1,5 +1,6 @@
 package com.motive.cimbomes.activity
 
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Bitmap
@@ -7,10 +8,8 @@ import android.graphics.Rect
 import android.media.MediaMetadataRetriever
 import android.media.MediaRecorder
 import android.net.Uri
-import android.os.Build
+import android.os.*
 import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-import android.os.Environment
 import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
@@ -778,6 +777,14 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener,Mess
     }
 
     override fun onItemLongClicked(position: Int): Boolean {
+        val v = (getSystemService(Context.VIBRATOR_SERVICE) as Vibrator)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            v.vibrate(VibrationEffect.createOneShot(100,
+                VibrationEffect.DEFAULT_AMPLITUDE))
+        }
+        else {
+            v.vibrate(100)
+        }
         var clickedItem = mesajlar[position]
         var mesajKey = clickedItem.mesajKey.toString()
         var gonderenID = clickedItem.user_id.toString()

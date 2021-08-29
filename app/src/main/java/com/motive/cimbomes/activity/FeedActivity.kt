@@ -71,6 +71,8 @@ class FeedActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         circle = header.findViewById(R.id.headerFoto)
         headerIsim = header.findViewById(R.id.isimSoyisimHeader)
         headerProgress = header.findViewById(R.id.headerprogress)
+
+
         setCurrentFragment(AnasayfaFragment())
 
         var toogle = ActionBarDrawerToggle(

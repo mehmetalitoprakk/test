@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
@@ -33,6 +34,7 @@ class AnasayfaFragment : Fragment() {
     private lateinit var groupDb : DatabaseReference
     var grupListenerAtandiMi = false
     var kullanicinOlduguGruplar = arrayListOf<String>()
+    var konusmalarKopy = arrayListOf<Konusma>()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,6 +62,22 @@ class AnasayfaFragment : Fragment() {
         sohbetlerTV.setOnClickListener {
             sohbetlerTiklandı()
         }
+
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                adapter.filter(query!!)
+
+                return false
+
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                adapter.filter(newText!!)
+                return false
+            }
+
+        })
 
 
         setupGrupKonusmaRecyclerView()
@@ -110,6 +128,8 @@ class AnasayfaFragment : Fragment() {
 
     }
 
+
+
     private var myGroupListener = object : ChildEventListener{
         override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
             var eklenecekGrupKonusma = snapshot.getValue(GroupKonusma::class.java)
@@ -151,6 +171,7 @@ class AnasayfaFragment : Fragment() {
             var eklenecekKonusma = snapshot.getValue(Konusma::class.java)
             eklenecekKonusma!!.user_id = snapshot.key
             tumKonusmalar.add(0,eklenecekKonusma!!)
+            konusmalarKopy.add(0,eklenecekKonusma)
             adapter.notifyItemInserted(0)
         }
 
@@ -250,7 +271,7 @@ class AnasayfaFragment : Fragment() {
     private fun setupKonusmalarRecyclerView() {
         recyclerView = chatsRV
         linearLayoutManager = LinearLayoutManager(requireContext(),LinearLayoutManager.VERTICAL,false)
-        adapter = KonusmalarAdapter(tumKonusmalar,requireContext())
+        adapter = KonusmalarAdapter(tumKonusmalar,konusmalarKopy,requireContext())
         recyclerView.layoutManager = linearLayoutManager
         recyclerView.adapter = adapter
 

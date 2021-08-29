@@ -52,6 +52,10 @@ class MessageAdapter(var mesahlar: ArrayList<Mesaj>, var ctx: Context, var liste
 
         init {
             itemView.setOnLongClickListener(this)
+            img.setOnLongClickListener(this)
+            videoContainer.setOnLongClickListener(this)
+            playButtonVideo.setOnLongClickListener(this)
+
             //itemView.setOnClickListener(this)
         }
 

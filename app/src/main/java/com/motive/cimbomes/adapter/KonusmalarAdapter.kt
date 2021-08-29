@@ -21,7 +21,7 @@ import com.motive.cimbomes.utils.TimeAgo
 import com.motive.cimbomes.utils.UniversalImageLoader
 import kotlinx.android.synthetic.main.konusma_child.view.*
 
-class KonusmalarAdapter(var konsumalar : ArrayList<Konusma>,var ctx : Context) : RecyclerView.Adapter<KonusmalarAdapter.KonsumaViewHolder>() {
+class KonusmalarAdapter(var konsumalar : ArrayList<Konusma>,var konusmalarKopy : ArrayList<Konusma>,var ctx : Context) : RecyclerView.Adapter<KonusmalarAdapter.KonsumaViewHolder>() {
     class KonsumaViewHolder(itemVİew : View) : RecyclerView.ViewHolder(itemVİew) {
         var isimsoyisim = ""
         var pic = ""
@@ -103,6 +103,24 @@ class KonusmalarAdapter(var konsumalar : ArrayList<Konusma>,var ctx : Context) :
         }
 
 
+    }
+
+    fun filter(text: String) {
+        var text = text
+        konsumalar.clear()
+        if (text.isEmpty()) {
+            konsumalar.addAll(konusmalarKopy)
+        } else {
+            text = text.toLowerCase()
+            for (item in konusmalarKopy) {
+
+                if (item.son_mesaj!!.toLowerCase().contains(text)
+                ) {
+                    konsumalar.add(item)
+                }
+            }
+        }
+        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): KonsumaViewHolder {

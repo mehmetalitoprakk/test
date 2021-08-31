@@ -19,7 +19,7 @@ class MainActivity : AppCompatActivity() {
 
         Handler().postDelayed({
             if (mAuth.currentUser != null){
-                startActivity(Intent(this, FeedActivity::class.java))
+                startActivity(Intent(this, KvkkActivity::class.java))
                 overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left)
                 finish()
             }else{

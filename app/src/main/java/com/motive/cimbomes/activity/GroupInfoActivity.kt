@@ -96,11 +96,16 @@ class GroupInfoActivity : AppCompatActivity(),GroupInfoMembersAdapter.OnItemClic
 
 
         if (isStatic){
-            println("statik tetiklendi")
+            imgLeaveGroup.visibility = View.GONE
             getMembers()
         }else{
+            imgLeaveGroup.visibility = View.VISIBLE
             println("members tetiklendi")
             getMembers()
+        }
+
+        imgLeaveGroup.setOnClickListener {
+            leaveGroup()
         }
 
 
@@ -135,6 +140,37 @@ class GroupInfoActivity : AppCompatActivity(),GroupInfoMembersAdapter.OnItemClic
 
 
 
+
+
+    }
+
+    private fun leaveGroup() {
+        db.child("groups").child(groupKey).child("member").addListenerForSingleValueEvent(object : ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                var index = ""
+                var uid = ""
+                if (snapshot.getValue() != null){
+                    for (i in snapshot.children){
+                        var user = i.getValue(GroupMembers::class.java)
+                        if (user!!.uid.toString() == FirebaseAuth.getInstance().currentUser!!.uid.toString()){
+                            index = i.key.toString()
+                            uid = user.uid!!.toString()
+                            break
+                        }
+                    }
+                    db.child("groups").child(groupKey).child("member").child(index).removeValue().addOnSuccessListener {
+                        db.child("grupkonusmalar").child(uid).child(groupKey).removeValue().addOnSuccessListener {
+                            startActivity(Intent(this@GroupInfoActivity,FeedActivity::class.java))
+                            finish()
+                        }
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+            }
+
+        })
     }
 
 

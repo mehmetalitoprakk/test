@@ -35,6 +35,7 @@ class AnasayfaFragment : Fragment() {
     var grupListenerAtandiMi = false
     var kullanicinOlduguGruplar = arrayListOf<String>()
     var konusmalarKopy = arrayListOf<Konusma>()
+    var grupKonusmalarKopy = arrayListOf<GroupKonusma>()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,28 +57,18 @@ class AnasayfaFragment : Fragment() {
 
 
         gruplarTV.setOnClickListener {
+
             grupTiklandi()
+
         }
 
         sohbetlerTV.setOnClickListener {
             sohbetlerTiklandı()
+
         }
 
 
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                adapter.filter(query!!)
 
-                return false
-
-            }
-
-            override fun onQueryTextChange(newText: String?): Boolean {
-                adapter.filter(newText!!)
-                return false
-            }
-
-        })
 
 
         setupGrupKonusmaRecyclerView()
@@ -93,6 +84,21 @@ class AnasayfaFragment : Fragment() {
         sohbetlerView.visibility = View.GONE
         staricGroupsRV.visibility = View.VISIBLE
         chatsRV.visibility = View.INVISIBLE
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                grupAdapter.filter(query!!)
+
+                return false
+
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                grupAdapter.filter(newText!!)
+                return false
+            }
+
+        })
     }
 
     private fun sohbetlerTiklandı(){
@@ -102,6 +108,21 @@ class AnasayfaFragment : Fragment() {
         sohbetlerView.visibility =View.VISIBLE
         chatsRV.visibility = View.VISIBLE
         staricGroupsRV.visibility = View.INVISIBLE
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                adapter.filter(query!!)
+
+                return false
+
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                adapter.filter(newText!!)
+                return false
+            }
+
+        })
     }
 
     private fun grupKonusmalariGetir() {
@@ -134,6 +155,7 @@ class AnasayfaFragment : Fragment() {
         override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
             var eklenecekGrupKonusma = snapshot.getValue(GroupKonusma::class.java)
             grupKonusmalar.add(0,eklenecekGrupKonusma!!)
+            grupKonusmalarKopy.add(0,eklenecekGrupKonusma)
             grupAdapter.notifyItemInserted(0)
         }
 
@@ -143,8 +165,10 @@ class AnasayfaFragment : Fragment() {
                 var guncellenecekGrupKonusma = snapshot.getValue(GroupKonusma::class.java)
                 guncellenecekGrupKonusma!!.groupID = snapshot.key
                 grupKonusmalar.removeAt(kontrol)
+                grupKonusmalarKopy.removeAt(kontrol)
                 grupAdapter.notifyItemRemoved(kontrol)
                 grupKonusmalar.add(0,guncellenecekGrupKonusma)
+                grupKonusmalarKopy.add(0,guncellenecekGrupKonusma)
                 grupAdapter.notifyItemInserted(0)
             }
         }
@@ -182,8 +206,10 @@ class AnasayfaFragment : Fragment() {
                 var guncellenecekKonusma = snapshot.getValue(Konusma::class.java)
                 guncellenecekKonusma!!.user_id = snapshot.key
                 tumKonusmalar.removeAt(kontrol)
+                konusmalarKopy.removeAt(kontrol)
                 adapter.notifyItemRemoved(kontrol)
                 tumKonusmalar.add(0,guncellenecekKonusma)
+                konusmalarKopy.add(0,guncellenecekKonusma)
                 adapter.notifyItemInserted(0)
             }
         }
@@ -255,7 +281,7 @@ class AnasayfaFragment : Fragment() {
     private fun setupGrupKonusmaRecyclerView() {
         groupsRecyclerView = staricGroupsRV
         grupLinearLayoutManager = LinearLayoutManager(requireContext(),LinearLayoutManager.VERTICAL,false)
-        grupAdapter = GroupKonusmaAdapter(grupKonusmalar,requireContext())
+        grupAdapter = GroupKonusmaAdapter(grupKonusmalar,grupKonusmalarKopy,requireContext())
 
 
         groupsRecyclerView.layoutManager = grupLinearLayoutManager

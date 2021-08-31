@@ -24,7 +24,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class GroupKonusmaAdapter(var konusmalar : ArrayList<GroupKonusma>,var ctx : Context) : RecyclerView.Adapter<GroupKonusmaAdapter.GroupKonusmaViewHolder>() {
+class GroupKonusmaAdapter(var konusmalar : ArrayList<GroupKonusma>, var konusmalarKopy : ArrayList<GroupKonusma>,var ctx : Context) : RecyclerView.Adapter<GroupKonusmaAdapter.GroupKonusmaViewHolder>() {
     class GroupKonusmaViewHolder(view : View) : RecyclerView.ViewHolder(view) {
         var grupName = ""
         var pic = ""
@@ -123,6 +123,24 @@ class GroupKonusmaAdapter(var konusmalar : ArrayList<GroupKonusma>,var ctx : Con
             })
         }
 
+    }
+
+    fun filter(text: String) {
+        var text = text
+        konusmalar.clear()
+        if (text.isEmpty()) {
+            konusmalar.addAll(konusmalarKopy)
+        } else {
+            text = text.toLowerCase()
+            for (item in konusmalarKopy) {
+
+                if (item.son_mesaj!!.toLowerCase().contains(text) || item.groupName!!.toLowerCase().contains(text)
+                ) {
+                    konusmalar.add(item)
+                }
+            }
+        }
+        notifyDataSetChanged()
     }
 
     fun convertLongToTime(time: Long): String {

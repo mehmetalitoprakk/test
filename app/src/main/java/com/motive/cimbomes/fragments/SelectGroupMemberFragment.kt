@@ -151,7 +151,12 @@ class SelectGroupMemberFragment : Fragment(), SelectMemberAdapter.OnItemClickLis
 
 
         nextButtonContactsGroup.setOnClickListener {
-            createGroup()
+            if (selectedList.size >= 2){
+                createGroup()
+            }else{
+                Toast.makeText(requireContext(),"Tek kişilik grup oluşturamazsınız!",Toast.LENGTH_SHORT).show()
+            }
+
         }
 
 

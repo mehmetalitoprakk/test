@@ -84,6 +84,10 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener,Mess
     var mediaRecorder = MediaRecorder()
 
     var videoFullPath = ""
+    var myName = ""
+    var mySurname = ""
+    var karsiName = ""
+    var karsiSurname = ""
 
 
 
@@ -117,6 +121,10 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener,Mess
         chatIsim.text = name
 
         edittextChat.addTextChangedListener(watcher)
+        getMyInfo()
+        getCrInfo()
+
+
 
         setupMesajlarRecyclerView()
         mesajlarıGetir()
@@ -222,6 +230,7 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener,Mess
                 konusmaMesajAtan.put("goruldu",true)
                 konusmaMesajAtan.put("son_mesaj",mesajText)
                 konusmaMesajAtan.put("typing",false)
+                konusmaMesajAtan.put("name",karsiName + " " + karsiSurname)
                 db.child("konusmalar").child(myID).child(uid).setValue(konusmaMesajAtan)
 
 
@@ -230,6 +239,7 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener,Mess
                 konusmaMesajAlan.put("goruldu",false)
                 konusmaMesajAlan.put("son_mesaj",mesajText)
                 //konusmaMesajAlan.put("typing",false)
+                konusmaMesajAlan.put("name",myName + " " + mySurname)
                 db.child("konusmalar").child(uid).child(myID).setValue(konusmaMesajAlan)
 
 
@@ -322,6 +332,23 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener,Mess
             showDialog()
         }
 
+    }
+
+    private fun getMyInfo() {
+        db.child("users").child(mAuth.currentUser!!.uid).child("isim").get().addOnSuccessListener {
+            myName = it.value.toString()
+            db.child("users").child(mAuth.currentUser!!.uid).child("soyisim").get().addOnSuccessListener {
+                mySurname = it.value.toString()
+            }
+        }
+    }
+    private fun getCrInfo(){
+        db.child("users").child(uid).child("isim").get().addOnSuccessListener {
+            karsiName = it.value.toString()
+            db.child("users").child(mAuth.currentUser!!.uid).child("soyisim").get().addOnSuccessListener {
+                karsiSurname = it.value.toString()
+            }
+        }
     }
 
 

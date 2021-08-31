@@ -103,4 +103,7 @@ dependencies {
     //Record Button
     implementation 'com.github.3llomi:RecordView:3.0.2'
 
+    //Admob
+    implementation 'com.google.android.gms:play-services-ads:20.3.0'
+
 }

@@ -114,7 +114,7 @@ class KonusmalarAdapter(var konsumalar : ArrayList<Konusma>,var konusmalarKopy :
             text = text.toLowerCase()
             for (item in konusmalarKopy) {
 
-                if (item.son_mesaj!!.toLowerCase().contains(text)
+                if (item.son_mesaj!!.toLowerCase().contains(text) || item.name!!.toLowerCase().contains(text)
                 ) {
                     konsumalar.add(item)
                 }

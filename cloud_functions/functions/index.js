@@ -2,14 +2,33 @@ const functions = require("firebase-functions");
 const admin = require('firebase-admin');
 admin.initializeApp();
 
-exports.grupBildirimiGonder=functions.database.ref("grupkonusmalar/{user_id}/{grup_key}/son_mesaj").onWrite(change,context =>{
+exports.grupBildirimiGonder=functions.database.ref("/grupkonusmalar/{user_id}/{grup_key}/son_mesaj").onWrite(async (change,context) =>{
     const userId = context.params.user_id;
     const grupKey = context.params.grup_key;
+    const mesaj = change.after.val();
+    console.log(`user id : ${userId}  grupKey : ${grupKey}, mesaj : ${mesaj}`);
 
-    var token = admin.database.ref(`/users/${userId}/fcmToken`).once('value');
-    var grupName = admin.database.ref(`groups/${grupKey}/grupName`).once('value');
+    const grupName = admin.database().ref(`/groups/${grupKey}/groupName`).once('value')
+    const token = admin.database().ref(`/users/${userId}/fcmToken`).once('value')
 
+    return token.then(result =>{
+        const bildirimAtilacakUserToken = result.val();
+        return grupName.then(result =>{
+            const bildirimAtilacakGrupName = result.val();
+
+            const grupBildirimi = {
+                notification : {
+                    title : `${bildirimAtilacakGrupName}`,
+                    body : `${mesaj}`,
+                    icon : 'defalut'
+                }
+            };
+            return admin.messaging().sendToDevice(bildirimAtilacakUserToken,grupBildirimi).then(result =>{
+                console.log(`grup bildirimi gönderildi`)
+            });
+        });
     });
+});
 
 
 
@@ -83,7 +102,6 @@ exports.yeniMesajBildirimiGonder=functions.database.ref("/chats/{mesaj_atan_user
                                     });
                                 }
                             }
-                        
                         });
                     });
                 });

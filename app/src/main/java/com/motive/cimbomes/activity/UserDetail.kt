@@ -1,14 +1,21 @@
 package com.motive.cimbomes.activity
 
+import android.app.AlertDialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.ContactsContract
 import android.view.View
+import android.widget.EditText
+import android.widget.ProgressBar
+import android.widget.Toast
 import coil.load
 import coil.size.Scale
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 import com.motive.cimbomes.R
 import kotlinx.android.synthetic.main.activity_user_detail.*
+import java.util.*
 
 class UserDetail : AppCompatActivity() {
     private var nameInfo : String? = null
@@ -94,6 +101,51 @@ class UserDetail : AppCompatActivity() {
 
         userInfoCancel.setOnClickListener {
             finish()
+        }
+
+        userInfoSikayetEt.setOnClickListener {
+            println("şikayet et tıklandı")
+            sikayetEt()
+        }
+        userInfoBlockUser.setOnClickListener {
+
+        }
+
+    }
+
+    private fun sikayetEt() {
+        val builder = AlertDialog.Builder(this)
+        val inflater = layoutInflater
+        val dialogLayput = inflater.inflate(R.layout.sikayet_et_layout,null)
+        val edittext = dialogLayput.findViewById<EditText>(R.id.sikayetSebebi)
+        val progressBar = dialogLayput.findViewById<ProgressBar>(R.id.progressSikayet)
+        with(builder){
+            setTitle("Kullanıcıyı Şikayet Et")
+            setPositiveButton("Tamam"){dialog,which ->
+                if (edittext.text.toString().isNotEmpty() || edittext.text.toString().length > 3){
+                    progressBar.visibility = View.VISIBLE
+                    var sikayet = hashMapOf<String,Any>()
+                    sikayet.put("sikayetEdenİd", FirebaseAuth.getInstance().currentUser!!.uid.toString())
+                    sikayet.put("sikayetEdilenİd",uidInfo.toString())
+                    sikayet.put("sikayetSebebi",edittext.text.toString())
+                    sikayet.put("time",Calendar.getInstance().time.toString())
+                    FirebaseDatabase.getInstance().reference.child("sikayetler").child(FirebaseAuth.getInstance().currentUser!!.uid.toString()).child(uidInfo.toString())
+                        .push().setValue(sikayet).addOnSuccessListener {
+                            progressBar.visibility = View.GONE
+                            Toast.makeText(this@UserDetail,"Şikayetiniz başarıyla gönderildi.",Toast.LENGTH_SHORT).show()
+                            dialog.dismiss()
+                        }.addOnFailureListener {
+                            progressBar.visibility = View.GONE
+                            Toast.makeText(this@UserDetail,"Bir hata oluştu, lütfen daha sonra tekrar deneyin.",Toast.LENGTH_SHORT).show()
+                            dialog.dismiss()
+                        }
+                }
+            }
+            setNegativeButton("İptal"){ dialog, which ->
+                dialog.dismiss()
+            }
+            setView(dialogLayput)
+            show()
         }
 
     }

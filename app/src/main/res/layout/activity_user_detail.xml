@@ -137,17 +137,6 @@
             android:outlineAmbientShadowColor="@color/yellow"
             app:cardCornerRadius="10dp">
 
-        <TextView
-            android:id="@+id/userInfoBlockUser"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="7dp"
-            android:padding="10dp"
-            android:text="Kişiyi Engelle"
-            android:textStyle="bold"
-            android:layout_gravity="center"
-            android:textColor="@color/teal_700"
-            android:textSize="18sp" />
         </androidx.cardview.widget.CardView>
 
 

@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "443103677746",
+    "firebase_url": "https://cimbomes-4cf88-default-rtdb.firebaseio.com",
     "project_id": "cimbomes-4cf88",
     "storage_bucket": "cimbomes-4cf88.appspot.com"
   },
@@ -19,6 +20,14 @@
           "android_info": {
             "package_name": "com.motive.cimbomes",
             "certificate_hash": "57aac1670668e27253442e8c7a8654d856549a76"
+          }
+        },
+        {
+          "client_id": "443103677746-u8m6oap82u0le6eeo9dmusro4emsp7kh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.motive.cimbomes",
+            "certificate_hash": "870a6b435bd985efbcd86f8f636c0fdbe641dd67"
           }
         },
         {

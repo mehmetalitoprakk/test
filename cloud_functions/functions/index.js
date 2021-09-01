@@ -10,21 +10,26 @@ exports.grupBildirimiGonder=functions.database.ref("/grupkonusmalar/{user_id}/{g
 
     const grupName = admin.database().ref(`/groups/${grupKey}/groupName`).once('value')
     const token = admin.database().ref(`/users/${userId}/fcmToken`).once('value')
+    const sessizMi = admin.database().ref(`/grupkonusmalar/${userId}/${grupKey}/sessiz`).once('value');
 
     return token.then(result =>{
         const bildirimAtilacakUserToken = result.val();
         return grupName.then(result =>{
             const bildirimAtilacakGrupName = result.val();
-
-            const grupBildirimi = {
-                notification : {
-                    title : `${bildirimAtilacakGrupName}`,
-                    body : `${mesaj}`,
-                    icon : 'defalut'
+            return sessizMi.then(result =>{
+                const grupSessizMi = result.val();
+                if(grupSessizMi != true){
+                    const grupBildirimi = {
+                        notification : {
+                            title : `${bildirimAtilacakGrupName}`,
+                            body : `${mesaj}`,
+                            icon : 'default'
+                        }
+                    };
+                    return admin.messaging().sendToDevice(bildirimAtilacakUserToken,grupBildirimi).then(result =>{
+                        console.log(`grup bildirimi gönderildi`)
+                    });
                 }
-            };
-            return admin.messaging().sendToDevice(bildirimAtilacakUserToken,grupBildirimi).then(result =>{
-                console.log(`grup bildirimi gönderildi`)
             });
         });
     });

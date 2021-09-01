@@ -22,7 +22,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         var bildirimData = p0.data
         Log.e("FCM", "BİLDİRİM GELDİ ${bildirimBaslik} ${bildirimBody}")
 
-        showNotification(bildirimBaslik,bildirimBody)
+        //showNotification(bildirimBaslik,bildirimBody)
 
     }
 

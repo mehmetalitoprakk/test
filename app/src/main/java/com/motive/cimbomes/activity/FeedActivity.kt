@@ -24,9 +24,15 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import com.karumi.dexter.Dexter
+import com.karumi.dexter.MultiplePermissionsReport
+import com.karumi.dexter.PermissionToken
+import com.karumi.dexter.listener.PermissionRequest
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.motive.cimbomes.R
 import com.motive.cimbomes.fragments.*
 import com.motive.cimbomes.model.Users
+import com.motive.cimbomes.utils.SignOutFragment
 import com.motive.cimbomes.utils.UniversalImageLoader
 import com.nostra13.universalimageloader.core.ImageLoader
 import de.hdodenhof.circleimageview.CircleImageView
@@ -38,25 +44,60 @@ class FeedActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     lateinit var db : DatabaseReference
     lateinit var headerIsim : TextView
     lateinit var headerProgress : ProgressBar
-    val CONTACT_RQ = 101
-    val RECORD_RQ = 102
     lateinit var toolbars : androidx.appcompat.widget.Toolbar
     var isAdmin = false
 
     var contactPermissinVerildiMi = false
+    var storagePermissonVerildiMi = false
+    var storageYazmaPermissionVerildiMi = false
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_feed)
         initImageLoader()
-        checkContactPermission(android.Manifest.permission.READ_CONTACTS,"contact",CONTACT_RQ)
-        checkContactPermission(Manifest.permission.RECORD_AUDIO,"Record",RECORD_RQ)
 
         Log.e("KONTROL","ONCREATE GİRDİ FEED")
 
         mAuth = FirebaseAuth.getInstance()
         db = FirebaseDatabase.getInstance().reference
+
+        Dexter.withContext(this).withPermissions(
+            Manifest.permission.READ_CONTACTS,
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            .withListener(object : MultiplePermissionsListener{
+                override fun onPermissionsChecked(p0: MultiplePermissionsReport?) {
+                    if (p0 != null){
+                        if (p0!!.areAllPermissionsGranted()){
+                            //all permissions granted
+                            contactPermissinVerildiMi = true
+                            storagePermissonVerildiMi = true
+                            storageYazmaPermissionVerildiMi = true
+                            setCurrentFragment(AnasayfaFragment())
+
+                        }else{
+                            Toast.makeText(this@FeedActivity,"Uygulamayı kullanabilmeniz için erişimlere izin vermeniz gerekiyor.",Toast.LENGTH_LONG).show()
+                            val intent = Intent()
+                            intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                            val uri = Uri.fromParts("package",getPackageName(), null)
+                            intent.data = uri
+                            startActivity(intent)
+                        }
+                    }
+
+                }
+
+                override fun onPermissionRationaleShouldBeShown(
+                    p0: MutableList<PermissionRequest>?,
+                    p1: PermissionToken?
+                ) {
+                    if (p1 != null){
+                        p1.continuePermissionRequest()
+                    }
+                }
+
+            }).check()
 
 
 
@@ -73,7 +114,8 @@ class FeedActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         headerProgress = header.findViewById(R.id.headerprogress)
 
 
-        setCurrentFragment(AnasayfaFragment())
+
+
 
         var toogle = ActionBarDrawerToggle(
             this,
@@ -116,66 +158,11 @@ class FeedActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     }
 
-    private fun checkContactPermission(permission:String,name:String,requestCode:Int) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-            when{
-                ContextCompat.checkSelfPermission(applicationContext,permission) == PackageManager.PERMISSION_GRANTED ->{
-                    Toast.makeText(applicationContext,"$name permission granted",Toast.LENGTH_SHORT).show()
-                    contactPermissinVerildiMi = true
-                }
-                shouldShowRequestPermissionRationale(permission) -> showDialog(permission,name,requestCode)
-                else -> ActivityCompat.requestPermissions(this, arrayOf(permission),requestCode)
-            }
-        }
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        fun innerChech(name:String){
-            if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED){
-
-                val builder = AlertDialog.Builder(this)
-                builder.apply {
-                    setMessage("'Cimbomes uygulamasını en verimli şekilde kullanmanız için kişilerinize erişmesine izin vermeniz gerekiyor. İzin verilsin mi?'")
-                    setTitle("İzin isteği")
-                    setPositiveButton("AYARLARA GİT"){dialog,which ->
-                        dialog.cancel()
-                        startActivity(Intent(Settings.ACTION_SETTINGS))
-
-                    }
-                }
-                val dialog = builder.create()
-                dialog.show()
-            }else{
-                Toast.makeText(this,"İzin verildi",Toast.LENGTH_SHORT).show()
-                contactPermissinVerildiMi = true
-            }
-        }
-        when(requestCode){
-            CONTACT_RQ -> innerChech("contact")
-            RECORD_RQ -> innerChech("Record")
-        }
 
 
-    }
 
-    private fun showDialog(permission: String,name: String,requestCode: Int){
-        val builder = AlertDialog.Builder(this)
 
-        builder.apply {
-            setMessage("Cimbomes uygulamasının kişilerinize erişmesine izin verilsin mi?")
-            setTitle("İzin isteği")
-            setPositiveButton("Tamam"){dialog,which ->
-                ActivityCompat.requestPermissions(this@FeedActivity, arrayOf(permission),requestCode)
-            }
-        }
-        val dialog = builder.create()
-        dialog.show()
-    }
+
 
     private fun initImageLoader() {
         var universalImageLoader = UniversalImageLoader(applicationContext)
@@ -208,28 +195,49 @@ class FeedActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     setCurrentFragment(KisilerFragment())
                     toolbars.setTitle("Kişilerim")
                 }else{
-                    Toast.makeText(this,"Lütfen 'Cimbomes' uygulamasının kişilerinize erişmesine izin verin.! ",Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this,"Lütfen 'Cimbomes' uygulamasının kişilerinize erişmesine izin verin! ",Toast.LENGTH_SHORT).show()
                 }
 
             }
             R.id.home -> {
-                setCurrentFragment(AnasayfaFragment())
-                toolbars.setTitle("CimbomES")
+                if (contactPermissinVerildiMi && storagePermissonVerildiMi && storageYazmaPermissionVerildiMi){
+                    setCurrentFragment(AnasayfaFragment())
+                    toolbars.setTitle("CimbomES")
+                }else{
+                    Toast.makeText(this,"Lütfen 'Cimbomes' uygulamasının kişilerinize ve medyanıza erişmesine izin verin! ",Toast.LENGTH_SHORT).show()
+                }
+
             }
             R.id.newGroup -> {
-                setCurrentFragment(YeniGrupFragment())
-                toolbars.setTitle("Yeni Grup Oluştur")
+                if (contactPermissinVerildiMi && storagePermissonVerildiMi && storageYazmaPermissionVerildiMi){
+                    setCurrentFragment(YeniGrupFragment())
+                    toolbars.setTitle("Yeni Grup Oluştur")
+                }else{
+                    Toast.makeText(this,"Lütfen 'Cimbomes' uygulamasının kişilerinize ve medyanıza erişmesine izin verin! ",Toast.LENGTH_SHORT).show()
+                }
+
             }
             R.id.savedMessages -> {
-                setCurrentFragment(KaydedilenMesajlarFragment())
-                toolbars.setTitle("Kaydedilen Mesajlar")
+                if (contactPermissinVerildiMi && storagePermissonVerildiMi && storageYazmaPermissionVerildiMi){
+                    setCurrentFragment(KaydedilenMesajlarFragment())
+                    toolbars.setTitle("Kaydedilen Mesajlar")
+                }else{
+                    Toast.makeText(this,"Lütfen 'Cimbomes' uygulamasının kişilerinize ve medyanıza erişmesine izin verin! ",Toast.LENGTH_SHORT).show()
+                }
+
             }
             R.id.settings -> {
-                setCurrentFragment(AyarlarFragment())
-                toolbars.setTitle("Ayarlar")
+                if (contactPermissinVerildiMi && storagePermissonVerildiMi && storageYazmaPermissionVerildiMi){
+                    setCurrentFragment(AyarlarFragment())
+                    toolbars.setTitle("Ayarlar")
+                }else{
+                    Toast.makeText(this,"Lütfen 'Cimbomes' uygulamasının kişilerinize ve medyanıza erişmesine izin verin! ",Toast.LENGTH_SHORT).show()
+                }
+
             }
             R.id.logout ->{
-
+                var dialog = SignOutFragment()
+                dialog.show(supportFragmentManager, "cikisyapdialoggöster")
             }
             R.id.admin ->{
                 setCurrentFragment(GrupYonetimiFragment())

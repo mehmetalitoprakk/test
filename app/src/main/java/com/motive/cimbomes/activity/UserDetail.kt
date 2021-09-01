@@ -107,9 +107,7 @@ class UserDetail : AppCompatActivity() {
             println("şikayet et tıklandı")
             sikayetEt()
         }
-        userInfoBlockUser.setOnClickListener {
 
-        }
 
     }
 

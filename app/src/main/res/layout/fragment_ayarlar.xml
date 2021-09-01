@@ -1,14 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".fragments.AyarlarFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
 
-</FrameLayout>
+
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="30dp"
+        android:background="@drawable/profile_backround"
+        android:orientation="vertical">
+
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/profile_image"
+            android:layout_width="160dp"
+            android:layout_height="160dp"
+            android:src="@drawable/human"
+            android:layout_gravity="center" />
+
+        <TextView
+            android:id="@+id/profile_change_photo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Profil Fotoğrafını Değiştir"
+            android:layout_gravity="center"
+            android:textColor="@color/yellow"
+            android:textStyle="bold"
+            android:layout_marginTop="20dp"/>
+
+    </LinearLayout>
+
+
+    <EditText
+        android:id="@+id/profileName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:hint="İsim"
+        android:padding="10dp"
+        android:layout_margin="16dp"
+        android:textAlignment="center"
+        android:background="@drawable/profile_edit_text_bg"
+        android:inputType="textPersonName"/>
+
+    <EditText
+        android:id="@+id/profileSurname"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:hint="Soyisim"
+        android:padding="10dp"
+        android:layout_margin="16dp"
+        android:textAlignment="center"
+        android:background="@drawable/profile_edit_text_bg"
+        android:inputType="textPersonName"/>
+
+    <Button
+        android:id="@+id/profile_kaydet_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:layout_gravity="center"
+        android:layout_margin="16dp"
+        android:text="Kaydet"
+        android:textStyle="bold"
+        android:backgroundTint="@color/teal_700"/>
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            android:id="@+id/profile_progress"/>
+
+
+
+
+
+
+</LinearLayout>

@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.View
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.motive.cimbomes.R
@@ -119,6 +120,18 @@ class GroupInfoActivity : AppCompatActivity(),GroupInfoMembersAdapter.OnItemClic
             setDialog()
         }
 
+        grubuSessizeAlImg.setOnClickListener {
+            db.child("grupkonusmalar").child(FirebaseAuth.getInstance().currentUser!!.uid).child(groupKey).child("sessiz").get().addOnSuccessListener {
+                if (it.value == false){
+                    db.child("grupkonusmalar").child(FirebaseAuth.getInstance().currentUser!!.uid).child(groupKey).child("sessiz").setValue(true)
+                    Toast.makeText(this,"Grup Sessize Alındı",Toast.LENGTH_SHORT).show()
+                }else if (it.value == true){
+                    db.child("grupkonusmalar").child(FirebaseAuth.getInstance().currentUser!!.uid).child(groupKey).child("sessiz").setValue(false)
+                    Toast.makeText(this,"Grup Sessizden Çıkarıldı",Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
 
         groupInfoName.text = groupName
         groupInfoImage.load(groupImage){
@@ -199,11 +212,10 @@ class GroupInfoActivity : AppCompatActivity(),GroupInfoMembersAdapter.OnItemClic
         db.child("users").addChildEventListener(object : ChildEventListener{
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                 var user = snapshot.getValue(Users::class.java)
-                println(user.toString() + " 77777")
                 if (user!!.uid.toString() !in oldMembersID){
                     mList.clear()
                     val newMember = GroupMembers(false,user.uid,user.isim,user.soyisim,user.telefonNo,false,user.profilePic)
-                    var newKonusma = GroupKonusma(false,"Eklendiniz",System.currentTimeMillis(),user!!.uid,groupImage,groupKey,groupName)
+                    var newKonusma = GroupKonusma(false,"Eklendiniz",System.currentTimeMillis(),user!!.uid,groupImage,groupKey,groupName,false)
                     Log.e("HATA", "     " + groupKey)
                     db.child("grupkonusmalar").child(user.uid!!).child(groupKey).setValue(newKonusma).addOnSuccessListener {
                         oldMemberList.add(newMember)

@@ -107,22 +107,27 @@ class SelectGroupMemberFragment : Fragment(), SelectMemberAdapter.OnItemClickLis
                 if (snapshot.getValue() != null){
                     for (user in snapshot.children){
                         var kullanici = user.getValue(Users::class.java)
-                        var number = kullanici!!.telefonNo!!.replace("\\s".toRegex(),"").replace("+9","")
-                        for (i in list){
-                            if (i.replace("\\s".toRegex(),"").replace("+9","") == number){
-                                val contacts = Contact()
-                                if (kullanici!!.uid != mAuth.currentUser!!.uid){
-                                    contacts.name = kullanici!!.isim + " " + kullanici.soyisim
-                                    contacts.number = kullanici!!.telefonNo
-                                    contacts.image = kullanici.profilePic
-                                    contacts.uid = kullanici.uid
-                                    contacts.kullaniyorMu = true
-                                    dataList.add(contacts)
-                                }
-                            }else{
+                        if (kullanici != null){
+                            if (kullanici.telefonNo != null){
+                                var number = kullanici!!.telefonNo!!.replace("\\s".toRegex(),"").replace("+9","")
+                                for (i in list){
+                                    if (i.replace("\\s".toRegex(),"").replace("+9","") == number){
+                                        val contacts = Contact()
+                                        if (kullanici!!.uid != mAuth.currentUser!!.uid){
+                                            contacts.name = kullanici!!.isim + " " + kullanici.soyisim
+                                            contacts.number = kullanici!!.telefonNo
+                                            contacts.image = kullanici.profilePic
+                                            contacts.uid = kullanici.uid
+                                            contacts.kullaniyorMu = true
+                                            dataList.add(contacts)
+                                        }
+                                    }else{
 
+                                    }
+                                }
                             }
                         }
+
                     }
                     selectAdapter.setDataList(dataList)
                 }
@@ -188,7 +193,7 @@ class SelectGroupMemberFragment : Fragment(), SelectMemberAdapter.OnItemClickLis
                             if (i.uid.toString() == mAuth.currentUser!!.uid){
                                 gorulduMu = true
                             }
-                            var grupKonusma = GroupKonusma(gorulduMu,"",System.currentTimeMillis(),i.uid.toString(),groupImageDb,newGroupKey,groupName)
+                            var grupKonusma = GroupKonusma(gorulduMu,"",System.currentTimeMillis(),i.uid.toString(),groupImageDb,newGroupKey,groupName,false)
                             db.child("grupkonusmalar").child(i.uid.toString()!!).child(newGroupKey!!).setValue(grupKonusma)
                         }
                         val intent = Intent(requireContext(),GroupChatActivity::class.java)

@@ -79,22 +79,26 @@ class AddMemberGroupActivity : AppCompatActivity(),EditGroupSelectedAdapter.OnIt
                     var memberList = arrayListOf<GroupMembers>()
                     for (user in snapshot.children){
                         var kullanici = user.getValue(Users::class.java)
-                        var number = kullanici!!.telefonNo!!.replace("\\s".toRegex(),"").replace("+9","")
-                        for (i in list){
-                            if (i.replace("\\s".toRegex(),"").replace("+9","") == number){
-                                val member = GroupMembers()
-                                if (kullanici!!.uid != FirebaseAuth.getInstance().currentUser!!.uid){
-                                    member.name = kullanici!!.isim
-                                    member.surname = kullanici.soyisim
-                                    member.image = kullanici.profilePic
-                                    member.typing = false
-                                    member.groupAdmin = null
-                                    member.number = kullanici.telefonNo
-                                    member.uid = kullanici.uid
+                        if (kullanici != null){
+                            if (kullanici.telefonNo != null){
+                                var number = kullanici!!.telefonNo!!.replace("\\s".toRegex(),"").replace("+9","")
+                                for (i in list){
+                                    if (i.replace("\\s".toRegex(),"").replace("+9","") == number){
+                                        val member = GroupMembers()
+                                        if (kullanici!!.uid != FirebaseAuth.getInstance().currentUser!!.uid){
+                                            member.name = kullanici!!.isim
+                                            member.surname = kullanici.soyisim
+                                            member.image = kullanici.profilePic
+                                            member.typing = false
+                                            member.groupAdmin = null
+                                            member.number = kullanici.telefonNo
+                                            member.uid = kullanici.uid
 
-                                    dataList.add(member)
-                                    denemeList.add(kullanici.uid.toString())
-                                    memberList.add(member)
+                                            dataList.add(member)
+                                            denemeList.add(kullanici.uid.toString())
+                                            memberList.add(member)
+                                        }
+                                    }
                                 }
                             }
                         }

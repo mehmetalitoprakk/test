@@ -151,13 +151,13 @@ class GroupChatActivity : AppCompatActivity(),GroupMessagesAdapter.OnItemLongCli
 
                 db.child("groups").child(groupKey).child("messages").child(newMesajKey).setValue(mesaj)
 
-                var konusmaGonderen = GroupKonusma(true,mesajText,System.currentTimeMillis(),mAuth.currentUser!!.uid,groupImage,groupKey,groupName)
+                var konusmaGonderen = GroupKonusma(true,mesajText,System.currentTimeMillis(),mAuth.currentUser!!.uid,groupImage,groupKey,groupName,false)
                 db.child("grupkonusmalar").child(mAuth.currentUser!!.uid).child(groupKey).setValue(konusmaGonderen)
                 Log.e("KONTROL",members.toString())
 
                 for (i in members){
                     if (i.uid != mAuth.currentUser!!.uid){
-                        var konusmaAlanlar = GroupKonusma(false,mesajText,System.currentTimeMillis(),i.uid,groupImage,groupKey,groupName)
+                        var konusmaAlanlar = GroupKonusma(false,mesajText,System.currentTimeMillis(),i.uid,groupImage,groupKey,groupName,false)
                         db.child("grupkonusmalar").child(i.uid!!).child(groupKey).setValue(konusmaAlanlar)
                     }
 
@@ -387,7 +387,10 @@ class GroupChatActivity : AppCompatActivity(),GroupMessagesAdapter.OnItemLongCli
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.getValue() != null){
                     groupImage = snapshot.value.toString()
-                    UniversalImageLoader.setImage(groupImage!!,groupImageView,null,"")
+                    if (groupImage != null){
+                        UniversalImageLoader.setImage(groupImage!!,groupImageView,null,"")
+                    }
+
                 }
             }
 

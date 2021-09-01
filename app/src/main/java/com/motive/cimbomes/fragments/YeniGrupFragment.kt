@@ -183,7 +183,7 @@ class YeniGrupFragment : Fragment() {
                             if (i.uid.toString() == mAuth.currentUser!!.uid){
                                 gorulduMu = true
                             }
-                            var groupKonusma = GroupKonusma(gorulduMu,"",System.currentTimeMillis(),i.uid,groupImageDb,newGroupKey,name)
+                            var groupKonusma = GroupKonusma(gorulduMu,"",System.currentTimeMillis(),i.uid,groupImageDb,newGroupKey,name,false)
                             db.child("grupkonusmalar").child(i.uid!!.toString()).child(newGroupKey).setValue(groupKonusma)
                         }
                         val intent = Intent(requireContext(),GroupChatActivity::class.java)

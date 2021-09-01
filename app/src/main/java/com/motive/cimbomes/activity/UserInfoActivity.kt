@@ -83,6 +83,10 @@ class UserInfoActivity : AppCompatActivity() {
             resimSec()
         }
 
+        kvkk.setOnClickListener {
+            startActivity(Intent(this,KvkkActivity::class.java))
+        }
+
 
     }
 
@@ -128,7 +132,7 @@ class UserInfoActivity : AppCompatActivity() {
                                                                         list.add(member)
 
                                                                         i.ref.child("member").setValue(list).addOnSuccessListener {
-                                                                            val konusma = GroupKonusma(false,"Eklendiniz",System.currentTimeMillis(),user.uid,group.image,group.groupID,group.groupName)
+                                                                            val konusma = GroupKonusma(false,"Eklendiniz",System.currentTimeMillis(),user.uid,group.image,group.groupID,group.groupName,false)
                                                                             db.child("grupkonusmalar").child(user.uid!!).child(group.groupID!!).setValue(konusma)
                                                                         }
 

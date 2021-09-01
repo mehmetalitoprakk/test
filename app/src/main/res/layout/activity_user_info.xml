@@ -123,4 +123,37 @@
         app:layout_constraintEnd_toEndOf="@+id/etUserInfoSurname"
         app:layout_constraintStart_toStartOf="@+id/etUserInfoSurname"
         app:layout_constraintTop_toBottomOf="@+id/etUserInfoSurname" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="@+id/buttonTamamlaUserInfo"
+        app:layout_constraintTop_toBottomOf="@+id/buttonTamamlaUserInfo">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tamamla butonuna basarak,Cimbomes'in "
+            android:textSize="10sp" />
+
+        <TextView
+            android:id="@+id/kvkk"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Kullanum Şartları ve Yükümlülüklerini"
+            android:textColor="@color/black"
+            android:textSize="10sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="kabul etmiş olursunuz. "
+        android:textSize="10sp"
+        app:layout_constraintEnd_toEndOf="@+id/linearLayout3"
+        app:layout_constraintStart_toStartOf="@+id/linearLayout3"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
 </androidx.constraintlayout.widget.ConstraintLayout>

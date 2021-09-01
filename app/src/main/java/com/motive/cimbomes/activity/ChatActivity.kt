@@ -750,16 +750,9 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener,Mess
         }
 
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            if (edittextChat.text.toString().length > 0){
+            if (edittextChat.text.toString().length >= 0){
                 imgSendChat.visibility = View.VISIBLE
-                imgMicChat.visibility = View.GONE
-                imgMicChat.isEnabled = false
                 imgSendChat.isEnabled = true
-            }else{
-                imgSendChat.visibility = View.GONE
-                imgMicChat.visibility = View.VISIBLE
-                imgMicChat.isEnabled = true
-                imgSendChat.isEnabled = false
             }
         }
 

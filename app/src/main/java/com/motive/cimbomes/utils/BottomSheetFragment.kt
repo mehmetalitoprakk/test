@@ -80,11 +80,16 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
                         if (snapshot.getValue()!=null){
                             for (i in snapshot.children){
                                 var user = i.getValue(GroupMembers::class.java)
-                                if (user!!.uid == groupmember.uid){
-                                    i.ref.removeValue()
-                                    dismiss()
-                                    break
+                                if (user != null){
+                                    if (user.uid != null){
+                                        if (user!!.uid == groupmember.uid){
+                                            i.ref.removeValue()
+                                            dismiss()
+                                            break
+                                        }
+                                    }
                                 }
+
                             }
                         }
                     }

@@ -75,10 +75,14 @@ class MesajlarBottomSheet : BottomSheetDialogFragment() {
                     if (it.getValue() != null){
                         var mesaj = it.getValue(Mesaj::class.java)
                         var savedMessageKey = db.child("savedMessages").child(myUid!!).push().key
-                        db.child("savedMessages").child(myUid!!).child(savedMessageKey!!).setValue(mesaj).addOnSuccessListener {
-                            Toast.makeText(requireContext(),"Kaydedildi",Toast.LENGTH_SHORT).show()
-                            dismiss()
+                        if (savedMessageKey != null){
+                            db.child("savedMessages").child(myUid!!).child(savedMessageKey!!).setValue(mesaj).addOnSuccessListener {
+                                android.widget.Toast.makeText(requireContext(),"Kaydedildi",
+                                    android.widget.Toast.LENGTH_SHORT).show()
+                                dismiss()
+                            }
                         }
+
                     }
                 }
             }else{
@@ -86,10 +90,13 @@ class MesajlarBottomSheet : BottomSheetDialogFragment() {
                     if (it.getValue() != null){
                         var mesaj = it.getValue(Mesaj::class.java)
                         var savedMessageKey = db.child("savedMessages").child(myUid!!).push().key
-                        db.child("savedMessages").child(myUid!!).child(savedMessageKey!!).setValue(mesaj).addOnSuccessListener {
-                            Toast.makeText(requireContext(),"Kaydedildi",Toast.LENGTH_SHORT).show()
-                            dismiss()
+                        if (savedMessageKey != null){
+                            db.child("savedMessages").child(myUid!!).child(savedMessageKey!!).setValue(mesaj).addOnSuccessListener {
+                                Toast.makeText(requireContext(),"Kaydedildi",Toast.LENGTH_SHORT).show()
+                                dismiss()
+                            }
                         }
+
                     }
                 }
             }

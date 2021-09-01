@@ -131,7 +131,12 @@ class ChechPhoneCodeActivity : AppCompatActivity() {
                         val telNumbers = arrayListOf<String>()
                         for (i in snapshot.children){
                             val user = i.getValue(Users::class.java)
-                            telNumbers.add(user!!.telefonNo!!)
+                            if (user != null){
+                                if (user.telefonNo != null){
+                                    telNumbers.add(user!!.telefonNo!!)
+                                }
+                            }
+
                         }
                         if (telNumbers.contains(gelenTelNo)){
                             getFcmTokenForExistsUser()

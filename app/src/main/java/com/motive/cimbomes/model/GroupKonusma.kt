@@ -8,8 +8,18 @@ class GroupKonusma {
     var groupImage : String? = null
     var groupID : String? = null
     var groupName : String? = null
+    var sessiz : Boolean? = null
     constructor(){}
-    constructor(goruldu: Boolean?, son_mesaj: String?, time: Long?, gonderenID: String?, groupImage: String?, groupID: String?, groupName: String?) {
+    constructor(
+        goruldu: Boolean?,
+        son_mesaj: String?,
+        time: Long?,
+        gonderenID: String?,
+        groupImage: String?,
+        groupID: String?,
+        groupName: String?,
+        sessiz: Boolean?
+    ) {
         this.goruldu = goruldu
         this.son_mesaj = son_mesaj
         this.time = time
@@ -17,10 +27,11 @@ class GroupKonusma {
         this.groupImage = groupImage
         this.groupID = groupID
         this.groupName = groupName
+        this.sessiz = sessiz
     }
 
     override fun toString(): String {
-        return "GroupKonusma(goruldu=$goruldu, son_mesaj=$son_mesaj, time=$time, gonderenID=$gonderenID, groupImage=$groupImage, groupID=$groupID, groupName=$groupName)"
+        return "GroupKonusma(goruldu=$goruldu, son_mesaj=$son_mesaj, time=$time, gonderenID=$gonderenID, groupImage=$groupImage, groupID=$groupID, groupName=$groupName, sessiz=$sessiz)"
     }
 
 

@@ -96,7 +96,7 @@ class AyarlarFragment : Fragment() {
                                                                                             profile_progress.visibility = View.GONE
                                                                                             profile_change_photo.isEnabled = true
                                                                                             profile_kaydet_button.isEnabled = true
-                                                                                            Toast.makeText(requireContext(),"Bilgileriniz başarıyla güncellendi.",Toast.LENGTH_SHORT).show()
+                                                                                            Toast.makeText(requireContext(),"Bilgileriniz sssbaşarıyla güncellendi.",Toast.LENGTH_SHORT).show()
                                                                                         }
                                                                                     }
                                                                                 }

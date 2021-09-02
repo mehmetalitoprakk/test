@@ -57,10 +57,10 @@ class FeedActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setContentView(R.layout.activity_feed)
         initImageLoader()
 
-        Log.e("KONTROL","ONCREATE GİRDİ FEED")
 
         mAuth = FirebaseAuth.getInstance()
         db = FirebaseDatabase.getInstance().reference
+        onlineControl()
 
         Dexter.withContext(this).withPermissions(
             Manifest.permission.READ_CONTACTS,
@@ -158,10 +158,45 @@ class FeedActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     }
 
+    private fun onlineControl() {
+        db.child("users").child(mAuth.currentUser!!.uid).child("online").setValue(true)
+    }
+
+    override fun onDestroy() {
+        Log.e("TAG","DESTRO FEED")
+
+        super.onDestroy()
 
 
+    }
 
+    override fun onPause() {
+        db.child("users").child(mAuth.currentUser!!.uid).child("online").setValue(false)
+        super.onPause()
+    }
+    override fun onStop() {
 
+        super.onStop()
+        Log.e("TAG","stop  FEED")
+    }
+
+    override fun onStart() {
+        Log.e("TAG","START FEED")
+        db.child("users").child(mAuth.currentUser!!.uid).child("online").setValue(true)
+        super.onStart()
+    }
+
+    override fun onResume() {
+        Log.e("TAG","RESUME FEED")
+        db.child("users").child(mAuth.currentUser!!.uid).child("online").setValue(true)
+        super.onResume()
+    }
+
+    override fun onRestart() {
+        Log.e("TAG","RESTART FEED")
+        db.child("users").child(mAuth.currentUser!!.uid).child("online").setValue(true)
+        super.onRestart()
+    }
 
 
     private fun initImageLoader() {

@@ -23,7 +23,20 @@ import com.motive.cimbomes.activity.FullImageActivity
 import com.motive.cimbomes.activity.VideoViewActivity
 import com.motive.cimbomes.model.Mesaj
 import com.motive.cimbomes.utils.TimeAgo
+import kotlinx.android.synthetic.main.chat_child_getter.view.*
 import kotlinx.android.synthetic.main.chat_child_sender.view.*
+import kotlinx.android.synthetic.main.chat_child_sender.view.imgSenderContainer
+import kotlinx.android.synthetic.main.chat_child_sender.view.imgSenderView
+import kotlinx.android.synthetic.main.chat_child_sender.view.imgViewVideo
+import kotlinx.android.synthetic.main.chat_child_sender.view.playButtonVideo
+import kotlinx.android.synthetic.main.chat_child_sender.view.timeFotoSender
+import kotlinx.android.synthetic.main.chat_child_sender.view.timeVideoSender
+import kotlinx.android.synthetic.main.chat_child_sender.view.tvMessageSender
+import kotlinx.android.synthetic.main.chat_child_sender.view.tvNameGroup
+import kotlinx.android.synthetic.main.chat_child_sender.view.tvTimeSender
+import kotlinx.android.synthetic.main.chat_child_sender.view.videoContainer
+import kotlinx.android.synthetic.main.chat_child_sender.view.yukleniyorSenderProgress
+import kotlinx.android.synthetic.main.chat_child_sender.view.getterProfileImage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -48,6 +61,7 @@ class MessageAdapter(var mesahlar: ArrayList<Mesaj>, var ctx: Context, var liste
         var timeFotoTV = tumLayout.timeFotoSender
         var timeVideoTv = tumLayout.timeVideoSender
         var nameSender = tumLayout.tvNameGroup
+        var profilePhoto = tumLayout.getterProfileImage
 
 
         init {
@@ -60,7 +74,7 @@ class MessageAdapter(var mesahlar: ArrayList<Mesaj>, var ctx: Context, var liste
         }
 
         fun setData(oankiMesaj: Mesaj){
-
+            profilePhoto.visibility = View.GONE
 
             if (oankiMesaj.type == "text"){
                 nameSender.visibility = View.GONE

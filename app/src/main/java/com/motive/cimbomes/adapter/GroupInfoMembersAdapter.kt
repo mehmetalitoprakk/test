@@ -42,21 +42,27 @@ class GroupInfoMembersAdapter(var members : ArrayList<GroupMembers>,var ctx :  C
                 numberList.add(number)
             }
 
-
-            val gelenNumber = member.number!!.replace("\\s".toRegex(),"").replace("+9","")
-
-            for (i in numberList){
-                var number = i.replace("\\s".toRegex(),"").replace("+9","")
-                formattedList.add(number)
+            if (member != null){
+                val gelenNumber = member.number!!.replace("\\s".toRegex(),"").replace("+9","")
+                for (i in numberList){
+                    var number = i.replace("\\s".toRegex(),"").replace("+9","")
+                    if (number != null){
+                        formattedList.add(number)
+                    }
+                }
+                if (gelenNumber in formattedList){
+                    numberInfo.text = member.number
+                }else if(member.uid == FirebaseAuth.getInstance().currentUser!!.uid){
+                    numberInfo.text = member.number
+                }else{
+                    numberInfo.text = ""
+                }
             }
 
-            if (gelenNumber in formattedList){
-                numberInfo.text = member.number
-            }else if(member.uid == FirebaseAuth.getInstance().currentUser!!.uid){
-                numberInfo.text = member.number
-            }else{
-                numberInfo.text = ""
-            }
+
+
+
+
 
 
 

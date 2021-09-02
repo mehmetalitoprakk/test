@@ -13,4 +13,5 @@ class EventBusDataEvents {
     internal class SendMessageInfo(var mesajKey : String,var gonderenID : String,var mesajiAlanId : String)
     internal class SendSavedMessageInfo(var mesajlar : ArrayList<Mesaj>)
     internal class SendGroupMessageInfo(var mesajKey: String, var gonderenID: String,var groupID :String,var mesajGroup : Mesaj)
+    internal class SendChatInfoOne(var uid:String)
 }

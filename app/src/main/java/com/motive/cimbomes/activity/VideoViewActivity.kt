@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 import com.motive.cimbomes.R
 import com.universalvideoview.UniversalVideoView
 import kotlinx.android.synthetic.main.activity_video_view.*
@@ -16,6 +18,7 @@ class VideoViewActivity : AppCompatActivity() {
         setContentView(R.layout.activity_video_view)
 
         url = intent.getStringExtra("videoURL")!!
+        //onlineControl()
 
         videoView.setVideoPath(url)
         videoView.setMediaController(media_controller)
@@ -54,5 +57,20 @@ class VideoViewActivity : AppCompatActivity() {
 
         })
 
+    }
+
+    private fun onlineControl() {
+        FirebaseDatabase.getInstance().reference.child("users").child(FirebaseAuth.getInstance().currentUser!!.uid).child("online").setValue(true)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        FirebaseDatabase.getInstance().reference.child("users").child(FirebaseAuth.getInstance().currentUser!!.uid).child("online").setValue(false)
+    }
+
+
+    override fun onStart() {
+        super.onStart()
+        FirebaseDatabase.getInstance().reference.child("users").child(FirebaseAuth.getInstance().currentUser!!.uid).child("online").setValue(true)
     }
 }

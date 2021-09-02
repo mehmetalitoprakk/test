@@ -15,19 +15,27 @@
       },
       "oauth_client": [
         {
-          "client_id": "443103677746-5t4i0m5gnktstc22ikfhofsod3u1vt8b.apps.googleusercontent.com",
+          "client_id": "443103677746-dalv0v9n97dvj2qglbcpfodf42ln9c2g.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.motive.cimbomes",
-            "certificate_hash": "57aac1670668e27253442e8c7a8654d856549a76"
+            "certificate_hash": "3816d4b62faafe9a2c933ee7976c45ba0313372e"
           }
         },
         {
-          "client_id": "443103677746-u8m6oap82u0le6eeo9dmusro4emsp7kh.apps.googleusercontent.com",
+          "client_id": "443103677746-girhhopd445mr87ftao3vfki8s1hidf6.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.motive.cimbomes",
-            "certificate_hash": "870a6b435bd985efbcd86f8f636c0fdbe641dd67"
+            "certificate_hash": "262e87e6caa6712ef3e148b4773c997daaca1795"
+          }
+        },
+        {
+          "client_id": "443103677746-nfs9g2cr25itfb0130q6vqp9c0aj43ge.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.motive.cimbomes",
+            "certificate_hash": "7d008161589a6c95bf47f45816d4826e5df5de75"
           }
         },
         {

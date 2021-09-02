@@ -103,13 +103,13 @@ class BottomSheetEditGroupFragment : BottomSheetDialogFragment() {
                             for (j in i.children){
                                 if (j.key == groupKey){
                                     j.ref.removeValue()
-                                    grubuSilProgress.visibility = View.GONE
-                                    Toast.makeText(requireContext(),"Grup başarıyla silindi.",Toast.LENGTH_SHORT).show()
-                                    startActivity(Intent(requireContext(),FeedActivity::class.java))
-                                    requireActivity().finish()
                                 }
                             }
                         }
+                        grubuSilProgress.visibility = View.GONE
+                        Toast.makeText(requireContext(),"Grup başarıyla silindi.",Toast.LENGTH_SHORT).show()
+                        startActivity(Intent(requireContext(),FeedActivity::class.java))
+                        requireActivity().finish()
                     }
                 }
 

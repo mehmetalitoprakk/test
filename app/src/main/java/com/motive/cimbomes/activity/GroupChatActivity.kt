@@ -101,6 +101,9 @@ class GroupChatActivity : AppCompatActivity(),GroupMessagesAdapter.OnItemLongCli
         mesajlariGetir()
         uyelerigetir()
         controlGroup()
+        controlUye()
+        onlineControl()
+
 
         yaziyorBilgisiniGuncelle()
         setTouchDelegate(groupBackBtn,100)
@@ -205,6 +208,49 @@ class GroupChatActivity : AppCompatActivity(),GroupMessagesAdapter.OnItemLongCli
         })
     }
 
+    private fun onlineControl() {
+        FirebaseDatabase.getInstance().reference.child("users").child(FirebaseAuth.getInstance().currentUser!!.uid).child("online").setValue(true)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        FirebaseDatabase.getInstance().reference.child("users").child(FirebaseAuth.getInstance().currentUser!!.uid).child("online").setValue(false)
+    }
+
+
+    override fun onStart() {
+        super.onStart()
+        FirebaseDatabase.getInstance().reference.child("users").child(FirebaseAuth.getInstance().currentUser!!.uid).child("online").setValue(true)
+    }
+
+    private fun controlUye() {
+        var kontrolList = arrayListOf<String>()
+        db.child("groups").child(groupKey).child("member").addValueEventListener(object : ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.getValue() != null){
+                    kontrolList.clear()
+                    for (i in snapshot.children){
+                        if (i.getValue() != null){
+                            val user = i.getValue(GroupMembers::class.java)
+                            if (user != null){
+                                kontrolList.add(user.uid!!)
+                            }
+                        }
+                    }
+                    if (!kontrolList.contains(mAuth.currentUser!!.uid.toString())){
+                        Toast.makeText(this@GroupChatActivity,"Gruptan Çıkarıldınız",Toast.LENGTH_LONG).show()
+                        finish()
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+
+        })
+    }
+
     private fun uyelerigetir() {
         typingRef.addValueEventListener(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -232,13 +278,16 @@ class GroupChatActivity : AppCompatActivity(),GroupMessagesAdapter.OnItemLongCli
                 if (snapshot.getValue() != null){
                     for (i in snapshot.children){
                         var typing = i.getValue(GroupMembers::class.java)
-                        if (typing!!.typing == true){
-                            name = typing.name!!
-                            yaziyormU = true
-                            break
+                        if (typing != null){
+                            if (typing.name != null){
+                                if (typing!!.typing == true){
+                                    name = typing.name!!
+                                    yaziyormU = true
+                                    break
+                                }
+                            }
+
                         }
-
-
                     }
                     if (yaziyormU){
                         tvgroupInfo.text = name + " " + "yazıyor."

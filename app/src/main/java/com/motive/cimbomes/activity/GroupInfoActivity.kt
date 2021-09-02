@@ -59,6 +59,7 @@ class GroupInfoActivity : AppCompatActivity(),GroupInfoMembersAdapter.OnItemClic
 
         getinfo()
         controlGroup()
+        onlinecontrol()
 
 
         db.child("groups").child(groupKey).child("member")
@@ -156,6 +157,12 @@ class GroupInfoActivity : AppCompatActivity(),GroupInfoMembersAdapter.OnItemClic
 
 
     }
+
+    private fun onlinecontrol() {
+        FirebaseDatabase.getInstance().reference.child("users").child(FirebaseAuth.getInstance().currentUser!!.uid).child("online").setValue(true)
+    }
+
+
 
     private fun leaveGroup() {
         db.child("groups").child(groupKey).child("member").addListenerForSingleValueEvent(object : ValueEventListener{
@@ -377,13 +384,17 @@ class GroupInfoActivity : AppCompatActivity(),GroupInfoMembersAdapter.OnItemClic
     override fun onStart() {
         super.onStart()
         EventBus.getDefault().register(this)
+        FirebaseDatabase.getInstance().reference.child("users").child(FirebaseAuth.getInstance().currentUser!!.uid).child("online").setValue(true)
 
     }
 
     override fun onStop() {
         super.onStop()
         EventBus.getDefault().unregister(this)
+        FirebaseDatabase.getInstance().reference.child("users").child(FirebaseAuth.getInstance().currentUser!!.uid).child("online").setValue(false)
     }
+
+
 
     private fun setDialog() {
         val dialog = BottomSheetEditGroupFragment()

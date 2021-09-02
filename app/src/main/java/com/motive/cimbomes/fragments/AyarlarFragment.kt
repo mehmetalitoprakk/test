@@ -10,12 +10,12 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.motive.cimbomes.R
+import com.motive.cimbomes.model.GroupMembers
 import com.motive.cimbomes.utils.UniversalImageLoader
 import kotlinx.android.synthetic.main.fragment_ayarlar.*
 
@@ -74,11 +74,53 @@ class AyarlarFragment : Fragment() {
                                 storage.child("users").child(mAuth.currentUser!!.uid).child("profile_picture").downloadUrl.addOnSuccessListener {
                                     val url = it.toString()
                                     db.child("users").child(mAuth.currentUser!!.uid).child("profilePic").setValue(url).addOnSuccessListener {
-                                        UniversalImageLoader.setImage(url,profile_image,null,"")
-                                        profile_progress.visibility = View.GONE
-                                        profile_change_photo.isEnabled = true
-                                        profile_kaydet_button.isEnabled = true
-                                        Toast.makeText(requireContext(),"Bilgileriniz başarıyla güncellendi.",Toast.LENGTH_SHORT).show()
+                                        db.child("grupkonusmalar").child(mAuth.currentUser!!.uid).addListenerForSingleValueEvent(object : ValueEventListener{
+                                            override fun onDataChange(snapshot: DataSnapshot) {
+                                                if (snapshot.getValue() != null){
+                                                    var keys = arrayListOf<String>()
+                                                    for (i in snapshot.children){
+                                                        keys.add(snapshot.key.toString())
+                                                    }
+                                                    for (j in keys){
+                                                        db.child("groups").child(j).child("member").addListenerForSingleValueEvent(object : ValueEventListener{
+                                                            override fun onDataChange(snapshot: DataSnapshot) {
+                                                                if (snapshot.getValue() != null){
+                                                                    for (i in snapshot.children){
+                                                                        val user = i.getValue(GroupMembers::class.java)
+                                                                        if (user != null){
+                                                                            if (user.uid != null){
+                                                                                if (user.uid == mAuth.currentUser!!.uid){
+                                                                                    i.ref.child("image").setValue(url).addOnSuccessListener {
+                                                                                        i.ref.child("name").setValue(yeniName + " " + yeniSurname).addOnSuccessListener {
+                                                                                            UniversalImageLoader.setImage(url,profile_image,null,"")
+                                                                                            profile_progress.visibility = View.GONE
+                                                                                            profile_change_photo.isEnabled = true
+                                                                                            profile_kaydet_button.isEnabled = true
+                                                                                            Toast.makeText(requireContext(),"Bilgileriniz başarıyla güncellendi.",Toast.LENGTH_SHORT).show()
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+
+                                                            override fun onCancelled(error: DatabaseError) {
+
+                                                            }
+
+                                                        })
+                                                    }
+
+                                                }
+                                            }
+
+                                            override fun onCancelled(error: DatabaseError) {
+                                                TODO("Not yet implemented")
+                                            }
+
+                                        })
                                     }
                                 }
 
@@ -130,6 +172,7 @@ class AyarlarFragment : Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == RESIM_SEC && resultCode == AppCompatActivity.RESULT_OK && data!!.data != null){
             if (data.data != null){
+                profile_image.setImageURI(data.data)
                 newPhotoUri = data.data!!
             }
         }

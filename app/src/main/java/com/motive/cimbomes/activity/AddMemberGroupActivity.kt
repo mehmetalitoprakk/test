@@ -15,6 +15,7 @@ import com.motive.cimbomes.R
 import com.motive.cimbomes.adapter.EditGroupContactAdapter
 import com.motive.cimbomes.adapter.EditGroupSelectedAdapter
 import com.motive.cimbomes.model.Contact
+import com.motive.cimbomes.model.GroupKonusma
 import com.motive.cimbomes.model.GroupMembers
 import com.motive.cimbomes.model.Users
 import com.motive.cimbomes.utils.BottomSheetEditGroupFragment
@@ -35,6 +36,8 @@ class AddMemberGroupActivity : AppCompatActivity(),EditGroupSelectedAdapter.OnIt
     private var groupKey = ""
     var denemeList = arrayListOf<String>()
     var denemeList2 = arrayListOf<String>()
+    var image = ""
+    var gurpname = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,7 +76,7 @@ class AddMemberGroupActivity : AppCompatActivity(),EditGroupSelectedAdapter.OnIt
         contacts.close()
 
 
-        db.child("users").addListenerForSingleValueEvent(object : ValueEventListener {
+        db.child("users").addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.getValue() != null){
                     var memberList = arrayListOf<GroupMembers>()
@@ -85,19 +88,22 @@ class AddMemberGroupActivity : AppCompatActivity(),EditGroupSelectedAdapter.OnIt
                                 for (i in list){
                                     if (i.replace("\\s".toRegex(),"").replace("+9","") == number){
                                         val member = GroupMembers()
-                                        if (kullanici!!.uid != FirebaseAuth.getInstance().currentUser!!.uid){
-                                            member.name = kullanici!!.isim
-                                            member.surname = kullanici.soyisim
-                                            member.image = kullanici.profilePic
-                                            member.typing = false
-                                            member.groupAdmin = null
-                                            member.number = kullanici.telefonNo
-                                            member.uid = kullanici.uid
+                                        if (member != null){
+                                            if (kullanici!!.uid != FirebaseAuth.getInstance().currentUser!!.uid){
+                                                member.name = kullanici!!.isim
+                                                member.surname = kullanici.soyisim
+                                                member.image = kullanici.profilePic
+                                                member.typing = false
+                                                member.groupAdmin = null
+                                                member.number = kullanici.telefonNo
+                                                member.uid = kullanici.uid
 
-                                            dataList.add(member)
-                                            denemeList.add(kullanici.uid.toString())
-                                            memberList.add(member)
+                                                dataList.add(member)
+                                                denemeList.add(kullanici.uid.toString())
+                                                memberList.add(member)
+                                            }
                                         }
+
                                     }
                                 }
                             }
@@ -129,10 +135,12 @@ class AddMemberGroupActivity : AppCompatActivity(),EditGroupSelectedAdapter.OnIt
             val number = i.number
             val surname = i.surname
             val member = GroupMembers(false,uid,name,surname,number,false,i.image)
+            var konusma = GroupKonusma(false,"Eklendiniz",System.currentTimeMillis(),uid,image,groupKey,gurpname,false)
             groupMembersList.add(member)
-            db.child("groups").child(groupKey).child("member").setValue(groupMembersList)
-            finish()
+            db.child("grupkonusmalar").child(uid!!).child(groupKey).setValue(konusma)
         }
+        db.child("groups").child(groupKey).child("member").setValue(groupMembersList)
+        finish()
     }
 
     private fun üyeleriGetir(memberList: ArrayList<GroupMembers>) {
@@ -162,9 +170,18 @@ class AddMemberGroupActivity : AppCompatActivity(),EditGroupSelectedAdapter.OnIt
                         }
                     }
 
+                    db.child("groups").child(groupKey).child("image").get().addOnSuccessListener { gimage ->
+                        if (image != null) {
+                            image = gimage.value.toString()
+                            db.child("groups").child(groupKey).child("groupName").get().addOnSuccessListener { name ->
+                                if (name.value != null){
+                                    gurpname = name.value.toString()
+                                }
 
+                            }
+                        }
 
-
+                    }
 
                 }
 

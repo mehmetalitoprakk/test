@@ -6,6 +6,7 @@ import android.graphics.Typeface
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
@@ -21,8 +22,8 @@ import com.motive.cimbomes.utils.TimeAgo
 import com.motive.cimbomes.utils.UniversalImageLoader
 import kotlinx.android.synthetic.main.konusma_child.view.*
 
-class KonusmalarAdapter(var konsumalar : ArrayList<Konusma>,var konusmalarKopy : ArrayList<Konusma>,var ctx : Context) : RecyclerView.Adapter<KonusmalarAdapter.KonsumaViewHolder>() {
-    class KonsumaViewHolder(itemVİew : View) : RecyclerView.ViewHolder(itemVİew) {
+class KonusmalarAdapter(var konsumalar : ArrayList<Konusma>,var konusmalarKopy : ArrayList<Konusma>,var ctx : Context,var listener : OnItemLongClickListener) : RecyclerView.Adapter<KonusmalarAdapter.KonsumaViewHolder>() {
+    inner class KonsumaViewHolder(itemVİew : View) : RecyclerView.ViewHolder(itemVİew),View.OnLongClickListener {
         var isimsoyisim = ""
         var pic = ""
         var tumLayout = itemVİew as ConstraintLayout
@@ -34,6 +35,7 @@ class KonusmalarAdapter(var konsumalar : ArrayList<Konusma>,var konusmalarKopy :
 
         fun setData(oAnkiKonusma : Konusma,ctx: Context){
 
+
             var konusmaText = oAnkiKonusma.son_mesaj.toString()
             konusmaText = konusmaText.replace("\n"," ")
             konusmaText=konusmaText.trim()
@@ -44,8 +46,10 @@ class KonusmalarAdapter(var konsumalar : ArrayList<Konusma>,var konusmalarKopy :
             }else{
                 sonMesaj.text = konusmaText
             }
+            if (oAnkiKonusma.time != null){
+                sonZaman.text = TimeAgo.getTimeAgoForComments(oAnkiKonusma.time!!.toLong())
+            }
 
-            sonZaman.text = TimeAgo.getTimeAgoForComments(oAnkiKonusma.time!!.toLong())
             if (oAnkiKonusma.goruldu == false){
                 okunduBilgisi.visibility = View.VISIBLE
                 sonMesaj.setTextColor(ctx.resources.getColor(R.color.black))
@@ -102,7 +106,24 @@ class KonusmalarAdapter(var konsumalar : ArrayList<Konusma>,var konusmalarKopy :
 
         }
 
+        init {
+            tumLayout.setOnLongClickListener(this)
+        }
 
+        override fun onLongClick(v: View?): Boolean {
+            val position = adapterPosition
+            if (position != RecyclerView.NO_POSITION){
+                listener.onItemLongClicked(position)
+                return false
+            }
+            return true
+        }
+
+
+    }
+
+    interface OnItemLongClickListener {
+        fun onItemLongClicked(position: Int) : Boolean
     }
 
     fun filter(text: String) {

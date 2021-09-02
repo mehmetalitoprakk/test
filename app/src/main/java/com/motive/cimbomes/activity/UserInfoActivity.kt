@@ -70,7 +70,12 @@ class UserInfoActivity : AppCompatActivity() {
             }else if (soyisimKontrol.length < 3){
                 etUserInfoSurname.setError("Soyadınız en az üç karakterden oluşmalıdır")
             }else{
-                registertoFirebase()
+                if (profilePhotoUri != null){
+                    registertoFirebase()
+                }else{
+                    Toast.makeText(this,"Lütfen profil fotoğrafı ekleyin.",Toast.LENGTH_SHORT).show()
+                }
+
             }
 
         }
@@ -104,7 +109,7 @@ class UserInfoActivity : AppCompatActivity() {
         isim = etUserInfoName.text.toString()
         soyisim = etUserInfoSurname.text.toString()
 
-        var user = Users(isim,soyisim,dbPhone,"",mAuth.currentUser!!.uid,"","",false)
+        var user = Users(isim,soyisim,dbPhone,"",mAuth.currentUser!!.uid,"","",false,false)
         db.child("users").child(mAuth.currentUser!!.uid).setValue(user).addOnCompleteListener(object : OnCompleteListener<Void>{
             override fun onComplete(p0: Task<Void>) {
                 if (p0.isSuccessful){
@@ -118,33 +123,37 @@ class UserInfoActivity : AppCompatActivity() {
                                                 override fun onDataChange(snapshot: DataSnapshot) {
                                                     if (snapshot.getValue() != null){
                                                         for (i in snapshot.children){
-                                                            val group = i.getValue(Groups::class.java)
-                                                            if (group!!.static == true){
-                                                                val member = GroupMembers(false,mAuth.currentUser!!.uid,user.isim,user.soyisim,user.telefonNo,false,user.profilePic)
-                                                                val list = mutableListOf<GroupMembers>()
-                                                                i.ref.child("member").addListenerForSingleValueEvent(object : ValueEventListener{
-                                                                    override fun onDataChange(
-                                                                        snapshot: DataSnapshot
-                                                                    ) {
-                                                                        for (i in snapshot.children){
-                                                                            list.add(i.getValue(GroupMembers::class.java)!!)
+                                                            if (i.getValue() != null){
+                                                                val group = i.getValue(Groups::class.java)
+                                                                if (group!!.static == true){
+                                                                    val member = GroupMembers(false,mAuth.currentUser!!.uid,user.isim,user.soyisim,user.telefonNo,false,user.profilePic)
+                                                                    val list = mutableListOf<GroupMembers>()
+                                                                    i.ref.child("member").addListenerForSingleValueEvent(object : ValueEventListener{
+                                                                        override fun onDataChange(
+                                                                            snapshot: DataSnapshot
+                                                                        ) {
+                                                                            if (snapshot.getValue() != null){
+                                                                                for (j in snapshot.children){
+                                                                                    list.add(j.getValue(GroupMembers::class.java)!!)
+                                                                                }
+                                                                            }
+                                                                            list.add(member)
+
+                                                                            i.ref.child("member").setValue(list).addOnSuccessListener {
+                                                                                val konusma = GroupKonusma(false,"Eklendiniz",System.currentTimeMillis(),user.uid,group.image,group.groupID,group.groupName,false)
+                                                                                db.child("grupkonusmalar").child(user.uid!!).child(group.groupID!!).setValue(konusma)
+                                                                            }
+
                                                                         }
-                                                                        list.add(member)
 
-                                                                        i.ref.child("member").setValue(list).addOnSuccessListener {
-                                                                            val konusma = GroupKonusma(false,"Eklendiniz",System.currentTimeMillis(),user.uid,group.image,group.groupID,group.groupName,false)
-                                                                            db.child("grupkonusmalar").child(user.uid!!).child(group.groupID!!).setValue(konusma)
+                                                                        override fun onCancelled(
+                                                                            error: DatabaseError
+                                                                        ) {
+
                                                                         }
 
-                                                                    }
-
-                                                                    override fun onCancelled(
-                                                                        error: DatabaseError
-                                                                    ) {
-
-                                                                    }
-
-                                                                })
+                                                                    })
+                                                                }
                                                             }
                                                         }
                                                         progressDialog.dismiss()
@@ -220,5 +229,16 @@ class UserInfoActivity : AppCompatActivity() {
             profile_image.setImageURI(profilePhotoUri)
             addPhotoUserInfo.visibility = View.INVISIBLE
         }
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        mAuth.currentUser!!.delete()
+        Toast.makeText(this,"Profil bilgilerinizi tamamlamadınız,lütfen tekrar SMS onayı yaparak kayıt olun.",Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.e("On Destroy","On destroy çalıştı")
     }
 }

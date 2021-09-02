@@ -14,6 +14,34 @@
         android:background="@color/defaultext"
         android:layout_gravity="center"/>
 
+    <TextView
+        android:id="@+id/groupMesajlarBottomSheetKullanıcıyıGruptanÇıkar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Kullanıcıyı Gruptan Çıkar"
+        android:padding="10dp"
+        android:gravity="center"
+        android:textSize="20sp"
+        android:textColor="@color/teal_700"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/backround"/>
+
+    <TextView
+        android:id="@+id/groupMesajlarBottomSheetBilgi"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Kullanıcı Bilgisi"
+        android:padding="10dp"
+        android:gravity="center"
+        android:textSize="20sp"
+        android:textColor="@color/teal_700"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/backround"/>
+
 
     <TextView
         android:id="@+id/groupMesajlarBottomSheetHerkestenSil"

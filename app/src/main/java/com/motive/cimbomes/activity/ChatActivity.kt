@@ -35,6 +35,7 @@ import com.motive.cimbomes.R
 import com.motive.cimbomes.adapter.MessageAdapter
 import com.motive.cimbomes.fragments.ProgressFragment
 import com.motive.cimbomes.model.Mesaj
+import com.motive.cimbomes.model.Users
 import com.motive.cimbomes.utils.*
 import kotlinx.android.synthetic.main.activity_chat.*
 import kotlinx.android.synthetic.main.chat_child_getter.*
@@ -123,6 +124,8 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener,Mess
         edittextChat.addTextChangedListener(watcher)
         getMyInfo()
         getCrInfo()
+        onlineKontrol()
+        checkOnline()
 
 
 
@@ -333,6 +336,41 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener,Mess
         }
 
     }
+
+    private fun checkOnline() {
+        db.child("users").child(uid).addValueEventListener(object : ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.getValue() != null){
+                    val user = snapshot.getValue(Users::class.java)
+                    if (user != null){
+                        if (user.online != null){
+                            if (user.online){
+                                online.visibility = View.VISIBLE
+                                offline.visibility = View.GONE
+                            }else{
+                                online.visibility = View.GONE
+                                offline.visibility = View.VISIBLE
+                            }
+                        }
+                    }
+
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                onBackPressed()
+            }
+
+        })
+    }
+
+    private fun onlineKontrol() {
+        db.child("users").child(mAuth.currentUser!!.uid).child("online").setValue(true)
+    }
+
+
+
+
 
     private fun getMyInfo() {
         db.child("users").child(mAuth.currentUser!!.uid).child("isim").get().addOnSuccessListener {
@@ -844,22 +882,30 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener,Mess
 
 
     override fun onStart() {
+
         super.onStart()
         //AuthListener Eklenicek
+
         Log.e("KONTROL","onstarta girdi")
     }
 
 
     override fun onStop() {
         // auth listener null değilse remove edilicek
+        //db.child("users").child(mAuth.currentUser!!.uid).child("online").setValue(false)
         super.onStop()
         Log.e("KONTROL","onstopa girdi")
+    }
 
+    override fun onDestroy() {
+        //db.child("users").child(mAuth.currentUser!!.uid).child("online").setValue(false)
+        super.onDestroy()
     }
 
     override fun onResume() {
 
         super.onResume()
+        db.child("users").child(mAuth.currentUser!!.uid).child("online").setValue(true)
         Log.e("KONTROL","onresume girdi")
         dinlenecekYaziyorRef.child("typing").addValueEventListener(typingEventListener)
 

@@ -39,6 +39,8 @@ class UserDetail : AppCompatActivity() {
         imageInfo = intent.getStringExtra("imageInfo")
         from = intent.getStringExtra("from")
 
+        onlineControl()
+
         if (from == "chat"){
             mesajGonderUserInfoContainer.visibility = View.GONE
             userInfoSendMessage.visibility = View.GONE
@@ -64,7 +66,7 @@ class UserDetail : AppCompatActivity() {
             userInfoPhone.text = phoneInfo
         }else{
             println("Numara yok")
-            userInfoPhone.text = " "
+            userInfoPhone.text = "Numara bilgisi gizli"
         }
 
         userınfoName.text = nameInfo + " " + surnameInfo
@@ -109,6 +111,21 @@ class UserDetail : AppCompatActivity() {
         }
 
 
+    }
+
+    private fun onlineControl() {
+        FirebaseDatabase.getInstance().reference.child("users").child(FirebaseAuth.getInstance().currentUser!!.uid).child("online").setValue(true)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        FirebaseDatabase.getInstance().reference.child("users").child(FirebaseAuth.getInstance().currentUser!!.uid).child("online").setValue(false)
+    }
+
+
+    override fun onStart() {
+        super.onStart()
+        FirebaseDatabase.getInstance().reference.child("users").child(FirebaseAuth.getInstance().currentUser!!.uid).child("online").setValue(true)
     }
 
     private fun sikayetEt() {

@@ -51,10 +51,10 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
+        android:backgroundTint="@color/yellow"
         android:src="@drawable/ic_next"
         android:tint="@color/teal_700"
-        android:backgroundTint="@color/yellow"
-        app:useCompatPadding="true"/>
+        app:useCompatPadding="true" />
 
 
 

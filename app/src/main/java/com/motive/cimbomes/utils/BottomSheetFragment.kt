@@ -72,7 +72,6 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
 
 
         bottomsheetgruptancıkar.setOnClickListener {
-            Log.e("KONTROL","TIKLANDI")
             db.child("grupkonusmalar").child(groupmember.uid!!).child(groupKey).removeValue().addOnSuccessListener {
                 Log.e("KONTROL","konsumalardan silindi")
                 db.child("groups").child(groupKey).child("member").addListenerForSingleValueEvent(object : ValueEventListener{

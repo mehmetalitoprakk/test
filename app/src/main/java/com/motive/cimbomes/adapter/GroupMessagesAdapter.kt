@@ -19,7 +19,19 @@ import com.motive.cimbomes.R
 import com.motive.cimbomes.activity.FullImageActivity
 import com.motive.cimbomes.activity.VideoViewActivity
 import com.motive.cimbomes.model.Mesaj
+import com.motive.cimbomes.utils.UniversalImageLoader
+import kotlinx.android.synthetic.main.chat_child_getter.view.*
 import kotlinx.android.synthetic.main.chat_child_sender.view.*
+import kotlinx.android.synthetic.main.chat_child_sender.view.imgSenderContainer
+import kotlinx.android.synthetic.main.chat_child_sender.view.imgSenderView
+import kotlinx.android.synthetic.main.chat_child_sender.view.imgViewVideo
+import kotlinx.android.synthetic.main.chat_child_sender.view.playButtonVideo
+import kotlinx.android.synthetic.main.chat_child_sender.view.tvMessageSender
+import kotlinx.android.synthetic.main.chat_child_sender.view.tvNameGroup
+import kotlinx.android.synthetic.main.chat_child_sender.view.tvTimeSender
+import kotlinx.android.synthetic.main.chat_child_sender.view.videoContainer
+import kotlinx.android.synthetic.main.chat_child_sender.view.yukleniyorSenderProgress
+import kotlinx.android.synthetic.main.chat_child_sender.view.getterProfileImage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -41,12 +53,28 @@ class GroupMessagesAdapter(var mesajlar : ArrayList<Mesaj>,var ctx : Context,var
         var playButtonVideo = tumLayout.playButtonVideo
         var nameTv = tumLayout.tvNameGroup
         var timeTV = tumLayout.tvTimeSender
+        var photo = tumLayout.getterProfileImage
 
         init {
             view.setOnLongClickListener(this)
+            img.setOnLongClickListener(this)
+            videoContainer.setOnLongClickListener(this)
+            playButtonVideo.setOnLongClickListener(this)
         }
 
         fun setData(oankiMesaj: Mesaj){
+            if (oankiMesaj.user_id != null){
+                if(oankiMesaj.user_id == FirebaseAuth.getInstance().currentUser!!.uid){
+                    photo.visibility = View.GONE
+                }else{
+                    FirebaseDatabase.getInstance().reference.child("users").child(oankiMesaj.user_id!!).child("profilePic").get().addOnSuccessListener {
+                        if (it.value != null){
+                            UniversalImageLoader.setImage(it.value.toString(),photo,null,"")
+                        }
+                    }
+                }
+
+            }
 
 
             if (oankiMesaj.type == "text"){

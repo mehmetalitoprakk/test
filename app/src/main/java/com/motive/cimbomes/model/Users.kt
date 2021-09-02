@@ -9,6 +9,7 @@ class Users {
     var fcmToken : String? = null
     var ipAdress : String? = null
     var isAdmin : Boolean? = null
+    var online = false
 
     constructor()
     constructor(
@@ -19,7 +20,8 @@ class Users {
         uid: String?,
         fcmToken: String?,
         ipAdress: String?,
-        isAdmin: Boolean?
+        isAdmin: Boolean?,
+        online: Boolean
     ) {
         this.isim = isim
         this.soyisim = soyisim
@@ -29,10 +31,11 @@ class Users {
         this.fcmToken = fcmToken
         this.ipAdress = ipAdress
         this.isAdmin = isAdmin
+        this.online = online
     }
 
     override fun toString(): String {
-        return "Users(isim=$isim, soyisim=$soyisim, telefonNo=$telefonNo, profilePic=$profilePic, uid=$uid, fcmToken=$fcmToken, ipAdress=$ipAdress, isAdmin=$isAdmin)"
+        return "Users(isim=$isim, soyisim=$soyisim, telefonNo=$telefonNo, profilePic=$profilePic, uid=$uid, fcmToken=$fcmToken, ipAdress=$ipAdress, isAdmin=$isAdmin, online=$online)"
     }
 
 

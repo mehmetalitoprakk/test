@@ -51,8 +51,14 @@ class GroupKonusmaAdapter(var konusmalar : ArrayList<GroupKonusma>, var konusmal
             }else{
                 sonMesajTV.text = konusmaText
             }
-            timeTV.text = TimeAgo.getTimeAgoForComments(oAnkiKonusma.time!!.toLong())
-            UniversalImageLoader.setImage(oAnkiKonusma.groupImage!!,imgIV,null,"")
+            if (oAnkiKonusma.time != null){
+                timeTV.text = TimeAgo.getTimeAgoForComments(oAnkiKonusma.time!!.toLong())
+            }
+            if (oAnkiKonusma.groupName != null){
+                UniversalImageLoader.setImage(oAnkiKonusma.groupImage!!,imgIV,null,"")
+            }
+
+
 
             if (oAnkiKonusma.goruldu == false){
                 goruldu.visibility = View.VISIBLE

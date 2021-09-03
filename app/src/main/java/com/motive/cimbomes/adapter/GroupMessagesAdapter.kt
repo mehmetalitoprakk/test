@@ -32,6 +32,9 @@ import kotlinx.android.synthetic.main.chat_child_sender.view.tvTimeSender
 import kotlinx.android.synthetic.main.chat_child_sender.view.videoContainer
 import kotlinx.android.synthetic.main.chat_child_sender.view.yukleniyorSenderProgress
 import kotlinx.android.synthetic.main.chat_child_sender.view.getterProfileImage
+import kotlinx.android.synthetic.main.chat_child_sender.view.timeVideoSender
+import kotlinx.android.synthetic.main.chat_child_sender.view.timeFotoSender
+import kotlinx.android.synthetic.main.chat_child_sender.view.nameFotoGetter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -54,6 +57,9 @@ class GroupMessagesAdapter(var mesajlar : ArrayList<Mesaj>,var ctx : Context,var
         var nameTv = tumLayout.tvNameGroup
         var timeTV = tumLayout.tvTimeSender
         var photo = tumLayout.getterProfileImage
+        var videoTime = tumLayout.timeVideoSender
+        var photoTıme = tumLayout.timeFotoSender
+        var nameFoto = tumLayout.nameFotoGetter
 
         init {
             view.setOnLongClickListener(this)
@@ -66,6 +72,7 @@ class GroupMessagesAdapter(var mesajlar : ArrayList<Mesaj>,var ctx : Context,var
             if (oankiMesaj.user_id != null){
                 if(oankiMesaj.user_id == FirebaseAuth.getInstance().currentUser!!.uid){
                     photo.visibility = View.GONE
+                    nameFoto.visibility = View.GONE
                 }else{
                     FirebaseDatabase.getInstance().reference.child("users").child(oankiMesaj.user_id!!).child("profilePic").get().addOnSuccessListener {
                         if (it.value != null){
@@ -83,8 +90,10 @@ class GroupMessagesAdapter(var mesajlar : ArrayList<Mesaj>,var ctx : Context,var
                 timeTV.text = convertLongToTime(oankiMesaj.time!!.toLong())
                 imgConainer.visibility = View.GONE
                 videoContainer.visibility = View.GONE
+                videoTime.visibility = View.GONE
                 imgViewThumbail.visibility = View.GONE
                 playButtonVideo.visibility = View.GONE
+                nameFoto.visibility = View.GONE
                 if (oankiMesaj.user_id == FirebaseAuth.getInstance().currentUser!!.uid){
                     nameTv.visibility = View.GONE
                 }else{
@@ -99,10 +108,22 @@ class GroupMessagesAdapter(var mesajlar : ArrayList<Mesaj>,var ctx : Context,var
                 imgConainer.visibility = View.VISIBLE
                 mesaj.visibility = View.GONE
                 img.visibility = View.VISIBLE
-                timeTV.text = convertLongToTime(oankiMesaj.time!!.toLong())
+                timeTV.visibility = View.GONE
+                photoTıme.text = convertLongToTime(oankiMesaj.time!!.toLong())
+                videoTime.visibility = View.GONE
                 videoContainer.visibility = View.GONE
                 imgViewThumbail.visibility = View.GONE
                 playButtonVideo.visibility = View.GONE
+                photo.visibility = View.GONE
+                nameTv.visibility = View.GONE
+                if (oankiMesaj.user_id == FirebaseAuth.getInstance().currentUser!!.uid){
+                    nameFoto.visibility = View.GONE
+                }else{
+                    nameFoto.visibility = View.VISIBLE
+                    FirebaseDatabase.getInstance().reference.child("users").child(oankiMesaj.user_id!!).child("isim").get().addOnSuccessListener {
+                        nameFoto.text = it.value.toString()
+                    }
+                }
 
                 img.load(oankiMesaj.mesajResim){
                     crossfade(true)
@@ -122,8 +143,14 @@ class GroupMessagesAdapter(var mesajlar : ArrayList<Mesaj>,var ctx : Context,var
                 videoContainer.visibility = View.VISIBLE
                 mesaj.visibility = View.GONE
                 imgConainer.visibility = View.GONE
+                nameTv.visibility = View.GONE
+                nameFoto.visibility = View.GONE
                 img.visibility = View.GONE
-                timeTV.text = convertLongToTime(oankiMesaj.time!!.toLong())
+                photoTıme.visibility = View.GONE
+                photo.visibility = View.GONE
+                nameTv.visibility = View.GONE
+                timeTV.visibility = View.GONE
+                videoTime.text = convertLongToTime(oankiMesaj.time!!.toLong())
                 imgViewThumbail.visibility = View.VISIBLE
                 playButtonVideo.visibility = View.VISIBLE
                 var thumbnail : Bitmap? = null

@@ -94,6 +94,7 @@ class MessageAdapter(var mesahlar: ArrayList<Mesaj>, var ctx: Context, var liste
                 videoContainer.visibility = View.GONE
                 imgViewThumbail.visibility = View.GONE
                 playButtonVideo.visibility = View.GONE
+                timeTV.visibility = View.GONE
 
                 img.load(oankiMesaj.mesajResim){
                     crossfade(true)
@@ -115,6 +116,7 @@ class MessageAdapter(var mesahlar: ArrayList<Mesaj>, var ctx: Context, var liste
                 mesaj.visibility = View.GONE
                 imgConainer.visibility = View.GONE
                 img.visibility = View.GONE
+                timeTV.visibility = View.GONE
                 imgViewThumbail.visibility = View.VISIBLE
                 playButtonVideo.visibility = View.VISIBLE
                 timeVideoTv.text = convertLongToTime(oankiMesaj.time!!.toLong())

@@ -3,6 +3,7 @@ package com.motive.cimbomes.fragments
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -79,7 +80,7 @@ class AyarlarFragment : Fragment() {
                                                 if (snapshot.getValue() != null){
                                                     var keys = arrayListOf<String>()
                                                     for (i in snapshot.children){
-                                                        keys.add(snapshot.key.toString())
+                                                        keys.add(i.key.toString())
                                                     }
                                                     for (j in keys){
                                                         db.child("groups").child(j).child("member").addListenerForSingleValueEvent(object : ValueEventListener{
@@ -91,33 +92,37 @@ class AyarlarFragment : Fragment() {
                                                                             if (user.uid != null){
                                                                                 if (user.uid == mAuth.currentUser!!.uid){
                                                                                     i.ref.child("image").setValue(url).addOnSuccessListener {
-                                                                                        i.ref.child("name").setValue(yeniName + " " + yeniSurname).addOnSuccessListener {
-                                                                                            UniversalImageLoader.setImage(url,profile_image,null,"")
-                                                                                            profile_progress.visibility = View.GONE
-                                                                                            profile_change_photo.isEnabled = true
-                                                                                            profile_kaydet_button.isEnabled = true
-                                                                                            Toast.makeText(requireContext(),"Bilgileriniz sssbaşarıyla güncellendi.",Toast.LENGTH_SHORT).show()
+                                                                                        i.ref.child("name").setValue(yeniName).addOnSuccessListener {
+                                                                                            i.ref.child("surname").setValue(yeniSurname).addOnSuccessListener {
+
+                                                                                            }
                                                                                         }
                                                                                     }
                                                                                 }
                                                                             }
                                                                         }
                                                                     }
+
                                                                 }
                                                             }
 
                                                             override fun onCancelled(error: DatabaseError) {
-
+                                                                Toast.makeText(requireContext(),"Bir hata oluştu. (${error.message})",Toast.LENGTH_SHORT).show()
                                                             }
 
                                                         })
                                                     }
+                                                    UniversalImageLoader.setImage(url,profile_image,null,"")
+                                                    profile_progress.visibility = View.GONE
+                                                    profile_change_photo.isEnabled = true
+                                                    profile_kaydet_button.isEnabled = true
+                                                    Toast.makeText(requireContext(),"Bilgileriniz başarıyla güncellendi.",Toast.LENGTH_SHORT).show()
 
                                                 }
                                             }
 
                                             override fun onCancelled(error: DatabaseError) {
-                                                TODO("Not yet implemented")
+                                                Toast.makeText(requireContext(),"Bir hata oluştu. (${error.message})",Toast.LENGTH_SHORT).show()
                                             }
 
                                         })
@@ -131,10 +136,59 @@ class AyarlarFragment : Fragment() {
             }else{
                 db.child("users").child(mAuth.currentUser!!.uid).child("isim").setValue(yeniName).addOnSuccessListener {
                     db.child("users").child(mAuth.currentUser!!.uid).child("soyisim").setValue(yeniSurname).addOnSuccessListener {
-                        profile_progress.visibility = View.GONE
-                        profile_change_photo.isEnabled = true
-                        profile_kaydet_button.isEnabled = true
-                        Toast.makeText(requireContext(),"Bilgileriniz başarıyla güncellendi.",Toast.LENGTH_SHORT).show()
+                        db.child("grupkonusmalar").child(mAuth.currentUser!!.uid).addListenerForSingleValueEvent(object : ValueEventListener{
+                            override fun onDataChange(snapshot: DataSnapshot) {
+                                if (snapshot.getValue() != null){
+                                    var keys = arrayListOf<String>()
+                                    for (i in snapshot.children){
+                                        keys.add(i.key.toString())
+                                    }
+                                    for (j in keys){
+                                        db.child("groups").child(j).child("member").addListenerForSingleValueEvent(object : ValueEventListener{
+                                            override fun onDataChange(snapshot: DataSnapshot) {
+                                                if (snapshot.getValue() != null){
+                                                    for (i in snapshot.children){
+                                                        val user = i.getValue(GroupMembers::class.java)
+                                                        if (user != null){
+                                                            if (user.uid != null){
+                                                                if (user.uid == mAuth.currentUser!!.uid){
+                                                                    i.ref.child("name").setValue(yeniName).addOnSuccessListener {
+                                                                        i.ref.child("surname").setValue(yeniSurname).addOnSuccessListener {
+
+                                                                            }.addOnFailureListener {
+                                                                            Toast.makeText(requireContext(),"Bir hata oluştu. (${it.message})",Toast.LENGTH_SHORT).show()
+                                                                        }
+                                                                        }.addOnFailureListener {
+                                                                        Toast.makeText(requireContext(),"Bir hata oluştu. (${it.message})",Toast.LENGTH_SHORT).show()
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+
+                                                }
+                                            }
+
+                                            override fun onCancelled(error: DatabaseError) {
+                                                Toast.makeText(requireContext(),"Bir hata oluştu. (${error.message})",Toast.LENGTH_SHORT).show()
+                                            }
+
+                                        })
+                                    }
+                                    profile_progress.visibility = View.GONE
+                                    profile_change_photo.isEnabled = true
+                                    profile_kaydet_button.isEnabled = true
+                                    Toast.makeText(requireContext(),"Bilgileriniz başarıyla güncellendi.",Toast.LENGTH_SHORT).show()
+
+                                }
+                            }
+
+                            override fun onCancelled(error: DatabaseError) {
+                                Toast.makeText(requireContext(),"Bir hata oluştu. (${error.message})",Toast.LENGTH_SHORT).show()
+                            }
+
+                        })
+
 
                     }
                 }

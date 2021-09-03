@@ -38,56 +38,60 @@ class GroupKonusmaAdapter(var konusmalar : ArrayList<GroupKonusma>, var konusmal
 
 
         fun setData(oAnkiKonusma : GroupKonusma, ctx: Context){
-            var konusmaText = oAnkiKonusma.son_mesaj.toString()
-            konusmaText = konusmaText.replace("\n"," ")
-            konusmaText=konusmaText.trim()
-            groupNameTV.text = oAnkiKonusma.groupName
-            //TODO SELECT MEMBER FRAGMENT BACK TUSU
 
-            if (konusmaText.length > 30){
-                sonMesajTV.text = konusmaText.substring(0,30)+"..."
-            }else if (konusmaText == ""){
-                sonMesajTV.text = "Eklendiniz"
-            }else{
-                sonMesajTV.text = konusmaText
-            }
-            if (oAnkiKonusma.time != null){
-                timeTV.text = TimeAgo.getTimeAgoForComments(oAnkiKonusma.time!!.toLong())
-            }
-            if (oAnkiKonusma.groupName != null){
-                UniversalImageLoader.setImage(oAnkiKonusma.groupImage!!,imgIV,null,"")
-            }
+            if (oAnkiKonusma != null){
+                var konusmaText = oAnkiKonusma.son_mesaj.toString()
+                konusmaText = konusmaText.replace("\n"," ")
+                konusmaText=konusmaText.trim()
+                groupNameTV.text = oAnkiKonusma.groupName
+                //TODO SELECT MEMBER FRAGMENT BACK TUSU
 
-
-
-            if (oAnkiKonusma.goruldu == false){
-                goruldu.visibility = View.VISIBLE
-                sonMesajTV.setTextColor(ctx.resources.getColor(R.color.black))
-                sonMesajTV.setTypeface(Typeface.DEFAULT_BOLD)
-                groupNameTV.setTypeface(Typeface.DEFAULT_BOLD)
-                timeTV.setTextColor(ctx.resources.getColor(R.color.black))
-                timeTV.setTypeface(Typeface.DEFAULT_BOLD)
-            }else{
-                goruldu.visibility = View.INVISIBLE
-                sonMesajTV.setTextColor(ctx.resources.getColor(R.color.defaultext))
-                sonMesajTV.setTypeface(Typeface.DEFAULT)
-                groupNameTV.setTypeface(Typeface.DEFAULT)
-                timeTV.setTextColor(ctx.resources.getColor(R.color.defaultext))
-                timeTV.setTypeface(Typeface.DEFAULT)
-            }
-
-            tumLayout.setOnClickListener {
-                var intent = Intent(ctx, GroupChatActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
-                intent.putExtra("GroupKey",oAnkiKonusma.groupID)
-                FirebaseDatabase.getInstance().reference.child("grupkonusmalar").child(FirebaseAuth.getInstance().currentUser!!.uid).child(oAnkiKonusma.groupID!!).child("goruldu").setValue(true).addOnCompleteListener {
-                    ctx.startActivity(intent)
+                if (konusmaText.length > 30){
+                    sonMesajTV.text = konusmaText.substring(0,30)+"..."
+                }else if (konusmaText == ""){
+                    sonMesajTV.text = "Eklendiniz"
+                }else{
+                    sonMesajTV.text = konusmaText
                 }
+                if (oAnkiKonusma.time != null){
+                    timeTV.text = TimeAgo.getTimeAgoForComments(oAnkiKonusma.time!!.toLong())
+                }
+                if (oAnkiKonusma.groupName != null){
+                    UniversalImageLoader.setImage(oAnkiKonusma.groupImage!!,imgIV,null,"")
+                }
+
+
+
+                if (oAnkiKonusma.goruldu == false){
+                    goruldu.visibility = View.VISIBLE
+                    sonMesajTV.setTextColor(ctx.resources.getColor(R.color.black))
+                    sonMesajTV.setTypeface(Typeface.DEFAULT_BOLD)
+                    groupNameTV.setTypeface(Typeface.DEFAULT_BOLD)
+                    timeTV.setTextColor(ctx.resources.getColor(R.color.black))
+                    timeTV.setTypeface(Typeface.DEFAULT_BOLD)
+                }else{
+                    goruldu.visibility = View.INVISIBLE
+                    sonMesajTV.setTextColor(ctx.resources.getColor(R.color.defaultext))
+                    sonMesajTV.setTypeface(Typeface.DEFAULT)
+                    groupNameTV.setTypeface(Typeface.DEFAULT)
+                    timeTV.setTextColor(ctx.resources.getColor(R.color.defaultext))
+                    timeTV.setTypeface(Typeface.DEFAULT)
+                }
+
+                tumLayout.setOnClickListener {
+                    var intent = Intent(ctx, GroupChatActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+                    intent.putExtra("GroupKey",oAnkiKonusma.groupID)
+                    FirebaseDatabase.getInstance().reference.child("grupkonusmalar").child(FirebaseAuth.getInstance().currentUser!!.uid).child(oAnkiKonusma.groupID!!).child("goruldu").setValue(true).addOnCompleteListener {
+                        ctx.startActivity(intent)
+                    }
+                }
+
+
+
+                grupBilgileriniGetir(oAnkiKonusma.groupID)
+                grupStatikMi(oAnkiKonusma.groupID)
             }
 
-
-
-            grupBilgileriniGetir(oAnkiKonusma.groupID)
-            grupStatikMi(oAnkiKonusma.groupID)
 
         }
 
@@ -102,23 +106,35 @@ class GroupKonusmaAdapter(var konusmalar : ArrayList<GroupKonusma>, var konusmal
         }
 
         private fun grupBilgileriniGetir(grupid: String?) {
-            FirebaseDatabase.getInstance().reference.child("grupkonusmalar").child(FirebaseAuth.getInstance().currentUser!!.uid).child(grupid!!).addListenerForSingleValueEvent(object : ValueEventListener{
+            FirebaseDatabase.getInstance().reference.child("grupkonusmalar").child(FirebaseAuth.getInstance().currentUser!!.uid).child(grupid!!).addValueEventListener(object : ValueEventListener{
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.getValue() != null){
                         var bulunanGrup = snapshot.getValue(GroupKonusma::class.java)
-                        if (bulunanGrup!!.son_mesaj == ""){
-                            sonMesajTV.text = "Eklendiniz"
-                        }else{
-                            sonMesajTV.text = bulunanGrup!!.son_mesaj
+                        if (bulunanGrup!= null){
+                            if (bulunanGrup.son_mesaj != null) {
+                                if (bulunanGrup!!.son_mesaj == "") {
+                                    sonMesajTV.text = "Eklendiniz"
+                                } else {
+                                    sonMesajTV.text = bulunanGrup!!.son_mesaj
+                                }
+
+                                if (bulunanGrup.groupName != null) {
+                                    groupNameTV.text = bulunanGrup!!.groupName
+                                }
+                                if (bulunanGrup.time != null) {
+                                    timeTV.text =
+                                        TimeAgo.getTimeAgoForComments(bulunanGrup.time!!.toLong())
+                                }
+                                if (bulunanGrup.groupImage != null) {
+                                    UniversalImageLoader.setImage(
+                                        bulunanGrup.groupImage!!,
+                                        imgIV,
+                                        null,
+                                        ""
+                                    )
+                                }
+                            }
                         }
-                        groupNameTV.text = bulunanGrup!!.groupName
-
-                        timeTV.text = TimeAgo.getTimeAgoForComments(bulunanGrup.time!!.toLong())
-                        if (bulunanGrup.groupImage != null){
-                            UniversalImageLoader.setImage(bulunanGrup.groupImage!!,imgIV,null,"")
-                        }
-
-
                     }
                 }
 

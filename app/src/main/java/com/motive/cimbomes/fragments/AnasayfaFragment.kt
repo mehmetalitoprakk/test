@@ -170,6 +170,7 @@ class AnasayfaFragment : Fragment(), KonusmalarAdapter.OnItemLongClickListener {
             var kontrol = grupKonusmaPositionBul(snapshot.key.toString())
             if (kontrol != -1){
                 var guncellenecekGrupKonusma = snapshot.getValue(GroupKonusma::class.java)
+
                 guncellenecekGrupKonusma!!.groupID = snapshot.key
                 grupKonusmalar.removeAt(kontrol)
                 grupKonusmalarKopy.removeAt(kontrol)
@@ -177,11 +178,23 @@ class AnasayfaFragment : Fragment(), KonusmalarAdapter.OnItemLongClickListener {
                 grupKonusmalar.add(0,guncellenecekGrupKonusma)
                 grupKonusmalarKopy.add(0,guncellenecekGrupKonusma)
                 grupAdapter.notifyItemInserted(0)
+
+
             }
         }
 
         override fun onChildRemoved(snapshot: DataSnapshot) {
+            var kontrol = grupKonusmaPositionBul(snapshot.key.toString())
+            if (kontrol != -1){
+                var silinecekKonusma = snapshot.getValue(GroupKonusma::class.java)
 
+                silinecekKonusma!!.groupID = snapshot.key
+                grupKonusmalar.removeAt(kontrol)
+                grupKonusmalarKopy.removeAt(kontrol)
+                grupAdapter.notifyItemRemoved(kontrol)
+
+
+            }
         }
 
         override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
@@ -260,6 +273,9 @@ class AnasayfaFragment : Fragment(), KonusmalarAdapter.OnItemLongClickListener {
         }
         return -1
     }
+
+
+
 
     override fun onPause() {
         super.onPause()

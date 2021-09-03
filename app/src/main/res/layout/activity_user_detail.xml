@@ -151,6 +151,32 @@
 
         </androidx.cardview.widget.CardView>
 
+        <androidx.cardview.widget.CardView
+            android:id="@+id/userDetailUnBlockUser"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:visibility="gone"
+            android:backgroundTint="@color/yellow"
+            android:outlineAmbientShadowColor="@color/yellow"
+            app:cardCornerRadius="10dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="7dp"
+                android:padding="10dp"
+                android:layout_gravity="center"
+                android:text="Engeli Kaldır"
+                android:textColor="@color/teal_700"
+                android:textStyle=""
+                android:textSize="18sp" />
+
+        </androidx.cardview.widget.CardView>
+
 
         <TextView
             android:id="@+id/userInfoSikayetEt"

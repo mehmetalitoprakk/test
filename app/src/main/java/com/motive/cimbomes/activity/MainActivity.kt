@@ -15,7 +15,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.motive.cimbomes.R
 
 class MainActivity : AppCompatActivity() {
-    private val SPLASH_TIME : Long = 3000
+    private val SPLASH_TIME : Long = 1000
     private lateinit var mAuth : FirebaseAuth
     private var mInterstitialAd: InterstitialAd? = null
     private final var TAG = "SPLASH"
@@ -27,6 +27,9 @@ class MainActivity : AppCompatActivity() {
         mAuth = FirebaseAuth.getInstance()
 
         loadAd()
+        if (intent.extras != null){
+
+        }
 
         Handler().postDelayed({
             if (mAuth.currentUser != null){

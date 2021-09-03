@@ -5,6 +5,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.ContactsContract
+import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.ProgressBar
@@ -14,6 +15,7 @@ import coil.size.Scale
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.motive.cimbomes.R
+import com.motive.cimbomes.model.BlockedUsers
 import kotlinx.android.synthetic.main.activity_user_detail.*
 import java.util.*
 
@@ -40,6 +42,7 @@ class UserDetail : AppCompatActivity() {
         from = intent.getStringExtra("from")
 
         onlineControl()
+
 
         if (from == "chat"){
             mesajGonderUserInfoContainer.visibility = View.GONE
@@ -71,7 +74,7 @@ class UserDetail : AppCompatActivity() {
 
         userınfoName.text = nameInfo + " " + surnameInfo
 
-
+        blockedKontrol()
 
         imageInfo?.let {
             usetDetailImage.load(imageInfo){
@@ -110,7 +113,52 @@ class UserDetail : AppCompatActivity() {
             sikayetEt()
         }
 
+        userDetailBlockUser.setOnClickListener {
+            blockUser()
+        }
+        userDetailUnBlockUser.setOnClickListener {
+            unBlockUser()
+        }
 
+
+    }
+
+    private fun blockedKontrol() {
+        FirebaseDatabase.getInstance().reference.child("blockedUsers").child(FirebaseAuth.getInstance().currentUser!!.uid).child(uidInfo!!).child("blocked").get().addOnSuccessListener {
+            if (it.value != null && it != null){
+                if (it.value == true){
+                    Log.e("BLOCKED", "TRUE GİRDİ")
+                    userDetailBlockUser.visibility = View.GONE
+                    userDetailUnBlockUser.visibility = View.VISIBLE
+                }else if (it.value == false){
+                    Log.e("BLOCKED", "FALSE GİRDİ")
+                    userDetailBlockUser.visibility = View.VISIBLE
+                    userDetailUnBlockUser.visibility = View.GONE
+                }
+            }else{
+                Log.e("BLOCKED", "ELSE GİRDİ")
+                userDetailBlockUser.visibility = View.VISIBLE
+                userDetailUnBlockUser.visibility = View.GONE
+            }
+        }
+    }
+
+    private fun unBlockUser() {
+        var blocked = BlockedUsers(false)
+        FirebaseDatabase.getInstance().reference.child("blockedUsers").child(FirebaseAuth.getInstance().currentUser!!.uid).child(uidInfo!!).setValue(blocked).addOnSuccessListener {
+            Toast.makeText(this,"Kişinin engelini kaldırdınız.",Toast.LENGTH_SHORT).show()
+            userDetailBlockUser.visibility = View.VISIBLE
+            userDetailUnBlockUser.visibility = View.GONE
+        }
+    }
+
+    private fun blockUser() {
+        var blocked = BlockedUsers(true)
+        FirebaseDatabase.getInstance().reference.child("blockedUsers").child(FirebaseAuth.getInstance().currentUser!!.uid).child(uidInfo!!).setValue(blocked).addOnSuccessListener {
+            Toast.makeText(this,"Kişiyi Engellediniz.",Toast.LENGTH_SHORT).show()
+            userDetailBlockUser.visibility = View.GONE
+            userDetailUnBlockUser.visibility = View.VISIBLE
+        }
     }
 
     private fun onlineControl() {

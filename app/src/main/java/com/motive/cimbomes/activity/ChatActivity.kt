@@ -34,6 +34,7 @@ import com.google.firebase.storage.*
 import com.motive.cimbomes.R
 import com.motive.cimbomes.adapter.MessageAdapter
 import com.motive.cimbomes.fragments.ProgressFragment
+import com.motive.cimbomes.model.BlockedUsers
 import com.motive.cimbomes.model.Mesaj
 import com.motive.cimbomes.model.Users
 import com.motive.cimbomes.utils.*
@@ -62,6 +63,7 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener,Mess
     private lateinit var myRecyclerView : RecyclerView
     private lateinit var dinlenecekYaziyorRef : DatabaseReference
     private lateinit var storageReference: StorageReference
+    var isBlocked = false
 
     //Sayfalama
     val NUMBER_OF_MESSAGE_PER_PAGE = 15
@@ -126,6 +128,7 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener,Mess
         getCrInfo()
         onlineKontrol()
         checkOnline()
+        engellemeKontrol()
 
 
 
@@ -337,6 +340,55 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener,Mess
 
     }
 
+    private fun engellemeKontrol() {
+        db.child("blockedUsers").child(uid).child(myID).child("blocked").get().addOnSuccessListener {
+            if (it.value != null && it != null){
+                if (it.value == true){
+                    imgSendChat.isEnabled = false
+                    imgSendChat.isClickable = false
+                    imgAddChat.isEnabled = false
+                    imgAddChat.isClickable = false
+                    onlineOflineContainer.visibility = View.INVISIBLE
+                    typingContainer.visibility = View.GONE
+                    gorulduContainer.visibility = View.GONE
+                    isBlocked = true
+
+                    Toast.makeText(this@ChatActivity,"Kişi tarafından engellendiniz mesaj gönderemezsiniz",Toast.LENGTH_SHORT).show()
+                }else if (it.value == false){
+                    imgSendChat.isEnabled = true
+                    imgSendChat.isClickable = true
+                    imgAddChat.isEnabled = true
+                    imgAddChat.isClickable = true
+                    onlineOflineContainer.visibility = View.VISIBLE
+                    isBlocked = false
+                }
+            }
+        }
+
+        db.child("blockedUsers").child(myID).child(uid).child("blocked").get().addOnSuccessListener {
+            if (it.value != null && it != null){
+                if (it.value == true){
+                    imgSendChat.isEnabled = false
+                    imgSendChat.isClickable = false
+                    imgAddChat.isEnabled = false
+                    imgAddChat.isClickable = false
+                    onlineOflineContainer.visibility = View.INVISIBLE
+                    typingContainer.visibility = View.GONE
+                    gorulduContainer.visibility = View.GONE
+                    isBlocked = true
+                    Toast.makeText(this@ChatActivity,"Kişiyi engellediniz mesaj gönderemezsiniz",Toast.LENGTH_SHORT).show()
+                }else if (it.value == false){
+                    imgSendChat.isEnabled = true
+                    imgSendChat.isClickable = true
+                    imgAddChat.isEnabled = true
+                    imgAddChat.isClickable = true
+                    onlineOflineContainer.visibility = View.VISIBLE
+                    isBlocked = false
+                }
+            }
+        }
+    }
+
     private fun checkOnline() {
         db.child("users").child(uid).addValueEventListener(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -506,16 +558,17 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener,Mess
                     destPath = yeniOlusturulanDosyaninKlasoru.path,
                     listener = object : CompressionListener {
                         override fun onCancelled() {
-
+                            Toast.makeText(this@ChatActivity,"Bir hata oluştui lütfen tüm izinleri verdiğinizden emin olun.",Toast.LENGTH_SHORT).show()
+                            dialog.dismiss()
                         }
 
                         override fun onFailure(failureMessage: String) {
-
+                            Toast.makeText(this@ChatActivity,"Bir hata oluştui lütfen tüm izinleri verdiğinizden emin olun.",Toast.LENGTH_SHORT).show()
+                            dialog.dismiss()
                         }
 
                         override fun onProgress(percent: Float) {
-                            Log.e("PROGRESS","%${percent}")
-
+                            //dialog.tvBilgi.text = "%${percent} sıkıştırıldı"
                         }
 
                         override fun onStart() {
@@ -761,8 +814,12 @@ class ChatActivity : AppCompatActivity(),MessageAdapter.OnItemClickListener,Mess
                     if (ekrandaSonGorulmeVarMi){
                         gorulduContainer.visibility = View.GONE
                     }
+
                     typingContainer.visibility = View.VISIBLE
                     typingContainer.startAnimation(AnimationUtils.loadAnimation(this@ChatActivity,android.R.anim.fade_in))
+
+
+
                 }else if(snapshot.getValue() == false){
 
                     if (ekrandaSonGorulmeVarMi){

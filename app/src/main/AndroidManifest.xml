@@ -42,7 +42,12 @@
         <activity android:name=".activity.VideoViewActivity" />
         <activity android:name=".activity.FullImageActivity" />
         <activity android:name=".activity.ChatActivity" />
-        <activity android:name=".activity.FeedActivity" />
+        <activity android:name=".activity.FeedActivity" >
+            <intent-filter>
+                <action android:name=".FeedActivity"> </action>
+                <category android:name="android.intent.category.DEFAULT"> </category>
+            </intent-filter>
+        </activity>
         <activity android:name=".activity.UserInfoActivity" />
         <activity android:name=".activity.ChechPhoneCodeActivity" />
         <activity android:name=".activity.RegisterActivity" />

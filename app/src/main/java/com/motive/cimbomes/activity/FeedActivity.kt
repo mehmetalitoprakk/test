@@ -24,6 +24,7 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import com.google.firebase.iid.FirebaseInstanceId
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
@@ -61,6 +62,7 @@ class FeedActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         mAuth = FirebaseAuth.getInstance()
         db = FirebaseDatabase.getInstance().reference
         onlineControl()
+        getFcmTokenForExistsUser()
 
         Dexter.withContext(this).withPermissions(
             Manifest.permission.READ_CONTACTS,
@@ -157,10 +159,19 @@ class FeedActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         })
 
+    }
 
-
-
-
+    private fun getFcmTokenForExistsUser() {
+        FirebaseInstanceId.getInstance().instanceId.addOnSuccessListener {
+            var token = it.token
+            addToDatabaseNewToken(token)
+        }
+    }
+    private fun addToDatabaseNewToken(token: String) {
+        if (FirebaseAuth.getInstance().currentUser != null){
+            FirebaseDatabase.getInstance().reference.child("users").child(FirebaseAuth.getInstance().currentUser!!.uid).child("fcmToken")
+                .setValue(token)
+        }
     }
 
     private fun onlineControl() {

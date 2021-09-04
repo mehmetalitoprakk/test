@@ -177,7 +177,6 @@ class ChechPhoneCodeActivity : AppCompatActivity() {
         FirebaseInstanceId.getInstance().instanceId.addOnSuccessListener {
             var token = it.token
             addToDatabaseNewToken(token)
-
         }
     }
 
@@ -192,7 +191,6 @@ class ChechPhoneCodeActivity : AppCompatActivity() {
                     finish()
                 }
         }
-
     }
 
     private fun addToDatabaseNewToken(token: String) {
@@ -205,7 +203,6 @@ class ChechPhoneCodeActivity : AppCompatActivity() {
                     finish()
                 }
         }
-
     }
 
 

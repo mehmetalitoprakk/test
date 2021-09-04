@@ -108,7 +108,7 @@ class GroupKonusmaAdapter(var konusmalar : ArrayList<GroupKonusma>, var konusmal
         }
 
         private fun grupBilgileriniGetir(grupid: String?) {
-            FirebaseDatabase.getInstance().reference.child("grupkonusmalar").child(FirebaseAuth.getInstance().currentUser!!.uid).child(grupid!!).addValueEventListener(object : ValueEventListener{
+            FirebaseDatabase.getInstance().reference.child("grupkonusmalar").child(FirebaseAuth.getInstance().currentUser!!.uid).child(grupid!!).addListenerForSingleValueEvent(object : ValueEventListener{
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.getValue() != null){
                         var bulunanGrup = snapshot.getValue(GroupKonusma::class.java)

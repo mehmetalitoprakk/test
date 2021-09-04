@@ -60,11 +60,13 @@ class BottomSheetEditGroupFragment : BottomSheetDialogFragment() {
         db.child("groups").child(groupKey).child("creator").get().addOnSuccessListener {
             println(it.toString() + "  7777777")
             if (it.value == FirebaseAuth.getInstance().currentUser!!.uid){
-                editGroupGrubuSil.visibility = View.VISIBLE
+                //editGroupGrubuSil.visibility = View.VISIBLE
             }else{
                 editGroupGrubuSil.visibility = View.GONE
             }
         }
+
+        editGroupGrubuSil.visibility = View.GONE
 
 
 
@@ -84,7 +86,7 @@ class BottomSheetEditGroupFragment : BottomSheetDialogFragment() {
 
 
         editGroupGrubuSil.setOnClickListener {
-            grubuSilDialog()
+            //grubuSilDialog()
         }
 
 

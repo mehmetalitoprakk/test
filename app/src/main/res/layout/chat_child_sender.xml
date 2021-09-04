@@ -9,21 +9,21 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
         android:background="@drawable/message_sender"
         android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/getterProfileImage"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:visibility="gone"
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"/>
+            android:layout_marginRight="5dp"
+            android:visibility="gone" />
 
 
         <LinearLayout
@@ -40,7 +40,7 @@
                 android:paddingEnd="6dp"
                 android:text="Mustafa"
                 android:textColor="@color/white"
-                android:visibility="visible" />
+                android:visibility="gone" />
 
 
             <LinearLayout
@@ -48,7 +48,6 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 android:orientation="horizontal">
-
 
                 <TextView
                     android:id="@+id/tvMessageSender"
@@ -58,11 +57,11 @@
                     android:gravity="start"
                     android:maxWidth="300dp"
                     android:padding="6dp"
-                    android:text="sssss"
-                    android:textIsSelectable="true"
+                    android:text="Mesaj"
                     android:textAlignment="textStart"
                     android:textColor="@color/white"
                     android:textColorLink="#6478E3"
+                    android:textIsSelectable="true"
                     android:textSize="15sp"
                     android:visibility="visible"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -90,7 +89,7 @@
             android:layout_height="350dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
-            android:visibility="visible"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -104,6 +103,7 @@
                 android:visibility="gone">
 
             </ProgressBar>
+
             <TextView
                 android:id="@+id/nameFotoGetter"
                 android:layout_width="wrap_content"

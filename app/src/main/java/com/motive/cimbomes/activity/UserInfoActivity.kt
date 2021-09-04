@@ -118,6 +118,7 @@ class UserInfoActivity : AppCompatActivity() {
                             .addOnSuccessListener {
                                 storageReference.child("users").child(mAuth.currentUser!!.uid).child("profile_picture").downloadUrl
                                     .addOnSuccessListener {
+                                        profilePic = it.toString()
                                         db.child("users").child(mAuth.currentUser!!.uid).child("profilePic").setValue(it.toString()).addOnSuccessListener {
                                             db.child("groups").addListenerForSingleValueEvent(object : ValueEventListener{
                                                 override fun onDataChange(snapshot: DataSnapshot) {

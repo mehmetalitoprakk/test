@@ -58,8 +58,7 @@
             android:layout_height="match_parent"
             android:layout_marginTop="5dp"
             android:cropToPadding="false"
-            android:scaleType="centerCrop"
-            android:src="@drawable/human" />
+            android:scaleType="centerCrop" />
     </FrameLayout>
 
     <LinearLayout

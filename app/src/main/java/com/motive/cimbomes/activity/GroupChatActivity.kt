@@ -334,7 +334,7 @@ class GroupChatActivity : AppCompatActivity(),GroupMessagesAdapter.OnItemLongCli
 
 
     private fun mesajlariGetir() {
-        childEventListener = db.child("groups").child(groupKey).child("messages").addChildEventListener(object : ChildEventListener{
+        childEventListener = db.child("groups").child(groupKey).child("messages").limitToLast(NUMBER_OF_MESSAGE_PER_PAGE).addChildEventListener(object : ChildEventListener{
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                 var okunanmesaj = snapshot.getValue(Mesaj::class.java)
                 mesajlar.add(okunanmesaj!!)
@@ -650,7 +650,17 @@ class GroupChatActivity : AppCompatActivity(),GroupMessagesAdapter.OnItemLongCli
                 myref.downloadUrl.addOnSuccessListener {
                     var newMesajKey = db.child("groups").child(groupKey).child("messages").push().key.toString()
                     var fotoMesaj = Mesaj("",true,System.currentTimeMillis(),"image",mAuth.currentUser!!.uid,it.toString(),"","",newMesajKey)
+                    var konusmaGonderen = GroupKonusma(true,"Fotoğraf",System.currentTimeMillis(),mAuth.currentUser!!.uid,groupImage,groupKey,groupName,false)
+                    db.child("grupkonusmalar").child(mAuth.currentUser!!.uid).child(groupKey).setValue(konusmaGonderen)
 
+
+                    for (i in members){
+                        if (i.uid != mAuth.currentUser!!.uid){
+                            var konusmaAlanlar = GroupKonusma(false,"Fotoğraf",System.currentTimeMillis(),i.uid,groupImage,groupKey,groupName,false)
+                            db.child("grupkonusmalar").child(i.uid!!).child(groupKey).setValue(konusmaAlanlar)
+                        }
+
+                    }
                     db.child("groups").child(groupKey).child("messages").child(newMesajKey).setValue(fotoMesaj)
 
                     progressDialog.dismiss()
@@ -701,6 +711,17 @@ class GroupChatActivity : AppCompatActivity(),GroupMessagesAdapter.OnItemLongCli
                 myref.downloadUrl.addOnSuccessListener {
                     var newMesajKey = db.child("groups").child(groupKey).child("messages").push().key.toString()
                     var videoMesaj = Mesaj("",true,System.currentTimeMillis(),"video",mAuth.currentUser!!.uid,"",it.toString(),"",newMesajKey)
+                    var konusmaGonderen = GroupKonusma(true,"Video",System.currentTimeMillis(),mAuth.currentUser!!.uid,groupImage,groupKey,groupName,false)
+                    db.child("grupkonusmalar").child(mAuth.currentUser!!.uid).child(groupKey).setValue(konusmaGonderen)
+
+                    for (i in members){
+                        if (i.uid != mAuth.currentUser!!.uid){
+                            var konusmaAlanlar = GroupKonusma(false,"Video",System.currentTimeMillis(),i.uid,groupImage,groupKey,groupName,false)
+                            db.child("grupkonusmalar").child(i.uid!!).child(groupKey).setValue(konusmaAlanlar)
+                        }
+
+                    }
+
 
                     db.child("groups").child(groupKey).child("messages").child(newMesajKey).setValue(videoMesaj)
 

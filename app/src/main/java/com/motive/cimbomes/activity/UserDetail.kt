@@ -76,19 +76,26 @@ class UserDetail : AppCompatActivity() {
 
         blockedKontrol()
 
-        imageInfo?.let {
-            usetDetailImage.load(imageInfo){
-                crossfade(true)
-                crossfade(400)
-                placeholder(R.drawable.placeholder)
-                scale(Scale.FIT)
+        FirebaseDatabase.getInstance().reference.child("users").child(uidInfo!!).child("profilePic").get().addOnSuccessListener {
+            if (it.value != null){
+                imageInfo = it.value.toString()
+                usetDetailImage.load(it.value.toString()){
+                    crossfade(true)
+                    crossfade(400)
+                    placeholder(R.drawable.placeholder)
+                    scale(Scale.FIT)
+
+                    usetDetailImage.setOnClickListener {
+                        val intent = Intent(this@UserDetail,FullImageActivity::class.java)
+                        intent.putExtra("fullImage",imageInfo)
+                        startActivity(intent)
+                    }
+                }
             }
-            usetDetailImage.setOnClickListener {
-                val intent = Intent(this,FullImageActivity::class.java)
-                intent.putExtra("fullImage",imageInfo)
-                startActivity(intent)
-            }
+
         }
+
+
 
         userInfoSendMessage.setOnClickListener {
             val intent = Intent(this,ChatActivity::class.java)

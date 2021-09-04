@@ -138,11 +138,16 @@ class FeedActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 headerIsim.text = user!!.isim + " " + user!!.soyisim
                 val admin = user.isAdmin
                 if (admin!!){
+                    menu.findItem(R.id.kullaniciYonetimi).isVisible = true
                     menu.findItem(R.id.admin).isVisible = true
                 }else{
+                    menu.findItem(R.id.kullaniciYonetimi).isVisible = false
                     menu.findItem(R.id.admin).isVisible = false
                 }
-                UniversalImageLoader.setImage(user.profilePic!!,circle,headerProgress,"")
+                if (user.profilePic != null){
+                    UniversalImageLoader.setImage(user.profilePic!!,circle,headerProgress,"")
+                }
+
 
             }
 
@@ -277,6 +282,10 @@ class FeedActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.admin ->{
                 setCurrentFragment(GrupYonetimiFragment())
                 toolbars.setTitle("Grup Yönetimi")
+            }
+            R.id.kullaniciYonetimi->{
+                setCurrentFragment(KullaniciYonetimiFragment())
+                toolbars.setTitle("Kullanıcı Yönetimi")
             }
         }
         return true

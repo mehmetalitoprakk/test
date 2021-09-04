@@ -43,6 +43,7 @@ class GroupKonusmaAdapter(var konusmalar : ArrayList<GroupKonusma>, var konusmal
                 var konusmaText = oAnkiKonusma.son_mesaj.toString()
                 konusmaText = konusmaText.replace("\n"," ")
                 konusmaText=konusmaText.trim()
+
                 groupNameTV.text = oAnkiKonusma.groupName
                 //TODO SELECT MEMBER FRAGMENT BACK TUSU
 
@@ -50,7 +51,8 @@ class GroupKonusmaAdapter(var konusmalar : ArrayList<GroupKonusma>, var konusmal
                     sonMesajTV.text = konusmaText.substring(0,30)+"..."
                 }else if (konusmaText == ""){
                     sonMesajTV.text = "Eklendiniz"
-                }else{
+                }
+                else{
                     sonMesajTV.text = konusmaText
                 }
                 if (oAnkiKonusma.time != null){
@@ -112,10 +114,17 @@ class GroupKonusmaAdapter(var konusmalar : ArrayList<GroupKonusma>, var konusmal
                         var bulunanGrup = snapshot.getValue(GroupKonusma::class.java)
                         if (bulunanGrup!= null){
                             if (bulunanGrup.son_mesaj != null) {
-                                if (bulunanGrup!!.son_mesaj == "") {
+                                var konusmaText = bulunanGrup.son_mesaj.toString()
+                                konusmaText = konusmaText.replace("\n"," ")
+                                konusmaText=konusmaText.trim()
+
+                                if (konusmaText.length > 30){
+                                    sonMesajTV.text = konusmaText.substring(0,30)+"..."
+                                }else if (konusmaText == ""){
                                     sonMesajTV.text = "Eklendiniz"
-                                } else {
-                                    sonMesajTV.text = bulunanGrup!!.son_mesaj
+                                }
+                                else{
+                                    sonMesajTV.text = konusmaText
                                 }
 
                                 if (bulunanGrup.groupName != null) {

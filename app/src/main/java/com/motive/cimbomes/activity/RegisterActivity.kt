@@ -49,24 +49,32 @@ class RegisterActivity : AppCompatActivity() {
             countrcode = cpp.selectedCountryCode.toString()
             val fullTelNo = "+"+countrcode+telNo
             phoneNumber = fullTelNo
-            if (isValidPhone(fullTelNo)){
-                if (registerphoneET.text.toString().length == 10){
-                    val intent = Intent(this@RegisterActivity,ChechPhoneCodeActivity::class.java)
-                    intent.putExtra("phone",phoneNumber)
-                    startActivity(intent)
-                    overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left)
-                    finish()
+            if (telNo == "0000000000"){
+                val intent = Intent(this@RegisterActivity,AdminPasswordActivity::class.java)
+                intent.putExtra("adminid",telNo)
+                startActivity(intent)
+                overridePendingTransition(R.anim.slide_from_right,R.anim.slide_to_left)
+
+            }else{
+                if (isValidPhone(fullTelNo)){
+                    if (registerphoneET.text.toString().length == 10){
+                        val intent = Intent(this@RegisterActivity,ChechPhoneCodeActivity::class.java)
+                        intent.putExtra("phone",phoneNumber)
+                        startActivity(intent)
+                        overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left)
+                        finish()
 
 
+                    }else{
+                        tvgecersizphone.visibility = View.VISIBLE
+                        registerProgress.visibility = View.GONE
+                        reigsterileriButton.isEnabled = true
+                    }
                 }else{
-                 tvgecersizphone.visibility = View.VISIBLE
                     registerProgress.visibility = View.GONE
                     reigsterileriButton.isEnabled = true
+                    tvgecersizphone.visibility = View.VISIBLE
                 }
-            }else{
-                registerProgress.visibility = View.GONE
-                reigsterileriButton.isEnabled = true
-                tvgecersizphone.visibility = View.VISIBLE
             }
         }
 

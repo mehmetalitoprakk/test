@@ -50,6 +50,14 @@
         <entry key="..\:/saved/AndroidStudioProjects/Cimbomes/app/src/main/res/layout/saved_messages_row.xml" value="0.33" />
         <entry key="..\:/saved/AndroidStudioProjects/Cimbomes/app/src/main/res/layout/sikayet_et_layout.xml" value="0.3283514492753623" />
         <entry key="..\:/saved/AndroidStudioProjects/Cimbomes/app/src/main/res/menu/navmenu.xml" value="0.36666666666666664" />
+        <entry key="app/src/main/res/layout/activity_admin_password.xml" value="0.23324275362318841" />
+        <entry key="app/src/main/res/layout/activity_feed.xml" value="0.23324275362318841" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.23324275362318841" />
+        <entry key="app/src/main/res/layout/activity_register.xml" value="0.23324275362318841" />
+        <entry key="app/src/main/res/layout/fragment_grup_yonetimi.xml" value="0.23324275362318841" />
+        <entry key="app/src/main/res/layout/fragment_progress.xml" value="0.23324275362318841" />
+        <entry key="app/src/main/res/layout/fragment_yeni_grup.xml" value="0.23324275362318841" />
+        <entry key="app/src/main/res/layout/kalici_gruplar_child.xml" value="0.23324275362318841" />
       </map>
     </option>
   </component>
